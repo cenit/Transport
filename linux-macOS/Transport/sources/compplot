@@ -1,0 +1,7 @@
+g77 -c -finit-local-zero -fno-automatic plotf.f
+g77 -c -finit-local-zero -fno-automatic plota.f
+g77 -c -finit-local-zero -fno-automatic plot1f.f
+g77 -c -finit-local-zero -fno-automatic splint.f
+g77 -c time.c
+
+

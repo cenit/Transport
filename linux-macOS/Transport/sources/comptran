@@ -1,0 +1,4 @@
+g77 -cg -finit-local-zero -fno-automatic translin.f
+g77 -cg system.c
+
+

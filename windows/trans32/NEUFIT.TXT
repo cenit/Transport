@@ -1,0 +1,350 @@
+   Neuer Optimier-Algorithmus fuer Transport.                 RU13, Sept. 1991
+   ==========================================
+
+   Beim Enveloppen-Fitten mit Raumladung hat sich herausgestellt, dass die
+Gradienten-Suchmethode die in Transport eingebaut ist, nicht funktioniert.
+Daher wurde oft muehsam das minimale Chi-Quadrat manuell gesucht. Kuerzlich
+habe ich in einer Zeitschrift (c't Juli 1991, Seiten 182-187) ein stochastisches
+Optimier-Verfahren beschrieben gesehen, das versprach auch fuer Transport
+anwendbar zu sein. Erste Versuche sehen vielversprechend aus.
+
+   Das von Udo Witzke (TU Dresden) vorgestellte Suchverfahren funktioniert
+folgendermassen:
+
+   Gesucht sei das Minimum des Chi-Quadrats (gebildet durch die 'Constraints')
+abhaengig von den N variierbaren Parametern (Varycodes). Jeder zu variierende
+Parameter wird innerhalb eines sinnvollen Intervalls (zwischen ALOW und AHIGH)
+veraendert. Der Startwert (A) wird durch die Anfangswerte der Parameter erzeugt.
+Dann wird ein N-dimensionaler normierter normalverteilter Zufallsvektor berech-
+net, der die Richtung der Suche festlegt. Die Normalverteilung garantiert, dass
+jede Richtung gleich wahrscheinlich ist. Nun werden in dieser zufaelligen Rich-
+tung zwei Suchpunkte (je ein N-Tupel der Varycodes) ermittelt, indem einmal mit
+normaler (C) und einmal mit vergroesserter (B) Schrittweite nach dem Chi-Quadrat
+an den betreffenden Stellen geforscht wird. Nun gibt es drei Moeglichkeiten der
+Entscheidung nach jedem Suchschritt:
+
+1.)  Die bei (C) und (B) gefundenen Chi-Quadrate sind schlechter als der Start-
+     wert bzw. als der bisher beste gefundene Suchpunkt (A). Kein Erfolg, eine
+     neue Suchrichtung auslosen und mit gleicher Schrittweite weitersuchen.
+     Wenn dieses Ereignis mehrfach hintereinander geschieht, deutet das darauf
+     hin, dass das Minimum nicht mehr allzu entfernt liegt. Die Suchschritt-
+     weite wird verkleinert mit gleichbleibendem Startwert (Mikroskop). 
+2.)  Der Punkt (B) war besser als (C) und auch besser als (A). Der groessere
+     Schritt hatte Erfolg, das Minimum scheint noch in weiter Ferne zu liegen.
+     Um mit groesserer Geschwindigkeit voranzukommen, wird daher die Such-
+     schrittweite vergroessert (Teleskop).
+3.)  Punkt (B) war nicht besser als (A), aber (C) war es, was soviel bedeutet
+     wie: Man braucht die Suchstrategie nicht zu aendern und sucht daher mit
+     gleicher Suchschrittweite nach einem besseren Punkt.
+
+   Hat man auf diese Weise zufaellig einen Punkt mit kleinerem Chi-Quadrat
+gefunden, egal ob (B) oder (C), so wird dieser zum aktuellen Ausgangspunkt (A)
+fuer die weitere Suche. Je laenger der Suchprozess andauert, desto kleiner
+wird die Schrittweite werden, da sich in der naeheren Umgebung des Minimums
+kaum noch bessere Punkte finden lassen. Es stellen sich dann viele den Such-
+horizont einengende Misserfolge ein, so dass sich ab einer gewissen Grenze die
+weitere Suche kaum mehr lohnt, sondern abgebrochen werden und der gefundene
+Punkt (A) als Minimum anerkannt werden soll. Konkret wird die Suche nach einer
+Anzahl M von Schritten ohne Kontrolle duch ein Konvergenz-Kriterium abgebrochen.
+Da der verwendete Zufalls-Generator bei jedem Neustart einer Fit-Sequenz anders
+initialiert wird, faellt das Minimum und der Weg dorthin jedesmal etwas anders
+aus.
+
+   Neu implementierte Transport Codes:
+
+   16. 31. 0. ;  Umschalten auf Stochatisches Suchverfahren.
+   16. 32. 0. ;  Zurueckschalten auf Gradienten-Suchverfahren    (Default).
+   16. 22. M. ;  Anzahl Suchschritte M bis zum Abbruch der Suche (Default=50).
+
+   50. L. ALOW. AHIGH. ; Untere (ALOW) und obere Limite (AHIGH) des
+                         L-ten varierten Parameters (Varycode).  
+                         Defaults: fuer Typecode 12: ALOW=-0.9999, AHIGH=.9999
+                                   fuer Typecode 1 : ALOW= 0.0   , AHIGH=2*VAL
+                                   fuer alle andern: ALOW=-2*VAL , AHIGH=2*VAL
+                                   (VAL = Absolut-Betrag des Start-Wertes des
+                                    Parameters L)
+
+
+Beispiel 1: Waist-Fit. Um zu demonstrieren, dass das Minimum wirklich erreicht
+            wurde, wird der letzte Run mit der traditionellen Fit-Prozedur
+            durchgefuehrt.
+
+ /TEST OF RANDOM OPTIMIZER WITH QUADRUPOL WAIST FIT/
+ 0
+ 15. 1. /MM/ .1 ;
+ 15. 6. /PM/ .1 ;
+ 13. 2. ;
+ 13. 6. ;
+
+  16. 31. 0. /RANO/;
+ -16. 32. 0. /NORM/ ;
+  16. 22. 200. /NITR/ ;
+  50. 1. -15. 15. /LIM1/ ;
+  50. 2. -15. 15. /LIM2/ ;
+
+ 1. 0.1 10. 0.1 10. 0. 0. 1.2 /BEAM/ ;
+ 3. 3. ;
+ 5. .5 0. 100. /Q1/ ;
+ 3. .2 ;
+ 5. .5 0. 100. /Q2/ ;
+ 3. 3. ;
+
+ -10. 2. 1. 0. .1 /FIT1/ ;
+ -10. 4. 3. 0. .1 /FIT1/ ;
+ -10. 1. 1. 0. .1 /FIT2/ ;
+ -10. 3. 3. 0. .1 /FIT2/ ;
+ SENTINEL
+ -1
+ 5.01 /Q1/ ;
+ 5.01 /Q2/ ;
+ 10.  /FIT2/ ;
+ SENTINEL
+ -1
+ 5.01 /Q1/ ;
+ 5.01 /Q2/ ;
+ 10.  /FIT1/ ;
+ 10.  /FIT2/ ;
+ SENTINEL
+ /*PLOT*/
+ -1
+ -16. /RANO/ ;
+ 16.  /NORM/ ;
+ SENTINEL
+ SENTINEL
+
+ Nachfolgend ist in etwas gekuerzter Fassung der formatierte Output aufgelistet,
+den dieses Beispiel bei der Verwendung der Transport-Prozedur TFO erzeugt.
+Bei den Korrekturen werden nur jene Schritte ausgedruckt, die zu einer Ver-
+besserung des Chi-Quadrates fuehren. Im Gegensatz zum normalen Fit-Algorithmus
+werden nicht die Aenderungen der Parameterwerte ausgegeben, sondern die Werte
+selbst. Waehrend der Optimierung wird bei jedem Schritt ein Punkt auf den Bild-
+schirm ausgegeben, um dem Benutzer bei laengeren Optimierzeiten den Fortschritt
+anzuzeigen.
+
+
+  .
+  .
+SENTINEL
+  .
+   -1
+    5.010          "Q1  " ;
+    5.010          "Q2  " ;
+   10.0            "FIT2" ;
+
+SENTINEL
+
+*CORRECTIONS*
+    0 0.10368E+07    0.0000    0.0000
+    1 0.70776E+06    3.7604   -4.6754
+   11 0.65639E+06    4.3122   -4.1674
+   12 0.51098E+06    4.9320   -5.5334
+   15 0.37061E+06    6.4158   -5.7528
+   16 0.16706E+06    8.8972   -7.4388
+   22 0.79289E+04    8.9679   -8.9371
+   30 0.23580E+04    9.1283   -9.2761
+   31 0.84237E+03    9.4910   -9.3715
+   35 0.33734E+03    9.3039   -9.3834
+   42 0.14222E+03    9.3106   -9.3370
+   44 0.58667E+02    9.3415   -9.3723
+   51 0.25597E+02    9.3532   -9.3727
+   54 0.23545E+02    9.3492   -9.3617
+   55 0.21086E+02    9.3549   -9.3719
+   61 0.19082E+02    9.3531   -9.3664
+   63 0.68530E+01    9.3646   -9.3641
+   70 0.55810E+01    9.3699   -9.3666
+   72 0.46892E+01    9.3721   -9.3720
+   79 0.46550E+01    9.3710   -9.3710
+   91 0.46539E+01    9.3712   -9.3711
+   98 0.46538E+01    9.3711   -9.3712
+  106 0.46538E+01    9.3711   -9.3712
+  107 0.46537E+01    9.3712   -9.3712
+  112 0.46537E+01    9.3712   -9.3712
+  113 0.46537E+01    9.3712   -9.3712
+  117 0.46537E+01    9.3712   -9.3712
+  121 0.46537E+01    9.3712   -9.3712
+  125 0.46537E+01    9.3712   -9.3712
+  134 0.46537E+01    9.3712   -9.3712
+
+*COVARIANCE* (FIT 0.46537E+01)
+ *QUAD*          5.010          "Q1  "      0.50000 M         9.37118 KG    ...
+ *QUAD*          5.010          "Q2  "      0.50000 M        -9.37119 KG    ...
+ *FIT*          10.0            "FIT2"      1.   1.  0.0 /0.1 (   0.21042 ) ...
+ *FIT*          10.0            "FIT2"      3.   3.  0.0 /0.1 (   0.04752 ) ...
+  .
+   -1
+    5.010          "Q1  " ;
+    5.010          "Q2  " ;
+   10.0            "FIT1" ;
+   10.0            "FIT2" ;
+
+SENTINEL
+
+
+*CORRECTIONS*
+    0 0.46686E+01    9.3712   -9.3712
+   57 0.46601E+01    9.3711   -9.3712
+   68 0.46598E+01    9.3711   -9.3712
+   70 0.46597E+01    9.3711   -9.3712
+   75 0.46596E+01    9.3711   -9.3712
+   79 0.46594E+01    9.3711   -9.3712
+   83 0.46591E+01    9.3711   -9.3712
+   84 0.46589E+01    9.3711   -9.3712
+   86 0.46588E+01    9.3711   -9.3712
+   87 0.46586E+01    9.3711   -9.3712
+   89 0.46579E+01    9.3711   -9.3712
+   90 0.46578E+01    9.3711   -9.3712
+   93 0.46572E+01    9.3711   -9.3712
+  103 0.46571E+01    9.3711   -9.3712
+
+*COVARIANCE* (FIT 0.46571E+01)
+ *QUAD*          5.010          "Q1  "      0.50000 M         9.37111 KG    ...
+ *QUAD*          5.010          "Q2  "      0.50000 M        -9.37118 KG    ...
+ *FIT*          10.0            "FIT1"      2.   1.  0.0 /0.1 (   0.00522 ) ...
+ *FIT*          10.0            "FIT1"      4.   3.  0.0 /0.1 (   0.00226 ) ...
+ *FIT*          10.0            "FIT2"      1.   1.  0.0 /0.1 (   0.21043 ) ...
+ *FIT*          10.0            "FIT2"      3.   3.  0.0 /0.1 (   0.04752 ) ...
+  .
+   -1
+  16.              "RANO" ;
+  16.00            "NORM" ;
+
+SENTINEL
+
+*CORRECTIONS*
+  0.10000E+01 ( 0.46571E+01)   -0.0001    0.0000
+
+*COVARIANCE* (FIT 0.46543E+01)
+        0.001
+       -0.863       0.000
+  .
+  .
+ *NORMAL*       16.00           "NORM"     32.                0.00000
+ *ITRLIM*       16.00           "NITR"     22.              200.00000
+ *LIMITS*       50.             "    "      1.00000    -15.00000     15.00000
+ *LIMITS*       50.             "    "      2.00000    -15.00000     15.00000
+  .
+ *QUAD*          5.010          "Q1  "      0.50000 M         9.37106 KG
+  .
+ *QUAD*          5.010          "Q2  "      0.50000 M        -9.37116 KG
+  .
+ *FIT*          10.0            "FIT1"      2.   1.  0.0 /0.1 (   0.00045 ) ...
+ *FIT*          10.0            "FIT1"      4.   3.  0.0 /0.1 (   0.00055 ) ...
+ *FIT*          10.0            "FIT2"      1.   1.  0.0 /0.1 (   0.21044 ) ...
+ *FIT*          10.0            "FIT2"      3.   3.  0.0 /0.1 (   0.04752 ) ...
+  .
+  .
+ TRANSPORT ENDE
+
+
+Beispiel 2: Gekuerzter Input fuer Simultan-Enveloppen-Fit mit Raumladung. Beim
+            ersten Fit-Durchgang werden x, x' und r12 variiert, beim zweiten
+            y, y' und r34 und beim dritten x, y, x', y', r12 und r34. Da die
+            Nummern der Fit-Parameter bei jeder der 3 Fit-Sequenzen andern
+            physikalischen Parametern zugeordnet sind, muessen die oberen und
+            unteren Limiten fuer alle drei Gruppen an Anfang (Sequenz 0) mit
+            unterschiedlichen Labels und mit Minus-Zeichen versehen vordefiniert
+            werden. Innerhalb jeder Fit-Sequenz wird dann die entsprechende
+            Gruppe mit Plus-Zeichen aktiviert und die Vorgaenger-Gruppe mit
+            Minus-Zeichen deaktiviert. Auf die gleiche Art und Weise wird auch
+            die Anzahl von Iterations-Schritten von Sequenz zu Sequenz variiert.
+              
+
+ /870 keV nur bis BW2, Messung Einfluss QWA3 -670,-770,-870,-970,-1070/
+ 0
+ 13. 2. ;
+ 13. 6. ;
+ 15. 1.0 /MM/ .1 ;
+ 15. 6.0 /PM/ .1 ;
+ 13. 48.0    /ANGL/ ;
+ 16. 14.0 .0 /SLIT/ ;
+ 
+  16. 31. 0. /RANO/ ;
+
+ -16. 22. 20.     /NIT1/ ;
+ -50. 1. 4.0  6.0  /XX1/ ;
+ -50. 2. 1.8  2.5  /XP1/ ;
+ -50. 3. -.96 -.90 /CX1/ ;
+
+ -16. 22. 30.     /NIT2/ ;
+ -50. 1. 5.0  5.5  /YY2/ ;
+ -50. 2. 2.4  2.8  /YP2/ ;
+ -50. 3. -.95 -.85 /CY2/ ;
+
+ -16. 22. 20.     /NIT3/ ;
+ -50. 1. 4.0   6.0 /XX3/ ;
+ -50. 2. 1.8   2.5 /XP3/ ;
+ -50. 3. 5.0   5.5 /YY3/ ;
+ -50. 4. 2.4   2.8 /YP3/ ;
+ -50. 5. -.96 -.90 /CX3/ ;
+ -50. 6. -.95 -.85 /CY3/ ;
+ 
+ 1. 4.82 2.49 5.152 2.62 .0 .0 .04042 /BEAM/ ;
+ 12. -.92 .0 .0 .0 .0 -.896 .0 .0 .0 .0 .0 .0 .0 .0 .0 /CORR/ ;
+ 16. 3.0 1836.15 /MASS/ ;
+ 22. .03 .016 .0 .2 /CUR1/ ;
+ .
+ .
+ 1. 4.82 2.49 5.152 2.62 .0 .0 .04042 /BEAM/ ;
+ 12. -.92 .0 .0 .0 .0 -.896 .0 .0 .0 .0 .0 .0 .0 .0 .0 /CORR/ ;
+ 22. .03 .016 .0 .2 /CUR1/ ;
+ .
+ .
+ 1. 4.82 2.49 5.152 2.62 .0 .0 .04042 /BEAM/ ;
+ 12. -.92 .0 .0 .0 .0 -.896 .0 .0 .0 .0 .0 .0 .0 .0 .0 /CORR/ ;
+ 22. .03 .016 .0 .2 /CUR1/ ;
+ .
+ .
+ 1. 4.82 2.49 5.152 2.62 .0 .0 .04042 /BEAM/ ;
+ 12. -.92 .0 .0 .0 .0 -.896 .0 .0 .0 .0 .0 .0 .0 .0 .0 /CORR/ ;
+ 22. .03 .016 .0 .2 /CUR1/ ;
+ .
+ .
+ 1. 4.82 2.49 5.152 2.62 .0 .0 .04042 /BEAM/ ;
+ 12. -.92 .0 .0 .0 .0 -.896 .0 .0 .0 .0 .0 .0 .0 .0 .0 /CORR/ ;
+ 22. .03 .016 .0 .2 /CUR1/ ;
+ .
+ .
+ SENTINEL
+ -1
+ 16. /NIT1/ ;
+ 50. /XX1/;
+ 50. /XP1/ ;
+ 50. /CX1/ ;
+ 1.AB00    /BEAM/;
+ 12.E00000 /CORR/ ;
+ .
+ .
+ SENTINEL
+ -1
+ -16. /NIT1/ ;
+ -50. /XX1/;
+ -50. /XP1/ ;
+ -50. /CX1/ ;
+ 16.  /NIT2/ ;
+ 50.  /YY2/;
+ 50.  /YP2/ ;
+ 50.  /CY2/ ;
+ 1.00CD    /BEAM/;
+ 12.00000E /CORR/ ;
+ .
+ .
+ SENTINEL
+ /*PLOT*/
+ -1
+ -16. /NIT2/ ;
+ -50. /YY2/;
+ -50. /YP2/ ;
+ -50. /CY2/ ;
+ 16.  /NIT3/ ;
+ 50.  /XX3/;
+ 50.  /XP3/ ;
+ 50.  /YY3/;
+ 50.  /YP3/ ;
+ 50.  /CX3/ ;
+ 50.  /CY3/ ;
+ 1.ABCD    /BEAM/ ;
+ 12.E0000F /CORR/ ;
+ .
+ .
+ SENTINEL
+ SENTINEL

@@ -1,0 +1,183 @@
+Copyright 1991, Dennis Cook        (Compuserve [76467,310])
+                Professional Development Svcs
+                P.O. Box 794
+                Boston, MA  02199
+
+                (617) 974-4037
+
+
+This is a user supported product.  It is not public domain, and it is
+not free software.  You are granted a limited license to use this
+product on a trial basis.  If you wish to continue using the product
+after the trial period, you must registar by sending $25. 
+
+For support I may be contacted via Compuserve MAIL, or telephone.   
+I have a similar control developed that supports the ProtoView
+Development Tool (Version 3).  If you need this control, check for the 
+file CRBUTTON.ZIP on the ProtoView BBS.
+
+
+Contents of CLRBUT.ZIP FILE
+
+     CLRBUTTN.DOC  - this document
+     CLRBUTTN.H    - header file for your applications
+     DEMO.EXE      - Demo program for ColorButtons
+     DEMO.ZIP      - zip file containing demo program source
+     PDSCNTL.DLL   - DLL for ColorButton support
+     PDSCNTL.ZIP   - zip file containing program source for DLL
+
+
+ColorButton Controls!!!!
+
+Did you ever wish for an easy way to change the color of a push button style
+control!   Yeah me too.  Well here is the answer to your prayers, Yuk, Yuk!
+
+Actually, you have more than color control with ColorButtons.  You can also
+have multiple line labels and font selection.
+
+
+The dynamic link library, PDSCNTL.DLL, contains the custom control procedure 
+for ColorButton.  It will also support the Dialog Editor and a
+version for ProtoView is also available.   To use this control type in your 
+application just include an IMPORTS statement in the app.DEF file for the 
+"PDSCNTL.ColorButtonWndFn" function.
+
+
+Default ColorButton parameter:
+
+    BUTTON FACE       =  COLOR_BTNFACE    (usually gray)
+    BUTTON SHADOW     =  COLOR_BTNSHADOW  (usually dark gray)
+    BUTTON HILITE     =  WHITE_BRUSH
+    LABEL TEXT COLOR  =  COLOR_BTNTEXT    (usually black)
+    LABEL FONT        =  SYSTEM_FONT
+    LABEL STYLE       =  DT_CENTER | DT_WORDBREAK (see DrawText())
+
+
+The following is a summation of messages that can be sent to ColorButtons
+
+
+
+CRBM_SETFACEBRUSH & CRBM_SETSHADOWBRUSH
+To Change: BUTTON COLOR
+
+    Normally, when changing a button color, you should send messages to 
+    change both the BUTTON FACE and BUTTON SHADOW.  Your application must
+    create brushes for the colors to be used and pass the handle to the 
+    brush via the SendMessage().  
+
+    SendMessage(hToColorButtonWnd, CRBM_SETFACEBRUSH, hYourFaceBrush, 0L); 
+    SendMessage(hToColorButtonWnd, CRBM_SETSHADOWBRUSH, hYourShadowBrush, 0L); 
+
+    You may also reset the ColorButton to use the Default values with the 
+    following messages.
+
+    SendMessage(hToColorButtonWnd, CRBM_SETFACEBRUSH, FALSE, 0L); 
+    SendMessage(hToColorButtonWnd, CRBM_SETSHADOWBRUSH, FALSE, 0L); 
+
+    NOTE - do not DeleteObject() for hYourFaceBrush or hYourShadowBrush
+    prematurely as this will cause a failure in the ColorButton control
+    procedure.
+
+
+CRBM_SETTEXTCOLOR
+To Change: LABEL TEXT COLOR
+
+    To change the color of the label text you will send the desire 
+    RGB value via the SendMessage().
+    
+    SendMessage(hToColorButtonWnd, CRBM_SETTEXTCOLOR, TRUE, crYourRGBValue); 
+
+    To reset the color of the label text back to the default send the 
+    following:
+
+    SendMessage(hToColorButtonWnd, CRBM_SETTEXTCOLOR, FALSE, 0L); 
+
+CRBM_SETLABELFONT
+To Change: LABEL FONT
+
+    To change the font for used for the label text, your application must
+    create a handle to the desired font then pass the handle to the 
+    font via the SendMessage().  
+
+    SendMessage(hToColorButtonWnd, CRBM_SETLABELFONT, hYourFont, 0L); 
+
+    You may also reset the ColorButton to use the Default font with the 
+    following message.
+
+    SendMessage(hToColorButtonWnd, CRBM_SETLABELFONT, FALSE, 0L); 
+
+    NOTE - do not DeleteObject() for hYourFont prematurely as this will 
+    cause a failure in the ColorButton control procedure.
+
+CRBM_SETDRAWTEXTSTYLE
+To Change: LABEL STYLE
+
+    The ColorButton control uses the DrawText function to create the label.
+    As a result, most of the style options that are available for this 
+    function are also available for use in this control.  When the control
+    is first created, the option of (DT_CENTER | DT_WORDBREAK) is
+    established.  You may replace this default value with the follow
+    SendMessage().
+
+    SendMessage(hToColorButtonWnd, CRBM_SETDRAWTEXTSTYLE, wYourOption, 0L); 
+
+    To reset to the default value:
+
+    SendMessage(hToColorButtonWnd, CRBM_SETDRAWTEXTSTYLE, 
+                                       (DT_CENTER | DT_WORDBREAK), 0L); 
+
+    NOTE - The ColorButton proc will cancel out the style option of 
+    DT_TABSTOP and DT_CALCRECT.  
+
+
+CRBM_GETFACEBRUSH & CRBM_GETSHADOWBRUSH
+
+To Get: BUTTON COLOR
+
+    lResult = SendMessage(hToColorButtonWnd, CRBM_GETFACEBRUSH, 0, 0L); 
+    lResult = SendMessage(hToColorButtonWnd, CRBM_GETSHADOWBRUSH, 0, 0L); 
+
+    The value of LOWORD(lResult) contains the HBRUSH hBrushInUse.  This value
+    will be NULL if currently using the default control brush.
+
+CRBM_GETTEXTCOLOR
+
+To Get: LABEL TEXT COLOR
+
+    lResult = SendMessage(hToColorButtonWnd, CRBM_GETTEXTCOLOR, 0, 0L); 
+    
+    The lResult value is the RGB color reference value currently in use
+    by the control.
+
+CRBM_GETLABELFONT
+To Get: LABEL FONT
+
+    lResult = SendMessage(hToColorButtonWnd, CRBM_GETLABELFONT, 0, 0L); 
+
+    The value of LOWORD(lResult) contains the HFONT hFontInUse.  This value
+    will be NULL if currently using the default control font.
+
+CRBM_GETDRAWTEXTSTYLE
+To Get: LABEL STYLE
+
+    lResult = SendMessage(hToColorButtonWnd, CRBM_GETDRAWTEXTSTYLE, 0, 0L); 
+
+    The value of LOWORD(lResult) contains the current DrawText styles for 
+    the control.
+
+
+Other Messages and Functions:
+
+    This control will issue a WM_CTLCOLOR message to the parent window
+    during its paint procedure.  Like the same message for a standard     
+    windows button control, passing a brush handle as a return value
+    to this message has no affect.  However, any of the other control
+    messages could be sent prior to return of the WM_CTLCOLOR message.
+
+    All of the window and dialog text functions and messages work as 
+    expected for this control; in as much as they function the same as 
+    they would with the standard windows push button.
+
+
+
+

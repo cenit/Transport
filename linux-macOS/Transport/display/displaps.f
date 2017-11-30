@@ -1,0 +1,692 @@
+      SUBROUTINE DISPLAPS(SECORD,IJK,COLF,PXFLAG,PDFLAG)
+C
+C     PROGRAM DRAWS FRAME FOR GRAPHIC TRANSPORT OUTPUT
+C     OUTPUTS ENVELOPES FOR GRAPHIC TRANSPORT
+C     OPTIMIZED FOR SMOOTH HP-PLOTTER OUTPUT
+C     AUTHOR: U.ROHRER (SIN), JANUARY 1984
+C     ADAPTED FOR WORKSTATION UIS BY U.ROHRER (PSI), JANUARY 1989
+C         POSTSCRIPT OUTPUT BY URS ROHRER (PSI), MAY 1990
+C
+      COMMON /COLTAG/ COLOR, XSCAL, YSCAL, XOFF, YOFF, CHSIZE
+      LOGICAL         COLOR
+C
+      CHARACTER*80 STR
+      CHARACTER*90 UEBER,TEXT
+      CHARACTER NAMEX*80,VERS*10,IJK*20,ELIP*4,TERNAM*10,INP*2
+      CHARACTER PS_DEV*6
+      CHARACTER*1 NAM(4,200), EXI(9,200), NAM1
+      INTEGER*4 ITT(3),JUMP(7),MM(100),IM(1000)
+c     INTEGER*4 SYS$TRNLOG
+      INTEGER*2 LENG
+      REAL Z(401),X(401),Y(401),DX(401),DY(401)
+      REAL RAX(401),RAY(401)
+      REAL IZ1(1000),IZ2(1000),IX(1000),IY(1000)
+      LOGICAL FIRST,SLITCONT,SLITLAB,LTR,SECORD,COLF
+      LOGICAL PXFLAG, PDFLAG
+      DATA JUMP /3*0,3,3*0/
+      DATA SLITCONT,SLITLAB /.FALSE.,.FALSE./
+C
+C     INITIALIZE POSTSCRIPT GRAPHICS
+C
+c     IOS = SYS$TRNLOG('PS_DEV',LEN,PS_DEV,,,%VAL(3))
+c     IF (PS_DEV(1:1) .EQ. 'C') THEN
+       COLOR  = COLF
+c     ELSE
+c      COLOR  = .FALSE.
+c     ENDIF
+      XSCAL  = 0.64
+      YSCAL  = 0.63
+      XOFF   = 85.0
+      YOFF   = 40.0
+      CHSIZE = 10.0
+C
+      CALL PSOPEN('TRANS.PS')
+      CALL SETCOL(1) ! SCHWARZ
+      CALL PSTXTS(CHSIZE)
+      CALL PSLINW(0.9)
+C
+      SCALX=1.0
+      SCALY=1.0
+C
+C     EINLESEN VON TITEL , MAGNETLABELS & ERREGUNGEN
+C
+      OPEN(UNIT=9,FILE='FOR009.DAT',STATUS='OLD')
+      READ(9,1004,ERR=100) TEXT    
+      READ(TEXT,1007) ZMIN,ZMAX
+      READ(9,1004) UEBER
+      READ(9,1005) IYUEB
+      READ(9,1005) ISPEZ2
+C
+C     EINZEICHNEN DES RAHMENS UND X/Y-ACHSEN EINTEILUNGEN
+C
+      DO 45 I=1,10         
+      CALL PSMOV(1000.*SCALX,70.*FLOAT(I-1)*SCALY)
+      CALL PSDRW(1000.*SCALX,70.*FLOAT(I)*SCALY)       
+      CALL PSDRW(995.*SCALX,70.*FLOAT(I)*SCALY)      
+ 45   CONTINUE        
+      CALL PSDRW(0.,700.*SCALY)    
+      DO 46 I=10,1,-1         
+      CALL PSMOV(0.,70.*FLOAT(I)*SCALY)
+      CALL PSDRW(0.,70.*FLOAT(I-1)*SCALY)         
+      CALL PSDRW(5.*SCALX,70.*FLOAT(I-1)*SCALY)         
+ 46   CONTINUE        
+      CALL PSDRW(1000.*SCALX,0.)   
+      CALL PSLINW(0.45)
+C
+C     EINZEICHNEN DER Z-ACHSE UND DEREN EINTEILUNG
+C
+      YO=355.*SCALY
+      YM=350.*SCALY
+      YU=345.*SCALY
+      TAUS=1000.*SCALX
+      SOLD=TAUS
+      SCALE=1000./(ZMAX-ZMIN)
+      IZMIN=ZMIN
+      IZMAX=ZMAX
+      N=IZMAX-IZMIN
+      K=1
+      IF (N .GT. 20)  K=2
+      IF (N .GT. 50)  K=5
+      IF (N .GT. 200) K=20
+      IF (N .GT. 500) K=50
+      ANF=SCALE*(ZMIN-FLOAT(IZMIN))
+      DO 60 I=N/K+1,1,-1
+      S=-ANF+FLOAT(I)*K*SCALE
+C     S=S*SCALX
+      IF (S .GT. TAUS) GO TO 60
+      CALL PSMOV(SOLD,YU)
+      CALL PSDRW(SOLD,YM)
+      CALL PSDRW(S,YM)
+      CALL PSDRW(S,YO)
+      SOLD=S
+ 60   CONTINUE
+      CALL PSMOV(SOLD,YU)
+      CALL PSDRW(SOLD,YM)
+      CALL PSDRW(0.,YM)
+C
+C     SCHREIBEN DER UEBERSCHRIFT
+C     SCHREIBEN DES TITELS
+C
+      IF(IYUEB.NE.0)
+     1  CALL PSTEXT(0., IYUEB*SCALY,UEBER)
+      OPEN(UNIT=10,FILE='FOR010.DAT',STATUS='OLD',
+     1       FORM='UNFORMATTED')
+      READ(10,ERR=100) ISPEZ,ILABS
+      IF (ISPEZ.NE.2 .AND. ISPEZ.NE.3)
+     1  CALL PSTEXT(0.,705.*SCALY,TEXT)
+C
+C   EINLESEN DER MAGNETPOSITIONEN
+C
+      I=1
+      OPEN(UNIT=8,FILE='FOR008.DAT',STATUS='OLD',
+     1       FORM='UNFORMATTED')
+      READ(8) ICOMP
+ 30   READ(8,END=40,ERR=151) Z1,Z2,XX,YY     
+      IF(Z1.GT.1500.0) THEN
+       SLITCONT=.TRUE.
+       GO TO 40
+      ENDIF
+      IM(I) = 0
+      IZ1(I)=Z1*SCALX
+      IZ2(I)=Z2*SCALX
+      IX(I)=XX*SCALY
+      IY(I)=YY*SCALY
+      IF (XX.EQ.25.0 .OR. YY.EQ.675.0) IM(I) = 1  !   BEND
+      I=I+1      
+      GO TO 30   
+ 40   N=I-1 
+C
+C     EINZEICHNEN DER MAGNETE (Y-APERTUREN)
+C
+      CALL PSLINW(0.9)
+      FIRST = .TRUE.
+      DO 950 I=N,1,-1
+      IF (IM(I) .EQ. 0) THEN
+       CALL SETCOL(2) ! ROT
+      ELSE
+       CALL SETCOL(4) ! BLAU
+      ENDIF
+      IF (IY(I)/SCALY .GE. 700.) GO TO 950
+      IF(I.EQ.1) GO TO 920
+      IF(IZ1(I-1).EQ.IZ2(I)) GO TO 905
+          IF(.NOT.FIRST) FIRST=.TRUE.
+      GO TO 920
+ 905  IF(FIRST) GO TO 915
+      CALL PSMOV(IZ1(I),IY(I))
+      CALL PSDRW(IZ1(I-1),IY(I-1))
+      GO TO 950
+ 915  FIRST=.FALSE.
+ 920  IF (ICOMP .EQ. 1) THEN
+          CALL PSMOV(IZ1(I),350.*SCALY)    
+          CALL PSDRW(IZ1(I),IY(I))       
+          CALL PSDRW(IZ2(I),IY(I))       
+          CALL PSDRW(IZ2(I),350.*SCALY)    
+      ELSE
+          CALL PSMOV(IZ1(I),IY(I)+25.*SCALY)    
+          CALL PSDRW(IZ1(I),IY(I))       
+          CALL PSDRW(IZ2(I),IY(I))       
+          CALL PSDRW(IZ2(I),IY(I)+25.*SCALY)    
+      ENDIF
+ 950  CONTINUE        
+C
+C     EINZEICHNEN DER MAGNETE (X-APERTUREN)
+C
+      FIRST = .TRUE.
+      DO 50 I=1,N
+      IF (IM(I) .EQ. 0) THEN
+       CALL SETCOL(2) ! ROT
+      ELSE
+       CALL SETCOL(4) ! BLAU
+      ENDIF
+      IF (IX(I)/SCALY .LE. 0.) GO TO 50
+      IF(I.EQ.N) GO TO 20
+      IF(IZ1(I).EQ.IZ2(I+1)) GO TO 5
+          IF(.NOT.FIRST) FIRST=.TRUE.
+      GO TO 20
+ 5    IF(FIRST) GO TO 15
+      CALL PSMOV(IZ2(I),IX(I))
+      CALL PSDRW(IZ2(I+1),IX(I+1))
+      GO TO 50
+ 15   FIRST=.FALSE.
+ 20   IF (ICOMP .EQ. 1.0) THEN
+          CALL PSMOV(IZ2(I),350.*SCALY)    
+          CALL PSDRW(IZ2(I),IX(I))       
+          CALL PSDRW(IZ1(I),IX(I))       
+          CALL PSDRW(IZ1(I),350.*SCALY)
+      ELSE
+          CALL PSMOV(IZ2(I),IX(I)-25.*SCALY)    
+          CALL PSDRW(IZ2(I),IX(I))       
+          CALL PSDRW(IZ1(I),IX(I))       
+          CALL PSDRW(IZ1(I),IX(I)-25.*SCALY)
+      ENDIF
+ 50   CONTINUE        
+      LTR=.FALSE.
+C
+C     EINLESEN DER BLENDEN
+C
+      IF(SLITCONT) THEN
+        I=1        
+ 130    READ(8,END=140,ERR=140) Z1,XX,YY     
+        IZ1(I)=Z1*SCALX
+        IX(I)=XX*SCALY
+        IY(I)=YY*SCALY
+        I=I+1      
+        GO TO 130   
+ 140    N=I-1 
+C
+C     EINZEICHNEN DER BLENDEN (X-APERTUREN)
+C
+        CALL SETCOL(1) ! SCHWARZ
+        CALL LOGIC(LTR,N,1,J1,J2,J3)
+        SX=2.*SCALX
+        SY=4.*SCALY
+        SZ=30.*SCALY
+        DO 350 I=J1,J2,J3
+        IF (IX(I)/SCALY .LE. 0.) GO TO 350
+        CALL PSMOV(IZ1(I),IX(I)-SZ)    
+        CALL PSDRW(IZ1(I),IX(I))       
+        CALL PSMOV(IZ1(I)-SX,IX(I)-SY)
+        CALL PSDRW(IZ1(I),IX(I))
+        CALL PSDRW(IZ1(I)+SX,IX(I)-SY)
+ 350    CONTINUE        
+        CALL REVERSE(LTR)
+C
+C     EINZEICHNEN DEL BLENDEN (Y-APERTUREN)
+C
+        CALL LOGIC(LTR,N,1,J1,J2,J3)
+        DO 352 I=J1,J2,J3
+        IF (IY(I)/SCALY .GE. 700.) GO TO 352
+        CALL PSMOV(IZ1(I),IY(I)+SZ)    
+        CALL PSDRW(IZ1(I),IY(I))       
+        CALL PSMOV(IZ1(I)-SX,IY(I)+SY)
+        CALL PSDRW(IZ1(I),IY(I))
+        CALL PSDRW(IZ1(I)+SX,IY(I)+SY)
+ 352    CONTINUE        
+        CALL REVERSE(LTR)
+      ENDIF
+      CALL PSLINW(0.45)
+C
+C   EINLESEN VON MAGNETLABELS & ERREGUNGEN
+C
+ 151  I=1        
+      REM=-10.0
+      REM2=-10.0  !!
+ 51   READ(9,1013,END=53) Z1,(NAM(K,I),K=1,4),(EXI(K,I),K=1,9)
+      IF(Z1.GT.1500.0) THEN 
+       SLITLAB=.TRUE.
+       GO TO 53
+      ENDIF
+      Z1=MAX(2.*SCALX,Z1*SCALX-3.5*SCALY)
+      IF(Z1.LT.REM2) GO TO 51  !!
+      IF(Z1-REM .LT. 10.*SCALY) THEN
+       IMAL=IMAL+1
+       IF(IMAL.GT.4) THEN
+        IMAL=0
+        REM2=REM  !!
+        GO TO 51
+       ENDIF
+       IF(IMAL.EQ.1 .AND. I.GT.1) THEN
+        Z(I-1)=Z(I-1)-(5.-((Z1-REM)/(2.*SCALY)))*SCALY
+        REM=Z(I-1)
+       ENDIF
+       Z1=REM+10.*SCALY
+      ELSE
+       IMAL=0
+      ENDIF
+      REM=Z1
+      Z(I)=Z1  
+      I=I+1      
+      GO TO 51   
+ 53   NN=I-1 
+C
+C     ANSCHREIBEN DER MAGNETE
+C
+      IF (NN .EQ. 0) GO TO 357
+      IF (ISPEZ .NE. 2 .AND. ISPEZ.NE.3) THEN
+       CALL LOGIC(LTR,NN,1,J1,J2,J3)
+       DO 59 I=J1,J2,2*J3
+        IF (EXI(9,I).EQ.'1') THEN ! 9TH BYTE USED AS COLOR INFO
+         CALL SETCOL(4) ! BLAU
+        ELSE
+         CALL SETCOL(2) ! ROT
+        ENDIF
+        DO 58 K=1,4
+         XX=700.-15.*FLOAT(K)
+             NAM1 = NAM(K,I)
+ 58     CALL PSTEXT(Z(I), SCALY*XX, NAM1)
+        IF(I+J3.LT.1 .OR. I+J3.GT.NN) GO TO 59
+        IF (EXI(9,I+J3).EQ.'1') THEN
+         CALL SETCOL(4) ! BLAU
+        ELSE
+         CALL SETCOL(2) ! ROT
+        ENDIF
+        DO 158 K=4,1,-1
+         XX=700.-15.*FLOAT(K)
+             NAM1 = NAM(K,I+J3)
+ 158       CALL PSTEXT(Z(I+J3), SCALY*XX, NAM1)
+ 59     CONTINUE
+        CALL REVERSE(LTR)
+      ENDIF
+C
+C     AUSSCHREIBEN DER ERREGUNGEN
+C
+      IF (ISPEZ2 .NE. 0) THEN
+       CALL LOGIC(LTR,NN,1,J1,J2,J3)
+       DO 56 I=J1,J2,2*J3
+        IF (EXI(9,I).EQ.'1') THEN ! 9TH BYTE USED AS COLOR INFO
+         CALL SETCOL(4) ! BLAU
+        ELSE
+         CALL SETCOL(2) ! ROT
+        ENDIF
+        DO 55 K=1,7
+         XX=140.-15.*FLOAT(K)+FLOAT(JUMP(K))
+             NAM1 = EXI(K,I)
+ 55     CALL PSTEXT(Z(I), SCALY*XX, NAM1)
+        IF(I+J3.LT.1 .OR. I+J3.GT.NN) GO TO 56
+        IF (EXI(9,I+J3).EQ.'1') THEN
+         CALL SETCOL(4) ! BLAU
+        ELSE
+         CALL SETCOL(2) ! ROT
+        ENDIF
+        DO 155 K=7,1,-1
+         XX=140.-15.*FLOAT(K)+FLOAT(JUMP(K))
+             NAM1 = EXI(K,I+J3)
+ 155     CALL PSTEXT(Z(I+J3), SCALY*XX, NAM1)
+ 56      CONTINUE
+       CALL REVERSE(LTR)
+      ENDIF
+      CALL SETCOL(1) ! SCHWARZ
+C
+C     EINLESEN VON SLIT LABELS
+C
+ 357  IF(SLITLAB) THEN
+      I=1        
+      REM=-10.0
+      REM2=-10.0
+ 351  READ(9,1003,END=353) Z1,(NAM(K,I),K=1,4)
+      Z1=MAX(2.*SCALX,Z1*SCALX-3.5*SCALY)
+      IF(Z1.LT.REM2) GO TO 351
+      IF(Z1-REM .LT. 10.*SCALY) THEN
+       IMAL=IMAL+1
+       IF(IMAL.GT.4) THEN
+        IMAL=0
+        REM2=REM
+        GO TO 351
+       ENDIF
+       IF(IMAL.EQ.1 .AND. I.GT.1) THEN
+        Z(I-1)=Z(I-1)-(5.-((Z1-REM)/(2.*SCALY)))*SCALY
+        REM=Z(I-1)
+       ENDIF
+       Z1=REM+10.*SCALY
+      ELSE
+           IMAL=0
+      ENDIF
+      REM=Z1
+      Z(I)=Z1  
+      I=I+1      
+      GO TO 351
+ 353  NN=I-1 
+C
+C     ANSCHREIBEN DER SLITS
+C
+       IF (NN .EQ. 0) GO TO 57
+       IF (ISPEZ.NE.2 .AND. ISPEZ.NE.3) THEN
+        CALL LOGIC(LTR,NN,1,J1,J2,J3)
+        DO 359 I=J1,J2,2*J3
+         DO 358 K=1,4
+          XX=65.-15.*FLOAT(K)
+              NAM1 = NAM(K,I)
+ 358        CALL PSTEXT(Z(I), SCALY*XX, NAM1)
+         IF(I+J3.LT.1 .OR. I+J3.GT.NN) GO TO 359
+         DO 458 K=4,1,-1
+          XX=65.-15.*FLOAT(K)
+          NAM1 = NAM(K,I+J3)
+ 458        CALL PSTEXT(Z(I+J3), SCALY*XX, NAM1)
+ 359       CONTINUE
+        CALL REVERSE(LTR)
+       ENDIF
+      ENDIF
+C
+C   EINLESEN DER POSITIONEN & LABELS VON SPEZIALELEM
+C
+ 57   IF(ISPEZ.EQ.0 .OR. ISPEZ.EQ.2) GO TO 90
+      I=1        
+      REM=-10.
+      REM2=-10. !!!
+ 80   READ(10,END=82) Z1,(NAM(K,I),K=1,4)
+      IF(NAM(1,I).EQ.'S' .AND. ILABS.NE.0) GO TO 80
+      IZ1(I)=Z1*SCALX
+      Z(I)=MAX(2.*SCALX,Z1*SCALX-4.*SCALY)
+      IX(I)=0
+      IF(Z(I).LT.REM2) GO TO 180  !!!
+      IF(Z(I)-REM .LT. 10.*SCALY) THEN
+       IMAL=IMAL+1
+       IF(IMAL.GT.4) THEN
+        IMAL=0
+        REM2=REM  !!!
+        GO TO 180
+       ENDIF
+       IF(IMAL.EQ.1 .AND. I.GT.1) THEN
+        Z(I-1)=Z(I-1)-(5.-((Z(I)-REM)/(2.*SCALY)))*SCALY
+        REM=Z(I-1)
+       ENDIF
+       Z(I)=REM+10.*SCALY
+      ELSE
+           IMAL=0
+      ENDIF
+      IX(I)=1.
+      REM=Z(I)
+ 180  I=I+1      
+ 182  GO TO 80   
+ 82   N=I-1 
+C
+C   EINZEICHNEN & ANSCHREIBEN DER SPEZIALELEMENTE
+C
+      CALL SETCOL(6) ! VIOLETT
+      IF (N. EQ. 0) GO TO 90
+      CALL LOGIC(LTR,N,1,J1,J2,J3)
+      DO 89 I=J1,J2,2*J3
+      IF (IX(I) .NE. 0.) THEN
+       DO 87 K=1,4
+        XX=640.-15.*FLOAT(K)
+        NAM1 = NAM(K,I)
+ 87      CALL PSTEXT(Z(I), SCALY*XX, NAM1)
+      ENDIF
+      CALL PSMOV(IZ1(I),575.*SCALY)    
+      CALL PSDRW(IZ1(I),350.*SCALY)         
+      IF (I+J3.LT.1 .OR. I+J3.GT.N) GO TO 89
+      CALL PSMOV(IZ1(I+J3),350.*SCALY)         
+      CALL PSDRW(IZ1(I+J3),575.*SCALY)    
+      IF (IX(I+J3) .NE. 0.) THEN
+       DO 287 K=4,1,-1
+        XX=640.-15.*FLOAT(K)
+        NAM1 = NAM(K,I+J3)
+ 287    CALL PSTEXT(Z(I+J3), SCALY*XX, NAM1)
+      ENDIF
+ 89   CONTINUE
+      CALL REVERSE(LTR)
+C
+C   EINLESEN DER POSITIONEN & LABELS VON STEUERMAGNETEN
+C
+ 90   IF(ILABS.LE.0) GO TO 190
+      REWIND 10
+      READ(10) ISPEZ,ILABS
+      I=1        
+      REM=-10.
+      REM2=-10.
+ 280  READ(10,END=282) Z1,(NAM(K,I),K=1,4)
+      IF(NAM(1,I).NE.'S') GO TO 280
+      IZ1(I)=Z1*SCALX
+      Z(I)=MAX(2.*SCALX,Z1*SCALX-4.*SCALY)
+      IX(I)=0
+      IF(Z(I).LT.REM2) GO TO 283
+      IF(Z(I)-REM .LT. 10.*SCALY) THEN
+       IMAL=IMAL+1
+       IF(IMAL.GT.4) THEN
+        IMAL=0
+        REM2=REM
+        GO TO 283
+       ENDIF
+       IF(IMAL.EQ.1 .AND. I.GT.1) THEN
+        Z(I-1)=Z(I-1)-(5.-((Z(I)-REM)/(2.*SCALY)))*SCALY
+        REM=Z(I-1)
+       ENDIF
+       Z(I)=REM+10.*SCALY
+      ELSE
+       IMAL=0
+      ENDIF
+      IX(I)=1.
+      REM=Z(I)
+ 283  I=I+1      
+ 284  GO TO 280   
+ 282  N=I-1 
+      IF (N .EQ. 0) GO TO 190
+C
+C     EINZEICHNEN & ANSCHREIBEN DER STEUERMAGNETE
+C
+      CALL SETCOL(3) ! GRUEN
+      CALL LOGIC(LTR,N,1,J1,J2,J3)
+      DO 189 I=J1,J2,2*J3
+      CALL PSMOV(IZ1(I),350.*SCALY)         
+      CALL PSDRW(IZ1(I),125.*SCALY)    
+      IF (IX(I) .NE. 0.) THEN
+       DO 187 K=1,4
+        XX=125.-15.*FLOAT(K)
+            NAM1 = NAM(K,I)
+ 187    CALL PSTEXT(Z(I),SCALY*XX,NAM1)
+      ENDIF
+      IF (I+J3.LT.1 .OR. I+J3.GT.N) GO TO 189
+      IF (IX(I+J3) .NE. 0.) THEN
+       DO 387 K=4,1,-1
+        XX=125.-15.*FLOAT(K)
+        NAM1 = NAM(K,I+J3)
+ 387    CALL PSTEXT(Z(I+J3), SCALY*XX,NAM1)
+      ENDIF
+      CALL PSMOV(IZ1(I+J3),125.*SCALY)    
+      CALL PSDRW(IZ1(I+J3),350.*SCALY)         
+ 189  CONTINUE
+      CALL REVERSE(LTR)
+C
+C   EINLESEN DER MESSUNGEN
+C
+ 190  OPEN(UNIT=14,FILE='FOR014.DAT',STATUS='OLD',
+     1       FORM='UNFORMATTED')
+      READ(14,ERR=500) ITT
+      IF(ITT(1)+ITT(2)+ITT(3) .NE. 0) THEN
+       I=1        
+ 91    READ(14,END=92) L1,L2,L3
+       MM(I)=L1
+       IZ1(I)=L2
+       IX(I)=L3
+       I=I+1      
+       GO TO 91   
+ 92    N=I-1 
+       IF (N .EQ. 0) GO TO 500
+      ENDIF
+C
+C     EINZEICHNEN DER X-MESSPUNKTE
+C
+      CALL SETCOL(1) ! SCHWARZ
+      IF (ITT(1) .EQ. 1) THEN
+       CALL LOGIC(LTR,N,1,J1,J2,J3)
+       DO 99 J=J1,J2,J3
+        IF (MM(J) .EQ. 1) THEN
+         CALL PSMOV(SCALX*(IZ1(J)-4.),SCALY*IX(J))     
+         CALL PSDRW(SCALX*(IZ1(J)+4.),SCALY*IX(J))     
+         CALL PSMOV(SCALX*IZ1(J),SCALY*IX(J))       
+         CALL PSDRW(SCALX*IZ1(J),SCALY*(IX(J)-8.))       
+        ENDIF
+ 99    CONTINUE        
+       CALL REVERSE(LTR)
+      ENDIF
+C
+C     EINZEICHNEN DER Y-MESSPUNKTE
+C
+      IF (ITT(2) .EQ. 1) THEN
+       CALL LOGIC(LTR,N,1,J1,J2,J3)
+       DO 98 J=J1,J2,J3
+        IF (MM(J) .EQ. 2) THEN
+         CALL PSMOV(SCALX*(IZ1(J)-4.),SCALY*IX(J))     
+         CALL PSDRW(SCALX*(IZ1(J)+4.),SCALY*IX(J))     
+         CALL PSMOV(SCALX*IZ1(J),SCALY*IX(J))       
+         CALL PSDRW(SCALX*IZ1(J),SCALY*(IX(J)+8.))
+        ENDIF
+ 98    CONTINUE        
+       CALL REVERSE(LTR)
+      ENDIF
+C
+C     EINZEICHNEN DER DP/P- UND SHIFT-MESSPUNKTE
+C
+      IF (ITT(3) .EQ. 1) THEN
+       CALL LOGIC(LTR,N,1,J1,J2,J3)
+       DO 97 J=J1,J2,J3
+        IF (MM(J) .EQ. 3) THEN
+         CALL PSMOV(SCALX*(IZ1(J)-4.),SCALY*IX(J))
+         CALL PSDRW(SCALX*(IZ1(J)+4.),SCALY*IX(J))
+         CALL PSMOV(SCALX*IZ1(J),SCALY*(IX(J)-4.))
+         CALL PSDRW(SCALX*IZ1(J),SCALY*(IX(J)+4.))
+        ENDIF
+ 97    CONTINUE        
+       CALL REVERSE(LTR)
+      ENDIF
+C
+C     SECOND ORDER TIJK DISPLAY
+C
+ 500  CONTINUE
+      IF (.NOT.SECORD) GO TO 540
+          CALL SETCOL(1) ! SCHWARZ
+      CALL DTMPS(IJK,ZMIN,ZMAX,IYUEB,LTR,COLOR)
+      GO TO 100
+ 540  CONTINUE
+C
+C   GET FULL FILENAME OF FILE ASSIGNED TO UNIT 7
+C
+      ICNT = 0
+      IV = 0
+ 579  CONTINUE
+      IV = IV + 1
+      IF (IV .EQ. 12) GO TO 600
+      IF (IV .EQ. 1) THEN
+        NAMEX = 'FOR007.DAT'
+      ELSE
+        NAMEX = 'FOR007.DAT.0'
+            NAMEX(12:12) = CHAR(48+IV-2)
+      ENDIF
+C
+      ICOL = MOD(ICNT,4) + 1
+      IF (ICOL .EQ. 4) ICOL = 5
+      ICNT = ICNT + 1
+      CALL SETCOL(ICOL) ! WEISS, ROT, GRUEN, CYAN, WEISS, ROT, ...
+C
+C   EINLESEN DER ENVELOPPEN
+C
+      OPEN(UNIT=7,FILE=NAMEX,STATUS='OLD',FORM='UNFORMATTED',ERR=600)
+      READ(7) IENV,IENV,IDISP,KDISP,IRAX,IRAY,N,ZM
+      READ(7) (Z(I),X(I),Y(I),DX(I),DY(I),RAX(I),RAY(I),
+     1  I=1,N)
+      CLOSE(UNIT=7)
+C
+      DO 506 I=1,N
+      Z(I)=Z(I)*SCALX
+      X(I)=X(I)*SCALY
+      Y(I)=Y(I)*SCALY
+      DX(I)=DX(I)*SCALY
+      DY(I)=DY(I)*SCALY
+      RAX(I)=RAX(I)*SCALY
+      RAY(I)=RAY(I)*SCALY
+ 506  CONTINUE
+C
+C     ZEICHEN DER ENVELOPPEN
+C
+      CALL PSLINW(0.9)
+      IF(IENV.EQ.0) GO TO 501
+      CALL LOGIC(LTR,N,1,L1,L2,L3)
+      CALL PSMOV(Z(L1),X(L1))
+      DO 511 I=L1,L2,L3
+ 511   CALL PSDRW(Z(I),X(I))
+      CALL REVERSE(LTR)
+C
+      CALL LOGIC(LTR,N,1,L1,L2,L3)
+      CALL PSMOV(Z(L1),Y(L1))
+      DO 512 I=L1,L2,L3
+ 512   CALL PSDRW(Z(I),Y(I))
+      CALL REVERSE(LTR)
+      CALL PSLINW(0.45)
+C
+ 501  IF(IDISP.EQ.0) GO TO 502
+      CALL SETCOL(3) ! GRUEN
+      CALL LOGIC(LTR,N,2,L1,L2,L3)
+      DO 515 I=L1,L2,L3
+      CALL PSMOV(Z(I),DX(I))
+ 515  CALL PSDRW(Z(I+L3/2),DX(I+L3/2))
+      CALL REVERSE(LTR)
+C
+ 502  IF(KDISP.EQ.0) GO TO 503
+      CALL LOGIC(LTR,N,2,L1,L2,L3)
+      DO 516 I=L1,L2,L3
+       CALL PSMOV(Z(I),DY(I))
+ 516   CALL PSDRW(Z(I+L3/2),DY(I+L3/2))
+      CALL REVERSE(LTR)
+C
+ 503  IF(IRAX.EQ.0) GO TO 504
+      CALL SETCOL(1) ! SCHWARZ
+      CALL LOGIC(LTR,N,1,L1,L2,L3)
+      CALL PSMOV(Z(L1),RAX(L1))
+      DO 513 I=L1,L2,L3
+ 513   CALL PSDRW(Z(I),RAX(I))
+      CALL REVERSE(LTR)
+C
+ 504  IF(IRAY.EQ.0) GO TO 505
+      CALL LOGIC(LTR,N,1,L1,L2,L3)
+      CALL PSMOV(Z(L1),RAY(L1))
+      DO 514 I=L1,L2,L3
+ 514   CALL PSDRW(Z(I),RAY(I))
+      CALL REVERSE(LTR)
+ 505  CONTINUE
+      GO TO 579
+C
+ 600  CONTINUE  !!  ENDE VERSIONEN LOOP
+C
+C   FINISH
+C
+ 100  IF (PDFLAG) CALL BEDACPS
+      IF (PXFLAG) CALL BEGAUSSPS
+      CALL PSMOV(0.,0.)
+      CALL PSCLS
+C
+      RETURN
+C
+C   FORMAT STATEMENTS
+C
+ 1003   FORMAT(F10.1,6X,4A1,2X,7A1)
+ 1013   FORMAT(F10.1,6X,4A1,2X,9A1)
+ 1004   FORMAT(A)    
+ 1005   FORMAT(I10)
+ 1007   FORMAT(6X,F6.2,9X,F6.2)
+C 5000  FORMAT(I)
+ 5001   FORMAT(I1)
+ 5002   FORMAT(I2)
+ 5003   FORMAT(I3)
+ 5004   FORMAT(I4)
+C
+      END

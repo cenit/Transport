@@ -1,0 +1,1 @@
+g77 translin.o system.o -o trans

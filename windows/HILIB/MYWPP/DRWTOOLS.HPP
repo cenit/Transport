@@ -1,0 +1,53 @@
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////// definition of class Font ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+class WindowManager;
+class DisplayDevice;
+
+class Font : public Object
+{
+    LOGFONT lf;
+    HFONT   hfont;
+    char Name[40];
+  public:
+    Font(LPCSTR FontName, BYTE CharSet);
+    Font(LPCSTR FontName, int flag, int flag2);
+    Font(LPCSTR FontName);
+    Font(void);
+    ~Font(void);
+    HFONT GetHandle(void) { return hfont; };
+    VOID SetFixedPitch(BOOL blState);
+    VOID SetPointSize(UINT size,
+                      DisplayDevice *opDev = Application::GetMainWindow());
+    VOID SetEscapement(int tenthofdeg);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////// definition of class Pen ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+class Pen : public Object
+{
+    HPEN hPen;
+    UINT width;
+  public:
+    Pen(UINT wType = PS_SOLID, UINT wWidth = 1, DWORD rgbColor = BLACK_PEN);
+    Pen(LPLOGPEN lplgpn);
+    ~Pen(void);
+    HPEN GetHandle(void) { return hPen; };
+};
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////// definition of class Brush //////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+class Brush : public Object
+{
+    HBRUSH hBrush;
+  public:
+    Brush(DWORD rgbColor);
+    ~Brush(void);
+    HBRUSH GetHandle(void) { return hBrush; };
+};
+///////////////////////////////////// EOF /////////////////////////////////////

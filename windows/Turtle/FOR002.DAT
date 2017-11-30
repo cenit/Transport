@@ -1,0 +1,599 @@
+  
+Turtle32.DLL computational part for Turtle Framework, compiled by U. Rohrer (PSI), 25-Mar-2008
+  
+ TEST                                                                            
+ 1000000
+   17.             /3ORD/      3.000000;
+   ** 3rd order **
+   16.00           /    /     20.000000     0.000000;
+   16.00           /    /    190.000000     1.000000   100.000000;
+    1.000000       /BEAM/      0.100000   500.000000     0.100000   200.000000     0.000000     0.000000     0.100000;
+   -1.             /BEAM/      0.001000   500.000000     0.000000     0.000000     0.000000     0.000000     0.100000;
+   -1.             /BEAM/      0.001000     0.000000     0.000000   200.000000     0.000000     0.000000     0.100000;
+   13.             /APP /     10.000000;
+    3.0            /    /      0.450000;
+   16.00           /CIRC/    100.000000    15.000000    15.000000;
+   16.00           /HYP /    101.000000    12.000000     0.000000;
+   16.00           /I1  /     25.000000     0.125000;
+   16.00           /I2  /     26.000000    -0.016300;
+   16.00           /I3  /     27.000000     0.038900;
+   16.00           /I4  /     28.000000    -0.272000;
+   26.0            /OCT /      0.200000     0.267000    12.500000;
+    3.0            /    /     -0.200000;
+    2.0            /    /   1000.000000;
+    5.00           /Q1  /      0.400000     3.529810    12.500000;
+    2.0            /    /   1000.000000;
+    3.0            /    /     -0.200000;
+   26.0            /OCT /      0.250000     0.267000    12.500000;
+   26.0            /OCT /      0.250000     0.267000    12.500000;
+    3.0            /    /     -0.200000;
+    2.0            /    /   1000.000000;
+    5.00           /Q2  /      0.400000    -2.195040    12.500000;
+    2.0            /    /   1000.000000;
+    3.0            /    /     -0.200000;
+   26.0            /OCT /      0.200000     0.267000    12.500000;
+    3.0            /    /      2.600000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+  -50.             /    /      1.000000   -10.000000    10.000000     1.000000;
+  -50.             /    /      3.000000   -10.000000    10.000000     1.000000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+    3.0            /    /      0.100000;
+   51.0            /    /      1.000000   -10.000000    10.000000     1.000000;
+   52.0            /    /      3.000000   -10.000000    10.000000     1.000000;
+ SENTINEL
+
+1The following requested histograms refer to  1000000 rays passing through the above beam line:
+ **********************************************************************************************
+
+ ****   TEST                                                                               ****
+
+ Histogram No  1                        
+ horizontal axis    x in cm                           3.950 m    from the target
+ vertical axis      y in cm                           3.950 m    from the target
+
+ Histogram No  2                        
+ horizontal axis    x in cm                           4.050 m    from the target
+ vertical axis      y in cm                           4.050 m    from the target
+
+ Histogram No  3                        
+ horizontal axis    x in cm                           4.150 m    from the target
+ vertical axis      y in cm                           4.150 m    from the target
+
+ Histogram No  4                        
+ horizontal axis    x in cm                           4.250 m    from the target
+ vertical axis      y in cm                           4.250 m    from the target
+
+ Histogram No  5                        
+ horizontal axis    x in cm                           4.350 m    from the target
+ vertical axis      y in cm                           4.350 m    from the target
+
+ Histogram No  6                        
+ horizontal axis    x in cm                           4.450 m    from the target
+ vertical axis      y in cm                           4.450 m    from the target
+
+ Histogram No  7                        
+ horizontal axis    x in cm                           4.550 m    from the target
+ vertical axis      y in cm                           4.550 m    from the target
+
+ Histogram No  8                        
+ horizontal axis    x in cm                           4.650 m    from the target
+ vertical axis      y in cm                           4.650 m    from the target
+
+ Histogram No  9                        
+ horizontal axis    x in cm                           4.750 m    from the target
+ vertical axis      y in cm                           4.750 m    from the target
+
+ 45986  places left for histogram storage.
+
+1Histogram No  1                        
+ horizontal axis    x in cm                           3.950 m    from the target
+ vertical axis      y in cm                           3.950 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I MKOXJS$$$$$$$YVOPSKN I   1868
+    9.000 to   8.000 I OIUEO$$$$$$$$$$KQJHJ I   1880
+    8.000 to   7.000 I MRUYSRY$$$$$$$YNHPVS I   2043
+    7.000 to   6.000 I OPVPZW$$$$$$$$$$SXXR I   2255
+    6.000 to   5.000 I YZZX$$$$$$$$$$Z$$RRW I   2523
+    5.000 to   4.000 I Z$T$$$$$$$$$$$$$$$XX I   2722
+    4.000 to   3.000 I $$$$$$$$$$$$$$$$$$$$ I   3069
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3462
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4432
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  35084
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  34960
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4430
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3601
+   -3.000 to  -4.000 I $$$$$$$$$$$$$$$$$$$$ I   3072
+   -4.000 to  -5.000 I $$ZZ$$$$$$$$$$$$$$$Z I   2747
+   -5.000 to  -6.000 I QJ$Y$$$$$$$$$$W$S$YX I   2409
+   -6.000 to  -7.000 I RUWWQ$$$$$$$$$$PUVYU I   2197
+   -7.000 to  -8.000 I PQO$UV$$$$$$$$$$ZWTL I   2018
+   -8.000 to  -9.000 I VLORRX$$$$$$$NULOSIT I   1960
+   -9.000 to -10.000 I MHPQVJ$$$$$$$XSNGPON I   1866
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I         1221         I        
+                     I 11122234088042222211 I        
+                     I 77913602736639731087 I        
+                     I 29755755557627250663 I        
+             totals  I 86591685879504762750 I 118598 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          26623          26922
+                     down             2420           2463
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.009   RMS half width =   3.47    
+                vertical   :  center =   0.001   RMS half width =   3.49    
+                correlation:  sinchi =  -0.001   RMS area / pi  =   12.1    
+
+ Histogram No  1                        
+ horizontal axis    x in cm                           3.950 m    from the target
+ vertical axis      y in cm                           3.950 m    from the target
+
+1Histogram No  2                        
+ horizontal axis    x in cm                           4.050 m    from the target
+ vertical axis      y in cm                           4.050 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I HETETZ$$$$$$$W$QJNGH I   1764
+    9.000 to   8.000 I HWQRQOV$$$$$$$UOILMV I   1889
+    8.000 to   7.000 I JMLYSX$$$$$$$$$VTOTL I   2039
+    7.000 to   6.000 I NSZS$$$$$$$$$$$Q$SRL I   2279
+    6.000 to   5.000 I $SQ$Y$$$$$$$$$$$X$R$ I   2478
+    5.000 to   4.000 I $$$$$$$$$$$$$$$$$$Z$ I   2727
+    4.000 to   3.000 I $$$$$$$$$$$$$$$$$$$$ I   2987
+    3.000 to   2.000 I X$$$$$$$$$$$$$$$$$V$ I   3516
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4465
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  32963
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  32586
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4509
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3622
+   -3.000 to  -4.000 I $$$$$$$$$$$$$$$$$$$$ I   3112
+   -4.000 to  -5.000 I $ZY$$$$$$$$$$$$$$Y$$ I   2714
+   -5.000 to  -6.000 I RTY$T$$$$$$$$$$$X$$T I   2444
+   -6.000 to  -7.000 I KN$SX$$$$$$$$$UWVQTT I   2163
+   -7.000 to  -8.000 I RPVSUXY$$$$$$$VVIZO$ I   2031
+   -8.000 to  -9.000 I ZLLXTO$$$$$$$$$RX$NM I   1894
+   -9.000 to -10.000 I KJMJN$$$$$$$$PNMGPJO I   1809
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I         1221         I        
+                     I 11122224077042222111 I        
+                     I 67912590125119620986 I        
+                     I 75417887631230679267 I        
+             totals  I 73799722396940892401 I 113991 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          27399          27717
+                     down             3937           3982
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.007   RMS half width =   3.49    
+                vertical   :  center =   0.000   RMS half width =   3.54    
+                correlation:  sinchi =  -0.002   RMS area / pi  =   12.3    
+
+ Histogram No  2                        
+ horizontal axis    x in cm                           4.050 m    from the target
+ vertical axis      y in cm                           4.050 m    from the target
+
+1Histogram No  3                        
+ horizontal axis    x in cm                           4.150 m    from the target
+ vertical axis      y in cm                           4.150 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I LPNFSST$$$$$$$WHFFJO I   1721
+    9.000 to   8.000 I KKJYNWZ$$$$$$$USOQNM I   1869
+    8.000 to   7.000 I PVOQUU$$$$$$$$$XUJQP I   2079
+    7.000 to   6.000 I TH$T$Z$$$$$$$$$$V$QY I   2263
+    6.000 to   5.000 I $P$$$$$$$$$$$$$X$YZM I   2426
+    5.000 to   4.000 I VV$$$$$$$$$$$$$$$$$$ I   2678
+    4.000 to   3.000 I $$X$$$$$$$$$$$$$$$R$ I   2962
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3584
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4581
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  30818
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  30456
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4589
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3659
+   -3.000 to  -4.000 I X$$$$$$$$$$$$$$$$$$$ I   3065
+   -4.000 to  -5.000 I Y$$$$$$$$$$$$$$$$M$W I   2696
+   -5.000 to  -6.000 I UQU$$$$$$$$$$$$$XZ$$ I   2436
+   -6.000 to  -7.000 I LUU$V$$$$$$$$$$WT$PY I   2172
+   -7.000 to  -8.000 I IYVPVY$$$$$$$$PWQPNS I   1991
+   -8.000 to  -9.000 I OHQROV$$$$$$$$VYMWVO I   1844
+   -9.000 to -10.000 I LER$LR$$$$$$$VXQPYKF I   1748
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11122223966932222111 I        
+                     I 57902498614698520886 I        
+                     I 90238916860155072740 I        
+             totals  I 98052093706898746187 I 109637 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          28178          28483
+                     down             5365           5363
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.008   RMS half width =   3.50    
+                vertical   :  center =   0.006   RMS half width =   3.58    
+                correlation:  sinchi =  -0.002   RMS area / pi  =   12.6    
+
+ Histogram No  3                        
+ horizontal axis    x in cm                           4.150 m    from the target
+ vertical axis      y in cm                           4.150 m    from the target
+
+1Histogram No  4                        
+ horizontal axis    x in cm                           4.250 m    from the target
+ vertical axis      y in cm                           4.250 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I KLUPMQZ$$$$$$$KPKGLL I   1711
+    9.000 to   8.000 I OQHUNY$$$$$$$T$XWLPU I   1914
+    8.000 to   7.000 I PVQSX$$$$$$$$$$NWVHL I   2103
+    7.000 to   6.000 I SJ$T$$$$$$$$$$$$$ZYO I   2184
+    6.000 to   5.000 I $U$$$$$$$$$$$$$R$$UV I   2423
+    5.000 to   4.000 I U$T$$$$$$$$$$$$$$U$$ I   2602
+    4.000 to   3.000 I $U$$$$$$$$$$$$$$$$$Q I   2990
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3605
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4657
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  28830
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  28526
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4645
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3605
+   -3.000 to  -4.000 I $$$$$$$$$$$$$$$$$$$$ I   3046
+   -4.000 to  -5.000 I $$$$$$$$$$$$$$$$$$$Z I   2738
+   -5.000 to  -6.000 I QTW$$$$$$$$$$$$$$VR$ I   2399
+   -6.000 to  -7.000 I OUZQ$$$$$$$$$$$$TR$Y I   2202
+   -7.000 to  -8.000 I IXM$ZY$$$$$$$$$P$NLU I   1984
+   -8.000 to  -9.000 I ORRDV$$$$$$$$SQTLMSO I   1805
+   -9.000 to -10.000 I IMRTGO$$$$$$$$QXRQRP I   1736
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11112223955932222111 I        
+                     I 56892487213178320876 I        
+                     I 78491435723693633125 I        
+             totals  I 93281834296893820226 I 105705 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          28868          29201
+                     down             6626           6626
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.008   RMS half width =   3.53    
+                vertical   :  center =   0.009   RMS half width =   3.64    
+                correlation:  sinchi =  -0.003   RMS area / pi  =   12.9    
+
+ Histogram No  4                        
+ horizontal axis    x in cm                           4.250 m    from the target
+ vertical axis      y in cm                           4.250 m    from the target
+
+1Histogram No  5                        
+ horizontal axis    x in cm                           4.350 m    from the target
+ vertical axis      y in cm                           4.350 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I IGTKOYU$$$$$$ZUXQOIR I   1756
+    9.000 to   8.000 I LTMST$$$$$$$$Z$UKTLK I   1932
+    8.000 to   7.000 I HL$OY$$$$$$$$Z$SYQ$F I   2015
+    7.000 to   6.000 I NZ$$$$$$$$$$$$$Z$UWQ I   2137
+    6.000 to   5.000 I L$$$$$$$$$$$$$$$$U$$ I   2395
+    5.000 to   4.000 I $V$$$$$$$$$$$$$$$TWM I   2577
+    4.000 to   3.000 I Z$$$$$$$$$$$$$$$$$$Q I   2991
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3603
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4818
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  27018
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  26565
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4701
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3654
+   -3.000 to  -4.000 I Y$$$$$$$$$$$$$$$$$$$ I   3036
+   -4.000 to  -5.000 I ZY$$$$$$$$$$$$$$$$$Z I   2697
+   -5.000 to  -6.000 I $X$$$$$$$$$$$$$$$ZL$ I   2396
+   -6.000 to  -7.000 I JPVVV$$$$$$$$$$$RT$W I   2140
+   -7.000 to  -8.000 I LPYO$Y$$$$$$$U$$XKYY I   2027
+   -8.000 to  -9.000 I OWKN$$S$$$$$$$VNPRLH I   1808
+   -9.000 to -10.000 I LLPMSK$$$$$$$NPLRFNQ I   1716
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11112223844832221111 I        
+                     I 56891376812867329766 I        
+                     I 16152967495645202835 I        
+             totals  I 62143319283017845582 I 101982 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          29584          29883
+                     down             7787           7790
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.008   RMS half width =   3.55    
+                vertical   :  center =   0.009   RMS half width =   3.70    
+                correlation:  sinchi =  -0.001   RMS area / pi  =   13.1    
+
+ Histogram No  5                        
+ horizontal axis    x in cm                           4.350 m    from the target
+ vertical axis      y in cm                           4.350 m    from the target
+
+1Histogram No  6                        
+ horizontal axis    x in cm                           4.450 m    from the target
+ vertical axis      y in cm                           4.450 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I SJELOVW$$$$$$$WZNNFM I   1746
+    9.000 to   8.000 I ISL$R$$$$$$$$$ZUPPON I   1894
+    8.000 to   7.000 I GYT$$Z$$$$$$$$$$TTXO I   1996
+    7.000 to   6.000 I QZ$$$$$$$$$$$$XSRU$O I   2160
+    6.000 to   5.000 I QO$$$$$$$$$$$$$$$UTR I   2289
+    5.000 to   4.000 I PS$$$$$$$$$$$$$$$$$W I   2588
+    4.000 to   3.000 I $$$$$$$$$$$$$$$$$$$$ I   3037
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3685
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4848
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  25029
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  24945
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4739
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3687
+   -3.000 to  -4.000 I $U$$$$$$$$$$$$$$$$$$ I   3045
+   -4.000 to  -5.000 I UV$$$$$$$$$$$$$$$$$$ I   2635
+   -5.000 to  -6.000 I XXYW$$$$$$$$$$$$$$U$ I   2414
+   -6.000 to  -7.000 I QUYQU$$$$$$$$$$$$YLS I   2111
+   -7.000 to  -8.000 I OOTT$$$$$$$$$$Z$MRRV I   2009
+   -8.000 to  -9.000 I NNURT$V$$$$$$ZUWRLNP I   1812
+   -9.000 to -10.000 I WMJMTVV$$$$$$UTJQLMD I   1692
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11112223833832221111 I        
+                     I 56790365512657219755 I        
+                     I 03325774130021720387 I        
+             totals  I 74080599866704893297 I  98361 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          30212          30594
+                     down             8915           8944
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.004   RMS half width =   3.56    
+                vertical   :  center =   0.007   RMS half width =   3.75    
+                correlation:  sinchi =   0.001   RMS area / pi  =   13.4    
+
+ Histogram No  6                        
+ horizontal axis    x in cm                           4.450 m    from the target
+ vertical axis      y in cm                           4.450 m    from the target
+
+1Histogram No  7                        
+ horizontal axis    x in cm                           4.550 m    from the target
+ vertical axis      y in cm                           4.550 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I RKORR$$$$$$$$S$RIRMJ I   1783
+    9.000 to   8.000 I FRNVRZ$$$$$$$YYZVTSX I   1857
+    8.000 to   7.000 I S$T$V$$$$$$$$$XUMRTL I   1913
+    7.000 to   6.000 I VW$YT$$$$$$$$$$VU$S$ I   2160
+    6.000 to   5.000 I LR$T$$$$$$$$$$$$$$KR I   2257
+    5.000 to   4.000 I T$$$$$$$$$$$$$$$$$$X I   2618
+    4.000 to   3.000 I $$$$$$$$$$$$$$$$$$$$ I   3023
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3674
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   4978
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  23171
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  23380
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4848
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3688
+   -3.000 to  -4.000 I $X$$$$$$$$$$$$$$$$$$ I   3016
+   -4.000 to  -5.000 I OQ$$$$$$$$$$$$$$$$$$ I   2625
+   -5.000 to  -6.000 I T$$$$$$$$$$$$$$$Z$$$ I   2370
+   -6.000 to  -7.000 I SO$R$$$$$$$$$$$X$XLN I   2133
+   -7.000 to  -8.000 I ONYPXV$$$$$$$W$$YSRQ I   1965
+   -8.000 to  -9.000 I LSKU$ZY$$$$$$X$TTQHZ I   1850
+   -9.000 to -10.000 I QIQSWR$$$$$$$$QPLUMI I   1667
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11112223822832221111 I        
+                     I 45780264211346208754 I        
+                     I 57285549205862515379 I        
+             totals  I 27018813663439439847 I  94976 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          30858          31246
+                     down             9940          10006
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =   0.003   RMS half width =   3.58    
+                vertical   :  center =   0.004   RMS half width =   3.81    
+                correlation:  sinchi =  -0.002   RMS area / pi  =   13.6    
+
+ Histogram No  7                        
+ horizontal axis    x in cm                           4.550 m    from the target
+ vertical axis      y in cm                           4.550 m    from the target
+
+1Histogram No  8                        
+ horizontal axis    x in cm                           4.650 m    from the target
+ vertical axis      y in cm                           4.650 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I MOMPUX$$$$$$$$UZRPDV I   1702
+    9.000 to   8.000 I R$PYR$$$$$$$$$VXROQO I   1813
+    8.000 to   7.000 I V$$RZ$$$$$$$$$WRIVQW I   1972
+    7.000 to   6.000 I KWUW$$$$$$$$$$$ZRYOV I   2046
+    6.000 to   5.000 I LQ$O$$$$$$$$$$$$$$TP I   2258
+    5.000 to   4.000 I X$$$$$$$$$$$$$$$$$$$ I   2607
+    4.000 to   3.000 I $$$$$$$$$$$$$$$$$$$Y I   2968
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3760
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   5007
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  21561
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  21862
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   4899
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3676
+   -3.000 to  -4.000 I $T$$$$$$$$$$$$$$$$$$ I   3030
+   -4.000 to  -5.000 I PV$$$$$$$$$$$$$$$$$$ I   2596
+   -5.000 to  -6.000 I W$Y$$$$$$$$$$$$$X$Y$ I   2333
+   -6.000 to  -7.000 I PPZV$$$$$$$$$$$R$ZQZ I   2139
+   -7.000 to  -8.000 I QWMPVR$$$$$$$X$$$VRK I   1910
+   -8.000 to  -9.000 I IPP$R$Z$$$$$$$ZZXKNO I   1823
+   -9.000 to -10.000 I KSHNVX$$$$$$$WRSPRBS I   1689
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11111223811832211111 I        
+                     I 45689253001135198654 I        
+                     I 53629488473479946540 I        
+             totals  I 16486145526255521913 I  91651 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          31465          31931
+                     down            10913          11066
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =  -0.006   RMS half width =   3.59    
+                vertical   :  center =  -0.005   RMS half width =   3.85    
+                correlation:  sinchi =  -0.002   RMS area / pi  =   13.9    
+
+ Histogram No  8                        
+ horizontal axis    x in cm                           4.650 m    from the target
+ vertical axis      y in cm                           4.650 m    from the target
+
+1Histogram No  9                        
+ horizontal axis    x in cm                           4.750 m    from the target
+ vertical axis      y in cm                           4.750 m    from the target
+
+
+                  -10.000     0.000    10.000 totals                                                                                
+                     I**---**---**---**---**I--------
+   10.000 to   9.000 I LLQRRS$$$$$$$$Q$SUOQ I   1677
+    9.000 to   8.000 I VRWO$$$$$$$$$$QOKLOU I   1787
+    8.000 to   7.000 I WTWUS$$$$$$$$$$TXYPN I   1922
+    7.000 to   6.000 I MUSR$$$$$$$$$$ZW$TMJ I   2004
+    6.000 to   5.000 I RY$Z$$$$$$$$$$$$$$TZ I   2329
+    5.000 to   4.000 I $$$$$$$$$$$$$$$$$$W$ I   2559
+    4.000 to   3.000 I $$$$$$$$$$$$$$$$$$$$ I   3036
+    3.000 to   2.000 I $$$$$$$$$$$$$$$$$$$$ I   3670
+    2.000 to   1.000 I $$$$$$$$$$$$$$$$$$$$ I   5115
+    1.000 to   0.000 I $$$$$$$$$$$$$$$$$$$$ I  20129
+    0.000 to  -1.000 I $$$$$$$$$$$$$$$$$$$$ I  20278
+   -1.000 to  -2.000 I $$$$$$$$$$$$$$$$$$$$ I   5041
+   -2.000 to  -3.000 I $$$$$$$$$$$$$$$$$$$$ I   3620
+   -3.000 to  -4.000 I $$$$$$$$$$$$$$$$$$$$ I   3027
+   -4.000 to  -5.000 I MP$$$$$$$$$$$$$$$$$$ I   2585
+   -5.000 to  -6.000 I N$$$$$$$$$$$$$$$$Y$S I   2312
+   -6.000 to  -7.000 I R$UX$$$$$$$$$$$UZZW$ I   2082
+   -7.000 to  -8.000 I NQPW$Z$$$$$$$Z$WZVOF I   1929
+   -8.000 to  -9.000 I LPPJR$V$$$$$$U$$$RUI I   1810
+   -9.000 to -10.000 I LTG$VR$$$$$$$$VSUIJM I   1669
+                     I**---**---**---**---**I--------
+                     I                      I        
+                     I          22          I        
+                     I 11111223700832211111 I        
+                     I 45679252901035188553 I        
+                     I 22053137042221693816 I        
+             totals  I 60756389695825613958 I  88581 
+
+          total number of entries =     177026 including underflow and overflow as follows
+
+                                underflow       overflow
+                     across          32060          32530
+                     down            11836          12019
+
+
+                          **** Ellipse parameters ****
+
+                horizontal :  center =  -0.005   RMS half width =   3.61    
+                vertical   :  center =  -0.006   RMS half width =   3.90    
+                correlation:  sinchi =  -0.004   RMS area / pi  =   14.1    
+
+ Histogram No  9                        
+ horizontal axis    x in cm                           4.750 m    from the target
+ vertical axis      y in cm                           4.750 m    from the target
+
+1         Summary of particles stopped by apertures.
+          ------------------------------------------
+
+          position        type    label        rays
+
+          0.4500 m        Octo     OCT     502811.0
+          0.4500 m        Quad     Q1      236106.0
+          0.6500 m        Octo     OCT      16982.0
+          0.9000 m        Octo     OCT      66896.0
+          0.9500 m        Quad     Q2          11.0
+          1.1500 m        Octo     OCT        169.0
+
+          total                            822975.0
+
+
+
+
+
+
+ Turtle finished.
+                                                                                 
+       0
+ Input file not for TURTLE

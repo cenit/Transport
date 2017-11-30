@@ -1,0 +1,2 @@
++manager.obj +drwtools.obj +dispdev.obj +window.obj +metadev.obj &
++dialog.obj +simpdlg.obj +control.obj +printer.obj

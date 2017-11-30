@@ -1,0 +1,6 @@
+-out:..\transnt.exe
+-machine:i386
+-subsystem:console
+-entry:mainCRTStartup
+-stack:32760,4096
+-defaultlib:dfor.lib

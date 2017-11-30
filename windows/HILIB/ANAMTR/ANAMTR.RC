@@ -1,0 +1,80 @@
+/*****************************************************************************
+
+ ----  A N A M T R  -------- MS-Windows Class Module ------------------------
+                             Resource file
+
+==============================================================================
+
+This MS-Windows module contains a dialog control class which provides an
+analog meter to display numerical values.
+
+------------------------------------------------------------------------------
+
+The resource file contains some useful resources for the dynamic link library
+and the dialog box for the style input.
+
+------------------------------------------------------------------------------
+
+Copyright 1988, 1989, 1990, 1991, 1992 by Marcellus Buchheit, Germany
+Internet mabu@buchheit.de, CompuServe 100020,1723, Fax +49(0)721/356238
+
+Release 1.00 of 91-Dec-30 --- All rights reserved.
+
+*****************************************************************************/
+
+#include "COMMON.H"
+
+/* declaration for control type 0 */
+STRINGTABLE BEGIN
+  ST_TITLE,"Dialogelement Analogmeßgerät"
+  ST_DESCR_0,"Analogmesser/Standard"
+END
+
+BMP_TLBOX_0   BITMAP TLBOX.BMP
+CRS_DRGDRP_0  CURSOR DRGDRP.CUR
+
+/* dialog message strings */
+STRINGTABLE BEGIN
+  MSG_GETINF,"Keine Stil-Information verfügbar."
+  MSG_SETINF,"Stil-Information kann nicht gesetzt werden."
+  MSG_NUMVAL,"Illegaler numerischer Wert."
+  MSG_LINERANGE,"Anzahl der Skalenlinien muß\nim Bereich von 0 bis 127 sein."
+  MSG_UNITYSTRING,"Text für Einheit zu lang."
+  MSG_SCALESTRING,"Text für Skala zu lang."
+END /* STRINGTABLE */
+
+
+DB_STYLE DIALOG LOADONCALL MOVEABLE DISCARDABLE 32,32,222,108
+CAPTION "Eigenschaften Analogmeßgerät"
+STYLE WS_BORDER|WS_CAPTION|WS_DLGFRAME|WS_POPUP
+BEGIN
+ CONTROL "&ID-Wert:",IDNONE,"static",SS_LEFT|WS_CHILD,4,8,48,8
+ CONTROL "",IDIDVAL,"edit",
+         ES_AUTOHSCROLL|ES_LEFT|WS_BORDER|WS_TABSTOP|WS_CHILD,38,6,50,12
+ CONTROL "Stile",IDNONE2,"button",BS_GROUPBOX|WS_GROUP|WS_CHILD,4,25,84,40
+ CONTROL "&Rand",IDBORDER,"button",
+         BS_AUTOCHECKBOX|WS_GROUP|WS_TABSTOP|WS_CHILD,8,36,68,12
+ CONTROL "Zusätzlich &Digital",IDDIGITAL,"button",
+         BS_AUTOCHECKBOX|WS_CHILD,8,50,70,12
+ CONTROL "&Linien/Skala:",IDNONE3,"static",SS_LEFT|WS_GROUP|WS_CHILD,
+         4,74,44,10
+ CONTROL "",IDSCLLINE,"edit",ES_LEFT|WS_BORDER|WS_TABSTOP|WS_CHILD,
+         52,72,36,12
+ CONTROL "Text/&Einheit:",IDNONE4,"static",SS_LEFT|WS_CHILD,4,92,44,10
+ CONTROL "",IDUTYTEXT,"edit",
+         ES_AUTOHSCROLL|ES_LEFT|WS_BORDER|WS_TABSTOP|WS_CHILD,52,90,36,12
+ CONTROL "&Skalentext:",IDNONE5,"static",SS_LEFT|WS_CHILD,96,8,68,8
+ CONTROL "",IDSCLTEXT,"edit",
+         ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|WS_BORDER|WS_VSCROLL|
+         WS_GROUP|WS_TABSTOP|WS_CHILD,96,18,72,88
+ CONTROL "",IDNONE6,"static",SS_BLACKFRAME|WS_CHILD,172,0,1,108
+ CONTROL "OK",IDOK,"button",BS_DEFPUSHBUTTON|WS_TABSTOP|WS_CHILD,178,4,40,14
+ CONTROL "Abbrechen",IDCANCEL,"button",
+         BS_PUSHBUTTON|WS_TABSTOP|WS_CHILD,178,22,40,14
+END /* DB_STYLE */
+
+
+/* =====================================
+   ANAMTR class module: End of ANAMTR.RC
+   =====================================
+*/

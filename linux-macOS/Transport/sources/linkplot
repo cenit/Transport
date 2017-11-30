@@ -1,0 +1,2 @@
+g77 plotf.o plot1f.o splint.o time.o -o plotf
+g77 plota.o plot1f.o splint.o time.o -o plota

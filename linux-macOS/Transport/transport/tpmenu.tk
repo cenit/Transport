@@ -1,0 +1,3337 @@
+#!/usr/bin/wish -f
+# Program: tpmenu
+# Tcl version: 7.4 (Tcl/Tk/XF)
+# Tk version: 4.0
+# XF version: 2.3
+#
+############################################
+# Compiled by Urs Rohrer (PSI), March 1995 #
+# Stuff added in June 1996                 #
+############################################
+
+# module inclusion
+global env
+global errorCode
+global xfLoadPath
+global xfLoadInfo
+
+global History
+global Counter
+
+global ColorCounter
+
+set xfLoadInfo 0
+if {[info exists env(XF_LOAD_PATH)]} {
+  if {[string first $env(XF_LOAD_PATH) /usr/local/lib/] == -1} {
+    set xfLoadPath $env(XF_LOAD_PATH):/usr/local/lib/
+  } {
+    set xfLoadPath /usr/local/lib/
+  }
+} {
+  set xfLoadPath /usr/local/lib/
+}
+
+global argc
+global argv
+global tkVersion
+set tmpArgv ""
+for {set counter 0} {$counter < $argc} {incr counter 1} {
+  case [string tolower [lindex $argv $counter]] in {
+    {-xfloadpath} {
+      incr counter 1
+      set xfLoadPath "[lindex $argv $counter]:$xfLoadPath"
+    }
+    {-xfstartup} {
+      incr counter 1
+      source [lindex $argv $counter]
+    }
+    {-xfbindfile} {
+      incr counter 1
+      set env(XF_BIND_FILE) "[lindex $argv $counter]"
+    }
+    {-xfcolorfile} {
+      incr counter 1
+      set env(XF_COLOR_FILE) "[lindex $argv $counter]"
+    }
+    {-xfcursorfile} {
+      incr counter 1
+      set env(XF_CURSOR_FILE) "[lindex $argv $counter]"
+    }
+    {-xffontfile} {
+      incr counter 1
+      set env(XF_FONT_FILE) "[lindex $argv $counter]"
+    }
+    {-xfmodelmono} {
+      if {$tkVersion >= 3.0} {
+        tk colormodel . monochrome
+      }
+    }
+    {-xfmodelcolor} {
+      if {$tkVersion >= 3.0} {
+        tk colormodel . color
+      }
+    }
+    {-xfloading} {
+      set xfLoadInfo 1
+    }
+    {-xfnoloading} {
+      set xfLoadInfo 0
+    }
+    {default} {
+      lappend tmpArgv [lindex $argv $counter]
+    }
+  }
+}
+set argv $tmpArgv
+set argc [llength $tmpArgv]
+unset counter
+unset tmpArgv
+
+# procedure ExecCheck
+proc ExecCheck { prg file message } {
+
+  set ok [file exists $file]
+  if {$ok == 1} {
+     ExecComm $prg
+  } else {
+     SimpleDialog .d {Transport} $message warning 0 {ok}
+  }
+} 
+
+# procedure DoTrans (graphic transport sequence)
+proc DoTrans {} {
+ 
+       global errorCode
+       set errorCode 0
+
+       catch {exec <@stdin >@stdout ./trans 0}
+       set code [lindex $errorCode 2] 
+
+       if {$code == 1} {
+	   SimpleDialog .d {Transport} {Error in FOR001.DAT input} warning 0 {ok}
+           return
+       }
+       if {$code == 2} {
+	   SimpleDialog .d {Transport} {File FOR001.DAT not found} warning 0 {ok}
+           return
+       }
+
+       catch {exec <@stdin >@stdout ./plotf}
+       set code [lindex $errorCode 2] 
+
+       if {$code == 1} {
+	   SimpleDialog .d {Plot} {Missing *PLOT* on title Card} warning 0 {ok}
+           return
+       }
+       if {$code == 2} {
+	   SimpleDialog .d {Plot} {Run graphical Transport first} warning 0 {ok}
+           return
+       }
+       if {$code == 3} {
+	   SimpleDialog .d {Plot} {File FOR004.DAT not found} warning 0 {ok}
+           return
+       }
+
+       SetDisplawOffset
+#       catch {exec <@stdin >@stdout ./displaw}
+       open {|./displaw} w+
+}
+
+# procedure DoDisplay (graphic transport sequence)
+proc DoDisplay {} {
+ 
+       global errorCode
+       set errorCode 0
+
+       catch {exec <@stdin >@stdout ./plota}
+       set code [lindex $errorCode 2] 
+
+       if {$code == 1} {
+	   SimpleDialog .d {Plot} {Missing *PLOT* on title Card} warning 0 {ok}
+           return
+       }
+       if {$code == 2} {
+	   SimpleDialog .d {Plot} {Run graphical Transport first} warning 0 {ok}
+           return
+       }
+       if {$code == 3} {
+	   SimpleDialog .d {Plot} {File FOR004.DAT not found} warning 0 {ok}
+           return
+       }
+
+       SetDisplawOffset
+#       catch {exec <@stdin >@stdout ./displaw}
+       open {|./displaw} w+ 
+}
+
+# procedure SetDisplawOffset
+proc SetDisplawOffset {} {
+
+    set xres [winfo screenwidth .]
+    set yres [winfo screenheight .]
+
+    set x0 0; set y0 0; set w0 0; set h0 0 
+    GetDim . x0 y0 w0 h0
+    set x1 100; set y1 100
+    set w1 800; set h1 608
+#   read stored displaw-window data in case they are there
+    if { ! [catch {set f [open .dispoff r] } ] } {
+     if {[gets $f line] >= 0} {
+       set x1 [lindex $line 0]
+       set y1 [lindex $line 1]
+       set w1 [lindex $line 2]
+       set h1 [lindex $line 3]
+       close $f
+     }
+    }
+    set x1 [expr $x0+$w0/2-$w1/2]
+    set x1 [expr ($x1 < 0) ? 0 : $x1]
+    set x1 [expr ($x1+$w1 > $xres) ? $xres-$w1-30 : $x1]
+    set y1 [expr $y0+$h0/2-$h1/2]
+    set y1 [expr ($y1 < 0) ? 0 : $y1]
+    set y1 [expr ($y1+$h1 > $yres) ? $yres-$h1-50 : $y1]
+#   overwrite displaw-window data
+    set f [open .dispoff w+]
+    puts $f [format "%6d%6d%6d%6d" $x1 $y1 $w1 $h1]
+    close $f
+}
+
+# procedure DisplayParams
+proc DisplayParams {w} {
+
+  global button
+  global zmin
+  global zmax
+  global xamp
+  global yamp
+  global apfac
+  global xdisp
+  global ydisp
+  global xray
+  global yray
+  global xcs
+  global ycs
+  global drlb
+  global aplb
+  global mags
+  global stop
+  global xmes
+  global ymes
+  global dmes
+  global win
+  global envel
+
+  set win $w
+
+  set check [file exists FOR004.DAT]
+  if {$check == 0} {
+      SimpleDialog .d {Transport} {File FOR004.DAT not found} warning 0 {ok}
+      return
+  }
+
+  catch {destroy $w}
+  toplevel $w -class Dialog
+  wm title $w Transport
+  $w configure  -background LightSkyBlue1
+
+  set comp "ZMIN ZMAX XMPL YMPL APFAC SPEZ SPEZ2 APLAB STEER DISP YDISP RAX RAY MEASX MEASY MEASD CSX CSY"
+  set vnam "zmin zmax xamp yamp apfac drlb mags aplb stop xdisp ydisp xray yray xmes ymes dmes xcs ycs"
+
+  set zmin 0.0
+  set zmax 10.0
+  set xamp 10.0
+  set yamp 10.0
+  set apfac 1.0
+  set drlb 1.0
+  set mags 0.0
+  set aplb 1.0
+  set stop 1.0
+  set xdisp 1.0
+  set ydisp 0.0
+  set xray 0.0
+  set yray 0.0
+  set xmes 1.0
+  set ymes 1.0
+  set dmes 0.0
+  set xcs 0.0
+  set ycs 0.0
+
+  set f [open FOR004.DAT r]
+  while {[gets $f line] >= 0} {
+	set param [lindex $line 0]
+        set value [lindex $line 1]
+        for {set i 0} {$i<18} {incr i} {
+            set temp [lindex $comp $i]
+            set varname [lindex $vnam $i]
+	    if {$param == $temp} {
+              set value [expr $value]
+              set $varname $value
+	    }
+        }        
+  }
+  close $f
+
+  set envel 1.0
+  if $xray==1.0 {set envel 0.0}
+  if $yray==1.0 {set envel 0.0}
+  if $xray==2.0 {set envel 1.0
+                 set xray 1.0}
+  if $yray==2.0 {set envel 1.0
+                 set yray 1.0}
+  if $xcs==1.0  {set envel 0.0}
+  if $ycs==1.0  {set envel 0.0}
+
+  frame $w.t -relief sunken -bd 2 -background LightSkyBlue1
+  label $w.t.tit -text "Display Parameters" -background LightSkyBlue1
+  pack $w.t.tit -padx 5 -pady 5
+
+  frame $w.m -relief ridge -bd 2 -background LightSkyBlue1
+  frame $w.m.0 -relief flat -bd 2 -background LightSkyBlue1
+
+
+  frame $w.m.0.a -background LightSkyBlue1
+  label $w.m.0.a.lzmin -width 12 -text "z-Minimum" -background LightSkyBlue1
+  entry $w.m.0.a.zmin -width 10 -relief sunken -bd 1 -textvariable zmin -background LightSkyBlue1 -highlightthickness 0 
+  pack $w.m.0.a.lzmin $w.m.0.a.zmin -side left -padx 10
+  bind $w.m.0.a.zmin <Return> { focus $win }
+
+  frame $w.m.0.b -background LightSkyBlue1
+  label $w.m.0.b.lzmax -width 12 -text "z-Maximum" -background LightSkyBlue1
+  entry $w.m.0.b.zmax -width 10 -relief sunken -bd 1 -textvariable zmax -background LightSkyBlue1 -highlightthickness 0
+  pack $w.m.0.b.lzmax $w.m.0.b.zmax -side left -padx 10
+  bind $w.m.0.b.zmax <Return> { focus $win }
+
+  frame $w.m.0.c -background LightSkyBlue1
+  label $w.m.0.c.lxamp -width 12 -text "x-Amplitude" -background LightSkyBlue1
+  entry $w.m.0.c.xamp -width 10 -relief sunken -bd 1 -textvariable xamp -background LightSkyBlue1 -highlightthickness 0
+  pack $w.m.0.c.lxamp $w.m.0.c.xamp -side left -padx 10
+  bind $w.m.0.c.xamp <Return> { focus $win }
+
+  frame $w.m.0.d -background LightSkyBlue1
+  label $w.m.0.d.lyamp -width 12 -text "y-Amplitude" -background LightSkyBlue1
+  entry $w.m.0.d.yamp -width 10 -relief sunken -bd 1 -textvariable yamp -background LightSkyBlue1 -highlightthickness 0
+  pack $w.m.0.d.lyamp $w.m.0.d.yamp -side left -padx 10
+  bind $w.m.0.d.yamp <Return> { focus $win }
+
+  frame $w.m.0.e -background LightSkyBlue1
+  label $w.m.0.e.lapfa -width 12 -text "Aperture factor" -background LightSkyBlue1
+  entry $w.m.0.e.apfa -width 10 -relief sunken -bd 1 -textvariable apfac -background LightSkyBlue1 -highlightthickness 0
+  pack $w.m.0.e.lapfa $w.m.0.e.apfa -side left -padx 10
+  bind $w.m.0.e.apfa <Return> { focus $win }
+
+  pack $w.m.0.a $w.m.0.b $w.m.0.c $w.m.0.d $w.m.0.e -fill x -padx 5
+
+  frame $w.m.but -bd 2 -relief sunken -background LightSkyBlue1
+  button $w.m.but.ok -text "OK" -command "set button 0" -background LightSkyBlue2 -highlightthickness 0
+  $w.m.but.ok configure -activebackground LightSkyBlue3 -bd 4
+  button $w.m.but.cancel -text "Cancel" -command "set button 1" -background LightSkyBlue1 -highlightthickness 0
+
+  $w.m.but.cancel configure -activebackground LightSkyBlue2 -bd 4
+  pack $w.m.but.ok $w.m.but.cancel -expand 1 -fill both -pady 8 -padx 4
+
+  pack $w.m.0 $w.m.but -side left -expand 1 -fill x -fill y -padx 5 -pady 5
+
+  frame $w.1 -relief groove -bd 2 -background LightSkyBlue1
+
+  frame $w.1.b1 -background LightSkyBlue1
+  label $w.1.b1.lxdisp -width 14 -text "x-Dispersion" -background LightSkyBlue1
+  radiobutton $w.1.b1.onxdisp -text on -relief flat -variable xdisp -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b1.onxdisp configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b1.offxdisp -text off -relief flat -variable xdisp -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b1.offxdisp configure -activebackground LightSkyBlue2
+  pack $w.1.b1.lxdisp $w.1.b1.onxdisp $w.1.b1.offxdisp -side left -padx 15
+
+  frame $w.1.b2 -background LightSkyBlue1
+  label $w.1.b2.lydisp -width 14 -text "y-Dispersion" -background LightSkyBlue1
+  radiobutton $w.1.b2.onydisp -text on -relief flat -variable ydisp -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b2.onydisp configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b2.offydisp -text off -relief flat -variable ydisp -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b2.offydisp configure -activebackground LightSkyBlue2
+  pack $w.1.b2.lydisp $w.1.b2.onydisp $w.1.b2.offydisp -side left -padx 15
+
+  frame $w.1.b3 -background LightSkyBlue1
+  label $w.1.b3.lxray -width 14 -text "x-Ray" -background LightSkyBlue1
+  radiobutton $w.1.b3.onxray -text on -relief flat -variable xray -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b3.onxray configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b3.offxray -text off -relief flat -variable xray -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b3.offxray configure -activebackground LightSkyBlue2
+  pack $w.1.b3.lxray $w.1.b3.onxray $w.1.b3.offxray -side left -padx 15
+  bind $w.1.b3.onxray <ButtonPress> { set xcs 0.0
+                                      set ycs 0.0 }
+  
+  frame $w.1.b4 -background LightSkyBlue1
+  label $w.1.b4.lyray -width 14 -text "y-Ray" -background LightSkyBlue1
+  radiobutton $w.1.b4.onyray -text on -relief flat -variable yray -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b4.onyray configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b4.offyray -text off -relief flat -variable yray -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b4.offyray configure -activebackground LightSkyBlue2
+  pack $w.1.b4.lyray $w.1.b4.onyray $w.1.b4.offyray -side left -padx 15
+  bind $w.1.b4.onyray <ButtonPress> { set xcs 0.0
+                                      set ycs 0.0 }
+
+  frame $w.1.b5 -background LightSkyBlue1
+  label $w.1.b5.lxcs -width 14 -text "x-Cos-Sin-Traj." -background LightSkyBlue1
+  radiobutton $w.1.b5.onxcs -text on -relief flat -variable xcs -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b5.onxcs configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b5.offxcs -text off -relief flat -variable xcs -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b5.offxcs configure -activebackground LightSkyBlue2
+  pack $w.1.b5.lxcs $w.1.b5.onxcs $w.1.b5.offxcs -side left -padx 15
+  bind $w.1.b5.onxcs <ButtonPress> { set xray  0.0
+                                     set yray  0.0
+				     set envel 0.0}
+
+  frame $w.1.b6 -background LightSkyBlue1
+  label $w.1.b6.lycs -width 14 -text "y-Cos-Sin-Traj." -background LightSkyBlue1
+  radiobutton $w.1.b6.onycs -text on -relief flat -variable ycs -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b6.onycs configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b6.offycs -text off -relief flat -variable ycs -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b6.offycs configure -activebackground LightSkyBlue2
+  pack $w.1.b6.lycs $w.1.b6.onycs $w.1.b6.offycs -side left -padx 15
+  bind $w.1.b6.onycs <ButtonPress> { set xray  0.0
+                                     set yray  0.0
+				     set envel 0.0}
+
+  frame $w.1.b7 -background LightSkyBlue1
+  label $w.1.b7.ldrlb -width 14 -text "Drift Labels" -background LightSkyBlue1
+  radiobutton $w.1.b7.ondrlb -text on -relief flat -variable drlb -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b7.ondrlb configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b7.offdrlb -text off -relief flat -variable drlb -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b7.offdrlb configure -activebackground LightSkyBlue2
+  pack $w.1.b7.ldrlb $w.1.b7.ondrlb $w.1.b7.offdrlb -side left -padx 15
+
+  frame $w.1.b8 -background LightSkyBlue1
+  label $w.1.b8.laplb -width 14 -text "Aperture Labels" -background LightSkyBlue1
+  radiobutton $w.1.b8.onaplb -text on -relief flat -variable aplb -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b8.onaplb configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b8.offaplb -text off -relief flat -variable aplb -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b8.offaplb configure -activebackground LightSkyBlue2
+  pack $w.1.b8.laplb $w.1.b8.onaplb $w.1.b8.offaplb -side left -padx 15
+
+  frame $w.1.b9 -background LightSkyBlue1
+  label $w.1.b9.lmags -width 14 -text "Magnet Settings" -background LightSkyBlue1
+  radiobutton $w.1.b9.onmags -text on -relief flat -variable mags -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b9.onmags configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b9.offmags -text off -relief flat -variable mags -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b9.offmags configure -activebackground LightSkyBlue2
+  pack $w.1.b9.lmags $w.1.b9.onmags $w.1.b9.offmags -side left -padx 15
+
+  frame $w.1.b10 -background LightSkyBlue1
+  label $w.1.b10.lstop -width 14 -text "Steering Mag.Opt." -background LightSkyBlue1
+  radiobutton $w.1.b10.onstop -text on -relief flat -variable stop -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b10.onstop configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b10.offstop -text off -relief flat -variable stop -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b10.offstop configure -activebackground LightSkyBlue2
+  pack $w.1.b10.lstop $w.1.b10.onstop $w.1.b10.offstop -side left -padx 15
+
+  frame $w.1.b11 -background LightSkyBlue1
+  label $w.1.b11.lxmes -width 14 -text "x-Measurements" -background LightSkyBlue1
+  radiobutton $w.1.b11.onxmes -text on -relief flat -variable xmes -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b11.onxmes configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b11.offxmes -text off -relief flat -variable xmes -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b11.offxmes configure -activebackground LightSkyBlue2
+  pack $w.1.b11.lxmes $w.1.b11.onxmes $w.1.b11.offxmes -side left -padx 15
+
+  frame $w.1.b12 -background LightSkyBlue1
+  label $w.1.b12.lymes -width 14 -text "y-Measurements" -background LightSkyBlue1
+  radiobutton $w.1.b12.onymes -text on -relief flat -variable ymes -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b12.onymes configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b12.offymes -text off -relief flat -variable ymes -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b12.offymes configure -activebackground LightSkyBlue2
+  pack $w.1.b12.lymes $w.1.b12.onymes $w.1.b12.offymes -side left -padx 15
+
+  frame $w.1.b13 -background LightSkyBlue1
+  label $w.1.b13.ldmes -width 14 -text "d-Measurements" -background LightSkyBlue1
+  radiobutton $w.1.b13.ondmes -text on -relief flat -variable dmes -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b13.ondmes configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b13.offdmes -text off -relief flat -variable dmes -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b13.offdmes configure -activebackground LightSkyBlue2
+  pack $w.1.b13.ldmes $w.1.b13.ondmes $w.1.b13.offdmes -side left -padx 15
+
+  frame $w.1.b14 -background LightSkyBlue1
+  label $w.1.b14.ldenv -width 14 -text "Envelopes" -background LightSkyBlue1
+  radiobutton $w.1.b14.onenv -text on -relief flat -variable envel -value 1.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b14.onenv configure -activebackground LightSkyBlue2
+  radiobutton $w.1.b14.offenv -text off -relief flat -variable envel -value 0.0 -background LightSkyBlue1 -highlightthickness 0
+  $w.1.b14.offenv configure -activebackground LightSkyBlue2
+  pack $w.1.b14.ldenv $w.1.b14.onenv $w.1.b14.offenv -side left -padx 15
+  bind $w.1.b14.onenv <ButtonPress> { set xcs  0.0
+                                      set ycs  0.0 }
+
+  pack $w.1.b14 $w.1.b1 $w.1.b2 $w.1.b3 $w.1.b4 $w.1.b5 $w.1.b6 $w.1.b7 \
+       $w.1.b8 $w.1.b9 $w.1.b10 $w.1.b11 $w.1.b12 $w.1.b13 -fill x -padx 5
+
+  pack $w.t $w.m $w.1 -fill x -padx 5 -pady 5
+
+  CenterDialog $w
+
+  bind $w <Return> {
+    set button 0
+  }
+
+  bind $w <ButtonPress> {
+    if {($xray==0.0) && ($yray==0.0) && ($xcs==0.0) && ($ycs==0.0)} {set envel 1.0}
+  }
+
+  set oldFocus [focus]
+  grab $w
+  focus $w
+
+  tkwait variable button
+
+  if {$button == 0} {
+
+    if {($xray==1.0) && ($envel==1.0)} {set xray 2.0}
+    if {($yray==1.0) && ($envel==1.0)} {set yray 2.0}
+    if {($xcs==1.0)  || ($ycs==1.0)}   {set xray 0.0
+                                        set yray 0.0}
+
+    set f [open FOR004.DAT w+]
+    for {set i 0} {$i<18} {incr i} {
+      set param [lindex $comp $i]
+      set varname [lindex $vnam $i]
+      upvar $varname val
+      puts $f [format "%-6s      %8.2f" $param $val ]
+    }
+    close $f
+  }
+  destroy $w
+  focus $oldFocus
+}
+
+#procedure to put 'comm' in history buffer 
+proc PutInHistory { comm } {
+
+  global History
+  global Counter
+
+  set History($Counter) $comm
+  incr Counter
+}
+
+# procedure KeyCommand
+proc KeyCommand {w char} {
+
+  global button
+  global Comm
+
+  set Comm $char
+
+  catch {destroy $w}
+  toplevel $w -class Dialog
+  wm title $w {Enter Command}
+  $w configure  -background LightSkyBlue1
+
+  frame $w.t -relief sunken -bd 2 -background LightSkyBlue1
+  entry $w.t.i -width 40 -relief sunken -bd 1 -textvariable Comm -background LightSkyBlue1 -highlightthickness 0
+  $w.t.i icursor end
+  pack $w.t.i -padx 5 -pady 5
+
+  frame $w.but -bd 2 -relief sunken -background LightSkyBlue1
+  button $w.but.ok -text "OK" -command "set button 0" -background LightSkyBlue2
+  $w.but.ok configure -activebackground LightSkyBlue3 -bd 4 -highlightthickness 0
+  button $w.but.cancel -text "Cancel" -command "set button 1" -background LightSkyBlue1
+  $w.but.cancel configure -activebackground LightSkyBlue2 -bd 4 -highlightthickness 0
+  pack $w.but.ok $w.but.cancel -side left -expand 1 -fill x -pady 2 -padx 2
+
+  pack $w.t $w.but -fill x
+  
+  CenterDialog $w
+
+  bind $w <Return> {
+    set button 0
+  }
+
+  bind $w.t.i <Return> {
+    set button 0
+  }
+
+  update idletasks
+  after 100
+  update idletasks
+
+  set oldFocus [focus]
+  grab $w
+  focus $w.t.i
+
+  tkwait variable button
+
+  destroy $w
+  focus $oldFocus
+  if {$button == 0} {
+    return $Comm
+  }
+  return ""
+}
+
+#procedure ExecComm
+proc ExecComm {Comm} {
+
+  set comp {./o ./dispo ./bero ./qoi ./boi ./loi ./si ./el ./tijk ./i ./ifq {./io I} {./io BERO} {./io QOI} {./io BOI} {./io LOI} {./io FXY2} {./io FXY} ./fxydac ./fxygauss ./bli ./e {./displaw E} ./elong {./displaw L}}
+
+#select xterm background color from list
+
+  global ColorCounter
+  set colors {thistle1 LightSteelBlue cornsilk LightSkyBlue1 aquamarine1 CadetBlue1 LightGrey wheat1 LightCyan RosyBrown1}
+  set col [lindex $colors $ColorCounter]
+
+#all commands in 'comp' list have to run in xterm window
+
+  set inwindow 0
+  for {set i 0} {$i<25} {incr i} {
+    set temp [lindex $comp $i]
+      if {$temp == $Comm} {
+            set inwindow 1
+      }
+  }
+
+# open xterm window (with many parameters) and start process via open
+
+  if {$inwindow == 1} {
+    set xt {xterm -sb -sl 500 -j -ls -fn 7x14 -fg black -bg}
+    if {$Comm == "./dispo"} {
+      set xxt {-geometry 100x24}
+      set dx 100
+    } elseif {$Comm == "./o"} {
+      set xxt {-geometry 100x24}
+      set dx 100
+    } else {
+      set xxt {-geometry 80x24}
+      set dx 80
+    }
+    set xt [concat $xt $col $xxt]
+
+    set xres [winfo screenwidth .]
+    set yres [winfo screenheight .]
+    set x0 0; set y0 0; set w0 0; set h0 0 
+    GetDim . x0 y0 w0 h0
+    set w1 [expr $dx*7]
+    set h1 [expr 24*14]
+    set x1 [expr $x0+$w0/2-$w1/2]
+    set x1 [expr ($x1 < 0) ? 0 : $x1]
+    set x1 [expr ($x1+$w1 > $xres) ? $xres-$w1-30 : $x1]
+    set y1 [expr $y0+$h0/2-$h1/2]
+    set y1 [expr ($y1 < 0) ? 0 : $y1]
+    set y1 [expr ($y1+$h1 > $yres) ? $yres-$h1-50 : $y1]
+    set xy +$x1+$y1
+    set xt $xt$xy
+
+    set xt [concat $xt -e]
+    set comnd [concat $xt $Comm]
+    set comnd [concat open \{|$comnd \} w+]
+    eval $comnd
+
+# start process via open
+
+  }  else {
+    set comnd [concat open \{|$Comm \} w+]
+    eval $comnd
+  }
+
+  incr ColorCounter
+  if {$ColorCounter > 9} {
+    set ColorCounter 0
+  }
+  incr ColorCounter
+  if {$ColorCounter > 9} {
+    set ColorCounter 0
+  }
+}
+
+# procedure to show window .
+proc ShowWindow. {args} {# xf ignore me 7
+
+  # Window manager configurations
+  global tkVersion
+  wm geometry . +100+100
+  wm sizefrom . ""
+  wm maxsize . 1152 900
+  wm title . {Transport Menu}
+
+  # build widget .b1
+  button .b1 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {AlertBox "\n    Transport for Linux    \n Version 1.55 \n by Urs Rohrer (PSI) \n"  "" ""  "About Transport"} \
+     -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {About Transport...}
+
+  # build widget .b27
+  button .b27 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       exec <@stdin >@stdout ./openURL http://people.web.psi.ch/rohrer_u/trans.htm &
+       PutInHistory "./openURL http://people.web.psi.ch/rohrer_u/trans.htm &"
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Transport online info via www}
+
+  # build widget .b2
+  button .b2 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {DoQuitDialog} \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Quit...}
+
+  # build widget .b3
+  button .b3 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       exec <@stdin >@stdout ./delf
+       PutInHistory ./delf
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Delete all scratch files}
+
+  # build widget .b31
+  button .b31 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+     set test "";
+     set {fsBox(pattern)} {*};
+     set in [FSBox "Select file to delete"];
+     if {$in != $test} {
+         puts "deleting $in"
+	 exec <@stdin >@stdout rm -f $in
+         PutInHistory "rm -f $in"
+        }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Delete File...}
+
+  # build widget .b4
+  button .b4 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+     set {fsBox(pattern)} {*.dat*};
+     set in [FSBox "Select Source"];
+     if {$in != ""} {
+       update idletasks
+       after 50 {
+         update idletasks
+         set {fsBox(pattern)} {*.DAT*};
+         set out [FSBox "Select Destination"];
+	 if {$out != ""} {
+             puts "copy $in ---> $out"
+	     exec <@stdin >@stdout cp $in $out}
+             PutInHistory "cp $in $out"
+         }
+       }   
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Copy File...}
+
+  # build widget .b5
+  button .b5 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {DoTrans; PutInHistory ./t} \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Run graphic Transport}
+
+  # build widget .b6
+  button .b6 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+       set errorCode 0
+       catch {exec <@stdin >@stdout ./trans 1}
+       PutInHistory ./tfo
+       set code [lindex $errorCode 2] 
+       if {$code == 1} {
+	   SimpleDialog .d {Transport} {Error in FOR001.DAT input} warning 0 {ok}
+       }
+       if {$code == 2} {
+	   SimpleDialog .d {Transport} {File FOR001.DAT not found} warning 0 {ok}
+       }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Run standard Transport}
+
+  # build widget .b7
+  button .b7 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {DoDisplay; PutInHistory ./r} \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {New Display}
+
+  # build widget .b8
+  button .b8 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+        set w00 [winfo reqwidth .]
+        set h00 [winfo reqheight .]
+        set x00 [winfo x .]
+        set y00 [winfo y .]
+        set h00 [expr ($h00*3)/10]
+        set y00 [expr $y00+$h00]
+        set x00 [expr $x00+$w00+3]
+        set ok [file exists FOR009.DAT]
+        if {$ok == 1} {
+          exec ./elimenu $x00 $y00 &
+          PutInHistory "./elimenu $x00 $y00 &"
+        } else {
+          SimpleDialog .d {Transport} "Run Graphic Transport first" warning 0 {ok}
+        }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Beam Ellipses}
+
+  # build widget .b9
+  button .b9 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+       eval exec <@stdin >@stdout "./displaw K"
+       PutInHistory ./save
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Save Run}
+
+  # build widget .b10
+  button .b10 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+        set w00 [winfo reqwidth .]
+        set h00 [winfo reqheight .]
+        set x00 [winfo x .]
+        set y00 [winfo y .]
+        set h00 [expr ($h00*3)/10]
+        set y00 [expr $y00+$h00]
+        set x00 [expr $x00+$w00+3]
+        set ok [file exists FOR009.DAT]
+        if {$ok == 1} {
+          exec ./dispomenu $x00 $y00 &
+          PutInHistory "./dispomenu $x00 $y00 &"
+        } else {
+          SimpleDialog .d {Transport} "Run Graphic Transport first" warning 0 {ok}
+        }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Output Tables}
+
+  # build widget .b11
+  button .b11 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecComm {./io BERO}
+       PutInHistory ./bero
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Bero scaling}
+
+  # build widget .b12
+  button .b12 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecCheck {./io QOI} FOR011.DAT "Run Graphic Transport first"
+       PutInHistory ./qoi
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Quads from Output to Input}
+
+  # build widget .b13
+  button .b13 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecCheck {./io BOI} FOR017.DAT "Run Graphic Transport first"
+       PutInHistory ./boi
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Beam from Output to Input}
+
+  # build widget .b14
+  button .b14 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecCheck {./io LOI} FOR003.DAT "Run Graphic Transport first"
+       PutInHistory ./loi
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Length from Output to Input}
+
+  # build widget .b24
+  button .b24 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecCheck {./io FXY} FOR022.DAT "FOR022.DAT not found"
+       PutInHistory ./fxydac
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Insert Quad- and Profile-Data (old)}
+
+  # build widget .b34
+  button .b34 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecCheck {./io FXY2} FOR022.DAT "FOR022.DAT not found"
+       PutInHistory ./fxygauss
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Insert Quad- and Profile-Data (new)}
+
+  # build widget .b25
+  button .b25 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+        set w00 [winfo reqwidth .]
+        set h00 [winfo reqheight .]
+        set x00 [winfo x .]
+        set y00 [winfo y .]
+        set h00 [expr ($h00*1)/10]
+        set y00 [expr $y00 +$h00]
+        set x00 [expr $x00 -100]
+        exec ./fitinq $ColorCounter $x00 $y00 &
+        PutInHistory "./fitinq $ColorCounter $x00 $y00 &"
+        incr ColorCounter
+        if {$ColorCounter > 9} {
+        set ColorCounter 0
+        }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Special fit procedures}
+
+  # build widget .b26
+  button .b26 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+       exec <@stdin >@stdout ./openURL http://acsdb1.psi.ch:7777/transmess/?M=D &
+       PutInHistory "./openURL http://acsdb1.psi.ch:7777/transmess/?M=D &"
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Download beam data from ACS}
+
+  # build widget .b15
+  button .b15 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+       ExecCheck ./si FOR002.DAT "Run Graphic Transport first"
+       PutInHistory ./si
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {List Sigma Matrix}
+
+  # build widget .b16
+  button .b16 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+       ExecCheck ./el FOR002.DAT "Run Graphic Transport first"
+       PutInHistory ./el
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {List Elements}
+
+  # build widget .b17
+  button .b17 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command {
+       ExecCheck ./tijk FOR000.DAT "Run Graphic Transport (with 2nd Order) first"
+       PutInHistory ./tijk
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {List Tijk}
+
+  # build widget .b18
+  button .b18 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecComm {./io I}
+       PutInHistory ./i
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Input Editor}
+  # build widget .b18
+
+  button .b32 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecComm {./bli}
+       PutInHistory ./bli
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Beam Line Inversion}
+
+  # build widget .b19
+  button .b19 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {
+       ExecComm ./ifq
+       PutInHistory ./ifq
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Fit Sequence Editor}
+
+  # build widget .b20
+  button .b20 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {\
+     set test "";
+     set {fsBox(pattern)} {*.DAT*};
+     set in [FSBox "Select file to edit"];
+     if {$in != $test} {
+         update idletasks
+	 after 100 {
+            update idletasks
+#            exec <@stdin >@stdout emacs $in
+#            open {|emacs FOR001.DAT} w+
+            set comm [concat open \{|emacs $in \} w+]
+            eval $comm
+            PutInHistory "emacs $in"
+         }
+       }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Edit file with emacs...}
+
+  # build widget .b21
+  button .b21 \
+    -background {CadetBlue1} \
+    -activebackground CadetBlue4 \
+    -command { \
+       set ok [file exists FOR000.DAT]
+       if {$ok == 1} {
+         DoDtm .d
+       } else {
+         SimpleDialog .d {Transport} "Run Graphic Transport (with 2nd Order) first" warning 0 {ok}
+       }
+     } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Display Second Order...}
+
+ # build widget .b22
+  button .b22 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {DisplayParams .d} \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Display Parameters...}
+
+ # build widget .b23
+  button .b23 \
+    -background {thistle1} \
+    -activebackground thistle4 \
+    -command {CommShell .d} \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Command Shell...}
+
+  # hot keys (with first key Dialog box pops up)
+  bind . <Any-KeyPress> {
+      set val %N
+      set var %A
+
+      set char ""
+      if  { $val > 31} {
+	  if { $val < 256 } {
+              set char $var              
+          }
+      }
+
+      set Comm [KeyCommand .d $char]
+
+      if {$Comm != ""} {
+         after 100
+         update idletasks
+         after 100 {
+            update idletasks         
+            after 100 
+            ExecComm $Comm 
+            PutInHistory $Comm
+         }
+      }
+  }
+
+  # pack widget .
+  pack append . \
+    .b1 {top frame center fillx} \
+    .b27 {top frame center fillx} \
+    .b2 {top frame center fillx} \
+    .b3 {top frame center fillx} \
+    .b31 {top frame center fillx} \
+    .b4 {top frame center fillx} \
+    .b5 {top frame center fillx} \
+    .b6 {top frame center fillx} \
+    .b7 {top frame center fillx} \
+    .b8 {top frame center fillx} \
+    .b21 {top frame center fillx} \
+    .b9 {top frame center fillx} \
+    .b10 {top frame center fillx} \
+    .b12 {top frame center fillx} \
+    .b13 {top frame center fillx} \
+    .b14 {top frame center fillx} \
+    .b24 {top frame center fillx} \
+    .b34 {top frame center fillx} \
+    .b25 {top frame center fillx} \
+    .b26 {top frame center fillx} \
+    .b15 {top frame center fillx} \
+    .b16 {top frame center fillx} \
+    .b17 {top frame center fillx} \
+    .b18 {top frame center fillx} \
+    .b32 {top frame center fillx} \
+    .b11 {top frame center fillx} \
+    .b19 {top frame center fillx} \
+    .b20 {top frame center fillx} \
+    .b22 {top frame center fillx} \
+    .b23 {top frame center fillx}
+
+  if {"[info procs XFEdit]" != ""} {
+    catch "XFMiscBindWidgetTree ."
+    after 2 "catch {XFEditSetShowWindows}"
+  }
+}
+
+
+# User defined procedures
+
+
+# Procedure: AlertBox
+proc AlertBox { {alertBoxMessage "Alert message"} {alertBoxCommand ""} {alertBoxGeometry "350x150"} {alertBoxTitle "Alert box"} args} {
+# xf ignore me 5
+##########
+# Procedure: AlertBox
+# Description: show alert box
+# Arguments: {alertBoxMessage} - the text to display
+#            {alertBoxCommand} - the command to call after ok
+#            {alertBoxGeometry} - the geometry for the window
+#            {alertBoxTitle} - the title for the window
+#            {args} - labels of buttons
+# Returns: The number of the selected button, ot nothing
+# Sideeffects: none
+# Notes: there exist also functions called:
+#          AlertBoxFile - to open and read a file automatically
+#          AlertBoxFd - to read from an already opened filedescriptor
+##########
+#
+# global alertBox(activeBackground) - active background color
+# global alertBox(activeForeground) - active foreground color
+# global alertBox(after) - destroy alert box after n seconds
+# global alertBox(anchor) - anchor for message box
+# global alertBox(background) - background color
+# global alertBox(font) - message font
+# global alertBox(foreground) - foreground color
+# global alertBox(justify) - justify for message box
+# global alertBox(toplevelName) - the toplevel name
+
+  global alertBox
+
+  # show alert box
+  if {[llength $args] > 0} {
+    eval AlertBoxInternal "\{$alertBoxMessage\}" "\{$alertBoxCommand\}" "\{$alertBoxGeometry\}" "\{$alertBoxTitle\}" $args
+  } {
+    AlertBoxInternal $alertBoxMessage $alertBoxCommand $alertBoxGeometry $alertBoxTitle
+  }
+
+  if {[llength $args] > 0} {
+    # wait for the box to be destroyed
+    update idletask
+    grab $alertBox(toplevelName)
+    tkwait window $alertBox(toplevelName)
+
+    return $alertBox(button)
+  }
+}
+
+
+# Procedure: AlertBoxFd
+proc AlertBoxFd { {alertBoxInFile ""} {alertBoxCommand ""} {alertBoxGeometry "350x150"} {alertBoxTitle "Alert box"} args} {
+# xf ignore me 5
+##########
+# Procedure: AlertBoxFd
+# Description: show alert box containing a filedescriptor
+# Arguments: {alertBoxInFile} - a filedescriptor to read. The descriptor
+#                               is closed after reading
+#            {alertBoxCommand} - the command to call after ok
+#            {alertBoxGeometry} - the geometry for the window
+#            {alertBoxTitle} - the title for the window
+#            {args} - labels of buttons
+# Returns: The number of the selected button, ot nothing
+# Sideeffects: none
+# Notes: there exist also functions called:
+#          AlertBox - to display a passed string
+#          AlertBoxFile - to open and read a file automatically
+##########
+#
+# global alertBox(activeBackground) - active background color
+# global alertBox(activeForeground) - active foreground color
+# global alertBox(after) - destroy alert box after n seconds
+# global alertBox(anchor) - anchor for message box
+# global alertBox(background) - background color
+# global alertBox(font) - message font
+# global alertBox(foreground) - foreground color
+# global alertBox(justify) - justify for message box
+# global alertBox(toplevelName) - the toplevel name
+
+  global alertBox
+
+  # check file existance
+  if {"$alertBoxInFile" == ""} {
+    puts stderr "No filedescriptor specified"
+    return
+  }
+
+  set alertBoxMessage [read $alertBoxInFile]
+  close $alertBoxInFile
+
+  # show alert box
+  if {[llength $args] > 0} {
+    eval AlertBoxInternal "\{$alertBoxMessage\}" "\{$alertBoxCommand\}" "\{$alertBoxGeometry\}" "\{$alertBoxTitle\}" $args
+  } {
+    AlertBoxInternal $alertBoxMessage $alertBoxCommand $alertBoxGeometry $alertBoxTitle
+  }
+
+  if {[llength $args] > 0} {
+    # wait for the box to be destroyed
+    update idletask
+    grab $alertBox(toplevelName)
+    tkwait window $alertBox(toplevelName)
+
+    return $alertBox(button)
+  }
+}
+
+
+# Procedure: AlertBoxFile
+proc AlertBoxFile { {alertBoxFile ""} {alertBoxCommand ""} {alertBoxGeometry "350x150"} {alertBoxTitle "Alert box"} args} {
+# xf ignore me 5
+##########
+# Procedure: AlertBoxFile
+# Description: show alert box containing a file
+# Arguments: {alertBoxFile} - filename to read
+#            {alertBoxCommand} - the command to call after ok
+#            {alertBoxGeometry} - the geometry for the window
+#            {alertBoxTitle} - the title for the window
+#            {args} - labels of buttons
+# Returns: The number of the selected button, ot nothing
+# Sideeffects: none
+# Notes: there exist also functions called:
+#          AlertBox - to display a passed string
+#          AlertBoxFd - to read from an already opened filedescriptor
+##########
+#
+# global alertBox(activeBackground) - active background color
+# global alertBox(activeForeground) - active foreground color
+# global alertBox(after) - destroy alert box after n seconds
+# global alertBox(anchor) - anchor for message box
+# global alertBox(background) - background color
+# global alertBox(font) - message font
+# global alertBox(foreground) - foreground color
+# global alertBox(justify) - justify for message box
+# global alertBox(toplevelName) - the toplevel name
+
+  global alertBox
+
+  # check file existance
+  if {"$alertBoxFile" == ""} {
+    puts stderr "No filename specified"
+    return
+  }
+
+  if {[catch "open $alertBoxFile r" alertBoxInFile]} {
+    puts stderr "$alertBoxInFile"
+    return
+  }
+
+  set alertBoxMessage [read $alertBoxInFile]
+  close $alertBoxInFile
+
+  # show alert box
+  if {[llength $args] > 0} {
+    eval AlertBoxInternal "\{$alertBoxMessage\}" "\{$alertBoxCommand\}" "\{$alertBoxGeometry\}" "\{$alertBoxTitle\}" $args
+  } {
+    AlertBoxInternal $alertBoxMessage $alertBoxCommand $alertBoxGeometry $alertBoxTitle
+  }
+
+  if {[llength $args] > 0} {
+    # wait for the box to be destroyed
+    update idletask
+    grab $alertBox(toplevelName)
+    tkwait window $alertBox(toplevelName)
+
+    return $alertBox(button)
+  }
+}
+
+
+# Procedure: AlertBoxInternal
+proc AlertBoxInternal { alertBoxMessage alertBoxCommand alertBoxGeometry alertBoxTitle args} {
+# xf ignore me 6
+  global alertBox
+
+  set tmpButtonOpt ""
+  set tmpFrameOpt ""
+  set tmpMessageOpt ""
+
+  if {"$alertBox(activeBackground)" != ""} {
+    append tmpButtonOpt "-activebackground \"$alertBox(activeBackground)\" "
+  }
+  if {"$alertBox(activeForeground)" != ""} {
+    append tmpButtonOpt "-activeforeground \"$alertBox(activeForeground)\" "
+  }
+  if {"$alertBox(background)" != ""} {
+    append tmpButtonOpt "-background \"$alertBox(background)\" "
+    append tmpFrameOpt "-background \"$alertBox(background)\" "
+    append tmpMessageOpt "-background \"$alertBox(background)\" "
+  }
+  if {"$alertBox(font)" != ""} {
+    append tmpButtonOpt "-font \"$alertBox(font)\" "
+    append tmpMessageOpt "-font \"$alertBox(font)\" "
+  }
+  if {"$alertBox(foreground)" != ""} {
+    append tmpButtonOpt "-foreground \"$alertBox(foreground)\" "
+    append tmpMessageOpt "-foreground \"$alertBox(foreground)\" "
+  }
+
+  # start build of toplevel
+  if {"[info commands XFDestroy]" != ""} {
+    catch {XFDestroy $alertBox(toplevelName)}
+  } {
+    catch {destroy $alertBox(toplevelName)}
+  }
+  toplevel $alertBox(toplevelName)  -borderwidth 0
+  catch "$alertBox(toplevelName) config $tmpFrameOpt"
+  if {[catch "wm geometry $alertBox(toplevelName) $alertBoxGeometry"]} {
+    wm geometry $alertBox(toplevelName) 350x150
+  }
+  wm title $alertBox(toplevelName) $alertBoxTitle
+  wm maxsize $alertBox(toplevelName) 1000 1000
+  wm minsize $alertBox(toplevelName) 100 100
+  # end build of toplevel
+
+  message $alertBox(toplevelName).message1  -anchor "$alertBox(anchor)"  -justify "$alertBox(justify)"  -relief raised  -text "$alertBoxMessage"
+  catch "$alertBox(toplevelName).message1 config $tmpMessageOpt"
+
+  set xfTmpWidth  [string range $alertBoxGeometry 0 [expr [string first x $alertBoxGeometry]-1]]
+  if {"$xfTmpWidth" != ""} {
+    # set message size
+    catch "$alertBox(toplevelName).message1 configure  -width [expr $xfTmpWidth-10]"
+  } {
+    $alertBox(toplevelName).message1 configure  -aspect 1500
+  }
+
+  frame $alertBox(toplevelName).frame1  -borderwidth 0  -relief raised
+  catch "$alertBox(toplevelName).frame1 config $tmpFrameOpt"
+
+  set alertBoxCounter 0
+  set buttonNum [llength $args]
+  if {$buttonNum > 0} {
+    while {$alertBoxCounter < $buttonNum} {
+      button $alertBox(toplevelName).frame1.button$alertBoxCounter  -text "[lindex $args $alertBoxCounter]"  -command "
+
+          global alertBox
+          set alertBox(button) $alertBoxCounter
+          if {\"\[info commands XFDestroy\]\" != \"\"} {
+            catch {XFDestroy $alertBox(toplevelName)}
+          } {
+            catch {destroy $alertBox(toplevelName)}
+          }"
+      catch "$alertBox(toplevelName).frame1.button$alertBoxCounter config $tmpButtonOpt"
+
+      pack append $alertBox(toplevelName).frame1  $alertBox(toplevelName).frame1.button$alertBoxCounter {left fillx expand}
+
+      incr alertBoxCounter
+    }
+  } {
+    button $alertBox(toplevelName).frame1.button0  -text "OK" -highlightthickness 0  -command "
+        global alertBox
+        set alertBox(button) 0
+        if {\"\[info commands XFDestroy\]\" != \"\"} {
+          catch {XFDestroy $alertBox(toplevelName)}
+        } {
+          catch {destroy $alertBox(toplevelName)}
+        }
+        $alertBoxCommand"
+    catch "$alertBox(toplevelName).frame1.button0 config $tmpButtonOpt"
+
+    pack append $alertBox(toplevelName).frame1  $alertBox(toplevelName).frame1.button0 {left fillx expand}
+  }
+
+  # packing
+  pack append $alertBox(toplevelName)  $alertBox(toplevelName).frame1 {bottom fill}  $alertBox(toplevelName).message1 {top fill expand}
+
+  if {$alertBox(after) != 0} {
+    after [expr $alertBox(after)*1000]  "catch \"$alertBox(toplevelName).frame1.button0 invoke\""
+  }
+  CenterDialog $alertBox(toplevelName)
+}
+
+
+# Procedure: DoDtm
+proc DoDtm {w} {
+
+  global button
+  global oldFocus
+  global param
+  global win
+
+  set win $w
+  set param ""
+
+  toplevel $w -class Dialog
+  wm title $w "2nd Order "
+
+  frame $w.1
+  listbox $w.1.tijk -relief raised -borderwidth 4  -yscrollcommand "$w.1.vscroll set" -highlightthickness 0
+  $w.1.tijk configure -selectbackground CadetBlue4
+  $w.1.tijk configure -selectforeground CadetBlue1
+  $w.1.tijk configure -background CadetBlue1
+
+  scrollbar $w.1.vscroll -command "$w.1.tijk yview" -highlightthickness 0
+  $w.1.vscroll configure -troughcolor CadetBlue1 -background CadetBlue4
+
+  pack $w.1.tijk -side left
+  pack $w.1.vscroll -side right -fill y
+
+  frame $w.0
+  button $w.0.quit -text "quit" -command "set button 0" -highlightthickness 0
+  $w.0.quit configure -borderwidth 4
+  $w.0.quit configure -background CadetBlue1
+  $w.0.quit configure -activebackground CadetBlue4
+  $w.0.quit configure -activeforeground CadetBlue1
+  button $w.0.ok -text "ok" -command "set button 1" -highlightthickness 0
+  $w.0.ok configure -borderwidth 4
+  $w.0.ok configure -background CadetBlue3
+  $w.0.ok configure -activebackground CadetBlue4
+  $w.0.ok configure -activeforeground CadetBlue1
+
+  pack $w.0.quit $w.0.ok -side left -fill x -expand 1
+
+  pack $w.1 $w.0 -fill x
+  
+  CenterDialog $w
+
+  set f [open dtm.dat]
+  while {[gets $f line] >= 0} {
+	  $w.1.tijk insert end [lrange $line 0 4]
+  }
+  close $f
+
+  bind $w.1.tijk <Double-Button-1> {
+       set param [selection get]
+       set len [string length $param]
+       set len [expr $len-1]
+       set param [string range $param 5 $len]
+       after 100 {
+          destroy $win
+          focus $oldFocus
+       }
+       after 100
+       update idletasks
+       after 100 {
+           update idletasks
+           after 100
+           SetDisplawOffset
+#           [eval exec <@stdin >@stdout "./displaw 2ND" $param]
+           ExecComm "./displaw 2ND $param"
+           PutInHistory "./dtm $param"
+       }
+  }
+
+  bind $w.1.tijk <Motion> {
+      set param ""
+      catch {set param [selection get]}
+  }
+
+  bind $w <Return> {
+      set button 1
+  }
+
+  set oldFocus [focus]
+  grab $w
+  focus $w
+  tkwait variable button
+
+  if {$button == 1} {
+       if {$param != ""} {
+          set len [string length $param]
+          set len [expr $len-1]
+#          set param [string range $param 6 $len]
+          set param [string range $param 5 $len]
+          after 100
+          update idletasks
+          after 100 {
+             update idletasks
+             after 100
+             SetDisplawOffset
+#             [eval exec <@stdin >@stdout "./displaw 2ND" $param]
+             ExecComm "./displaw 2ND $param"
+             PutInHistory "./dtm $param"
+          }
+      }
+   }
+   catch {destroy $w}
+   focus $oldFocus
+}
+
+
+# Procedure: CommShell
+proc CommShell {w} {
+
+  global button
+  global oldFocus
+  global comm
+  global win
+  global History
+  global Counter
+
+  set win $w
+  set param ""
+  set comm ""
+
+  toplevel $w -class Dialog
+  wm title $w "Command Shell"
+  $w configure -background CadetBlue1
+
+  frame $w.2 -background CadetBlue1 -bd 2 -relief ridge
+  label $w.2.l -text "Enter Command:" -background CadetBlue1
+  entry $w.2.e -width 40 -relief sunken -bd 2 -textvariable comm -background CadetBlue1 -highlightthickness 0
+  pack $w.2.l $w.2.e -fill x -padx 2 -pady 2
+
+  frame $w.1 -background CadetBlue1 -bd 2 -relief ridge
+  label $w.1.h -text "History buffer:" -background CadetBlue1
+  listbox $w.1.comm -relief sunken -bd 2 -yscrollcommand "$w.1.vscroll set" -highlightthickness 0
+  $w.1.comm configure -selectbackground CadetBlue4
+  $w.1.comm configure -selectforeground CadetBlue1
+  $w.1.comm configure -background CadetBlue1
+
+  scrollbar $w.1.vscroll -command "$w.1.comm yview" -highlightthickness 0
+  $w.1.vscroll configure -troughcolor CadetBlue1 -background CadetBlue4
+
+  pack $w.1.h -fill x
+  pack $w.1.comm -side left -fill x -expand 1 -padx 2 -pady 2
+  pack $w.1.vscroll -side right -fill y
+
+  frame $w.0 -background CadetBlue1 -bd 2 -relief ridge
+  button $w.0.quit -text "quit" -command "set button 0" -highlightthickness 0
+  $w.0.quit configure -borderwidth 4
+  $w.0.quit configure -background CadetBlue1
+  $w.0.quit configure -activebackground CadetBlue4
+  $w.0.quit configure -activeforeground CadetBlue1
+  button $w.0.ok -text "ok" -command "set button 1" -highlightthickness 0
+  $w.0.ok configure -borderwidth 4
+  $w.0.ok configure -background CadetBlue3
+  $w.0.ok configure -activebackground CadetBlue4
+  $w.0.ok configure -activeforeground CadetBlue1
+
+  pack $w.0.quit $w.0.ok -side left -fill x -expand 1 -padx 2 -pady 2
+
+  pack $w.2 $w.1 $w.0 -fill x -padx 4 -pady 4
+  
+  CenterDialog $w
+
+
+  for {set i 0} {$i<$Counter} {incr i} {
+     $win.1.comm insert end $History($i)
+  }
+
+  set pos [expr $Counter - 10]
+  if {$pos > 0} {
+     $win.1.comm yview $pos
+  }
+
+  bind $w.1.comm <Double-Button-1> {
+      set comm [selection get]
+      set check [string index $comm 0]
+      set checkf \173
+      if {$check == $checkf} {
+         set len [string length $comm]
+         set len [expr $len-2]
+         set comm [string range $comm 1 $len]
+      }
+      if {$comm != ""} {
+          set comme $comm
+          after 100
+          update idletasks
+          after 100 {
+             update idletasks
+	      after 100
+              ExecComm $comme 
+          }
+      }
+  }
+
+  bind $w.1.comm <ButtonRelease-1> {
+      set comme ""
+      catch {set comme [selection get]}
+      set check [string index $comme 0]
+      set checkf \173
+      if {$check == $checkf} {
+         set len [string length $comme]
+         set len [expr $len-2]
+         set comme [string range $comme 1 $len]
+      }
+      if {$comme != ""} {
+         set comm $comme
+         focus $win
+      }
+  }
+
+  bind $w <Return> {
+      set button 1
+  }
+
+  bind $w <KeyPress-Tab> {
+      focus $win.2.e
+      selection clear $win.1.comm
+  }
+
+  bind $w.2.e <KeyPress-Tab> {
+      focus $win
+  }
+
+  bind $w <KeyPress-Home> {
+      $win.1.comm yview 0
+  }
+
+  bind $w <KeyPress-End> {
+      set pos [expr $Counter - 10]
+      if {$pos > 0} {
+         $win.1.comm yview $pos
+      }
+  }
+
+  bind $w <KeyPress-Prior> {
+      set temp [$win.1.vscroll get]
+      set index [lindex $temp 2]      
+      set index [expr $index - 10]
+      $win.1.comm yview $index
+  }
+
+  bind $w <KeyPress-Next> {
+      set temp [$win.1.vscroll get]
+      set index [lindex $temp 2]      
+      set index [expr $index + 10]
+      $win.1.comm yview $index
+  }
+
+  bind $w <KeyPress-Up> {
+      set temp [$win.1.vscroll get]
+      set index [lindex $temp 2]      
+      incr index -1
+      $win.1.comm yview $index
+  }
+
+  bind $w <KeyPress-Down> {
+      set temp [$win.1.vscroll get]
+      set index [lindex $temp 2]      
+      incr index
+      $win.1.comm yview $index
+  }
+
+  bind $w.2.e <Return> {
+      if {$comm != ""} {
+	  $win.1.comm insert end $comm
+          PutInHistory $comm
+	  set comme $comm
+          set comm ""
+          set pos [expr $Counter - 10]
+          if {$pos > 0} {
+             $win.1.comm yview $pos
+          }
+          after 100
+          update idletasks
+          after 100 {
+             update idletasks
+	      after 100
+              ExecComm $comme
+          }
+      }
+  }
+
+  set oldFocus [focus]
+  grab $w
+  focus $w.2.e
+  tkwait variable button
+
+  if {$button == 1} {
+       if {$comm != ""} {
+          set comme $comm
+	  $win.1.comm insert end $comm
+          PutInHistory $comm
+          set comm ""
+          set pos [expr $Counter - 10]
+          if {$pos > 0} {
+             $win.1.comm yview $pos
+          }
+          after 100
+          update idletasks
+          after 100 {
+             update idletasks
+	      after 100 
+              ExecComm $comme
+          }
+       }
+   }
+   catch {destroy $w}
+   focus $oldFocus
+}
+
+
+# Procedure: DoQuitDialog
+proc DoQuitDialog {} {
+
+  global History
+  global Counter
+
+  set retval [SimpleDialog .d {Transport} {Do you really want to quit} question 0 {yes} {no}];
+  if {$retval == 0} {
+      if {$Counter > 0} {
+          set f [open .tpmenu.history w+]
+          set start [ expr ($Counter > 100) ? $Counter-100 : 0 ]
+          for {set i $start} {$i<$Counter} {incr i} {
+              puts $f $History($i)
+          }
+          close $f
+      }
+      exec rm -f tpmenu.is.running
+      exit 0
+  }
+}
+
+proc GetDim {object xx yy ww hh} {
+#
+#  return the x, y, w and h of the window 'object'
+#
+  upvar $xx x
+  upvar $yy y
+  upvar $ww w
+  upvar $hh h
+  
+  set w [winfo reqwidth $object]
+  set h [winfo reqheight $object]
+  set x [winfo x $object]
+  set y [winfo y $object]
+}
+
+# Procedure: CenterDialog
+proc CenterDialog {object} {
+
+# first get x, y, w and h of root-window
+
+  wm withdraw $object
+  update idletasks
+
+  GetDim . x0 y0 w0 h0
+
+#get screen size
+
+  set sw [winfo screenwidth $object]
+  set sh [winfo screenheight $object]
+ 
+#then get width and height of dialog box 'object'
+
+  GetDim $object x1 y1 w1 h1
+  set xmax [expr $sw-$w1-10]
+  set ymax [expr $sh-$h1-40]
+
+#then center 'object' relative to root
+
+  set x1 [expr $x0+$w0/2-$w1/2 - 6 ]
+  set xt [expr $x1+$w1+10]
+  if {$x1 < 0} {
+    set x1 0
+  }
+  if {$xt > $sw} {
+    set x1 $xmax
+  }
+  set y1 [expr $y0+$h0/2-$h1/2 - 15 ]
+  set yt [expr $y1+$h1+10]
+  if {$y1 < 0} {
+    set y1 0
+  }
+  if {$yt > $sh} {
+    set y1 $ymax
+  }
+  wm geometry $object +$x1+$y1
+  wm deiconify $object
+}
+
+# Procedure: FSBox
+proc FSBox { {fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} {fsBoxActionCancel ""}} {
+# xf ignore me 5
+##########
+# Procedure: FSBox
+# Description: show file selector box
+# Arguments: fsBoxMessage - the text to display
+#            fsBoxFileName - a file name that should be selected
+#            fsBoxActionOk - the action that should be performed on ok
+#            fsBoxActionCancel - the action that should be performed on cancel
+# Returns: the filename that was selected, or nothing
+# Sideeffects: none
+##########
+# 
+# global fsBox(activeBackground) - active background color
+# global fsBox(activeForeground) - active foreground color
+# global fsBox(background) - background color
+# global fsBox(font) - text font
+# global fsBox(foreground) - foreground color
+# global fsBox(extensions) - scan directory for extensions
+# global fsBox(scrollActiveForeground) - scrollbar active background color
+# global fsBox(scrollBackground) - scrollbar background color
+# global fsBox(scrollForeground) - scrollbar foreground color
+# global fsBox(scrollSide) - side where scrollbar is located
+
+  global fsBox
+
+  set tmpButtonOpt ""
+  set tmpFrameOpt ""
+  set tmpMessageOpt ""
+  set tmpScaleOpt ""
+  set tmpScrollOpt ""
+
+  if {"$fsBox(activeBackground)" != ""} {
+    append tmpButtonOpt "-activebackground \"$fsBox(activeBackground)\" "
+  }
+  if {"$fsBox(activeForeground)" != ""} {
+    append tmpButtonOpt "-activeforeground \"$fsBox(activeForeground)\" "
+  }
+  if {"$fsBox(background)" != ""} {
+    append tmpButtonOpt "-background \"$fsBox(background)\" "
+    append tmpFrameOpt "-background \"$fsBox(background)\" "
+    append tmpMessageOpt "-background \"$fsBox(background)\" "
+  }
+  if {"$fsBox(font)" != ""} {
+    append tmpButtonOpt "-font \"$fsBox(font)\" "
+    append tmpMessageOpt "-font \"$fsBox(font)\" "
+  }
+  if {"$fsBox(foreground)" != ""} {
+    append tmpButtonOpt "-foreground \"$fsBox(foreground)\" "
+    append tmpMessageOpt "-foreground \"$fsBox(foreground)\" "
+  }
+  if {"$fsBox(scrollActiveForeground)" != ""} {
+    append tmpScrollOpt "-activeforeground \"$fsBox(scrollActiveForeground)\" "
+  }
+  if {"$fsBox(scrollBackground)" != ""} {
+    append tmpScrollOpt "-background \"$fsBox(scrollBackground)\" "
+  }
+  if {"$fsBox(scrollForeground)" != ""} {
+    append tmpScrollOpt "-foreground \"$fsBox(scrollForeground)\" "
+  }
+
+  if {[file exists [file tail $fsBoxFileName]] &&
+      [IsAFile [file tail $fsBoxFileName]]} {
+    set fsBox(name) [file tail $fsBoxFileName]
+  } {
+    set fsBox(name) ""
+  }
+  if {[file exists $fsBoxFileName] && [IsADir $fsBoxFileName]} {
+    set fsBox(path) $fsBoxFileName
+  } {
+    if {"[file dirname $fsBoxFileName]" != "."} {
+      set fsBox(path) [file dirname $fsBoxFileName]
+    }
+  }
+  if {$fsBox(showPixmap)} {
+    set fsBox(path) [string trimleft $fsBox(path) @]
+  }
+  if {"$fsBox(path)" != "" && [file exists $fsBox(path)] &&
+      [IsADir $fsBox(path)]} {
+    set fsBox(internalPath) $fsBox(path)
+  } {
+    if {"$fsBox(internalPath)" == "" ||
+        ![file exists $fsBox(internalPath)]} {
+      set fsBox(internalPath) [pwd]
+    }
+  }
+  # build widget structure
+
+  # start build of toplevel
+  if {"[info commands XFDestroy]" != ""} {
+    catch {XFDestroy .fsBox}
+  } {
+    catch {destroy .fsBox}
+  }
+  toplevel .fsBox  -borderwidth 0
+  catch ".fsBox config $tmpFrameOpt"
+  wm geometry .fsBox 350x300 
+  wm title .fsBox {File select box}
+  wm maxsize .fsBox 1000 1000
+  wm minsize .fsBox 100 100
+  # end build of toplevel
+
+  label .fsBox.message1  -anchor c  -relief raised  -text "$fsBoxMessage"
+  catch ".fsBox.message1 config $tmpMessageOpt"
+
+  frame .fsBox.frame1  -borderwidth 0  -relief raised
+  catch ".fsBox.frame1 config $tmpFrameOpt"
+
+  button .fsBox.frame1.ok  -highlightthickness 0 -text "OK"  -command "
+      global fsBox
+      set fsBox(name) \[.fsBox.file.file get\]
+      if {$fsBox(showPixmap)} {
+        set fsBox(path) @\[.fsBox.path.path get\]
+      } {
+        set fsBox(path) \[.fsBox.path.path get\]
+      }
+      set fsBox(internalPath) \[.fsBox.path.path get\]
+      $fsBoxActionOk
+      if {\"\[info commands XFDestroy\]\" != \"\"} {
+        catch {XFDestroy .fsBox}
+      } {
+        catch {destroy .fsBox}
+      }"
+  catch ".fsBox.frame1.ok config $tmpButtonOpt"
+
+  button .fsBox.frame1.rescan  -highlightthickness 0 -text "Rescan"  -command {
+      global fsBox
+      FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)}
+  catch ".fsBox.frame1.rescan config $tmpButtonOpt"
+
+  button .fsBox.frame1.cancel -highlightthickness 0  -text "Cancel"  -command "
+      global fsBox
+      set fsBox(name) {}
+      set fsBox(path) {}
+      $fsBoxActionCancel
+      if {\"\[info commands XFDestroy\]\" != \"\"} {
+        catch {XFDestroy .fsBox}
+      } {
+        catch {destroy .fsBox}
+      }"
+  catch ".fsBox.frame1.cancel config $tmpButtonOpt"
+
+  if {$fsBox(showPixmap)} {
+    frame .fsBox.frame2  -borderwidth 0  -relief raised
+    catch ".fsBox.frame2 config $tmpFrameOpt"
+
+    scrollbar .fsBox.frame2.scrollbar3  -command {.fsBox.frame2.canvas2 xview}  -orient {horizontal}  -relief {raised}
+    catch ".fsBox.frame2.scrollbar3 config $tmpScrollOpt"
+
+    scrollbar .fsBox.frame2.scrollbar1 -command {.fsBox.frame2.canvas2 yview}  -relief {raised}
+    catch ".fsBox.frame2.scrollbar1 config $tmpScrollOpt"
+
+    canvas .fsBox.frame2.canvas2  -confine {true}  -relief {raised}  -scrollregion {0c 0c 20c 20c}  -width {100}  -xscrollcommand {.fsBox.frame2.scrollbar3 set}  -yscrollcommand {.fsBox.frame2.scrollbar1 set}
+    catch ".fsBox.frame2.canvas2 config $tmpFrameOpt"
+
+    .fsBox.frame2.canvas2 addtag currentBitmap withtag [.fsBox.frame2.canvas2 create bitmap 5 5 -anchor nw]
+  }
+
+  frame .fsBox.path  -borderwidth 0  -relief raised
+  catch ".fsBox.path config $tmpFrameOpt"
+
+  frame .fsBox.path.paths  -borderwidth 2  -relief raised
+  catch ".fsBox.path.paths config $tmpFrameOpt"
+
+  menubutton .fsBox.path.paths.paths  -borderwidth 0  -menu ".fsBox.path.paths.paths.menu"  -relief flat  -text "Pathname:"
+  catch ".fsBox.path.paths.paths config $tmpButtonOpt"
+
+  menu .fsBox.path.paths.paths.menu
+  catch ".fsBox.path.paths.paths.menu config $tmpButtonOpt"
+
+  .fsBox.path.paths.paths.menu add command  -label "[string trimright $fsBox(internalPath) {/@}]"  -command "
+       global fsBox
+       FSBoxFSShow \[.fsBox.path.path get\]  \[.fsBox.pattern.pattern get\] \$fsBox(all)
+       .fsBox.path.path delete 0 end
+       .fsBox.path.path insert 0 [string trimright $fsBox(internalPath) {/@}]"
+
+  entry .fsBox.path.path  -highlightthickness 0 -relief raised
+  catch ".fsBox.path.path config $tmpMessageOpt"
+
+  if {![IsADir $fsBox(internalPath)]} {
+    set $fsBox(internalPath) [pwd]
+  }
+  .fsBox.path.path insert 0 $fsBox(internalPath)
+
+  frame .fsBox.pattern  -borderwidth 0  -relief raised
+  catch ".fsBox.pattern config $tmpFrameOpt"
+
+  frame .fsBox.pattern.patterns  -borderwidth 2  -relief raised
+  catch ".fsBox.pattern.patterns config $tmpFrameOpt"
+
+  menubutton .fsBox.pattern.patterns.patterns  -borderwidth 0  -menu ".fsBox.pattern.patterns.patterns.menu"  -relief flat  -text "Selection pattern:"
+  catch ".fsBox.pattern.patterns.patterns config $tmpButtonOpt"
+
+  menu .fsBox.pattern.patterns.patterns.menu
+  catch ".fsBox.pattern.patterns.patterns.menu config $tmpButtonOpt"
+
+  .fsBox.pattern.patterns.patterns.menu add checkbutton  -label "Scan extensions"  -variable fsBox(extensions)  -command {
+      global fsBox
+      FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)}
+
+  entry .fsBox.pattern.pattern  -highlightthickness 0 -relief raised
+  catch ".fsBox.pattern.pattern config $tmpMessageOpt"
+
+  .fsBox.pattern.pattern insert 0 $fsBox(pattern)
+  
+  frame .fsBox.files  -borderwidth 0  -relief raised
+  catch ".fsBox.files config $tmpFrameOpt"
+
+  scrollbar .fsBox.files.vscroll -highlightthickness 0 -relief raised  -command ".fsBox.files.files yview"
+  catch ".fsBox.files.vscroll config $tmpScrollOpt"
+
+  scrollbar .fsBox.files.hscroll  -highlightthickness 0 -orient horiz  -relief raised  -command ".fsBox.files.files xview"
+  catch ".fsBox.files.hscroll config $tmpScrollOpt"
+
+  listbox .fsBox.files.files  -highlightthickness 0 -exportselection false  -relief raised  -xscrollcommand ".fsBox.files.hscroll set"  -yscrollcommand ".fsBox.files.vscroll set"
+  .fsBox.files.files configure -selectforeground CadetBlue1 -selectbackground CadetBlue4
+
+  catch ".fsBox.files.files config $tmpMessageOpt"
+
+  frame .fsBox.file  -borderwidth 0  -relief raised
+  catch ".fsBox.file config $tmpFrameOpt"
+
+  label .fsBox.file.labelfile  -relief raised  -text "Filename:"
+  catch ".fsBox.file.labelfile config $tmpMessageOpt"
+
+  entry .fsBox.file.file  -highlightthickness 0 -relief raised
+  catch ".fsBox.file.file config $tmpMessageOpt"
+
+  .fsBox.file.file delete 0 end
+  .fsBox.file.file insert 0 $fsBox(name)
+  
+  checkbutton .fsBox.pattern.all  -highlightthickness 0 -offvalue 0  -onvalue 1  -text "Show all files"  -variable fsBox(all)  -command {
+      global fsBox
+      FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)}
+  catch ".fsBox.pattern.all config $tmpButtonOpt"
+
+  FSBoxFSShow $fsBox(internalPath) $fsBox(pattern) $fsBox(all)
+
+  # bindings
+  bind .fsBox.files.files <Double-Button-1> "
+    FSBoxFSFileSelectDouble %W $fsBox(showPixmap) \{$fsBoxActionOk\} %y"
+  bind .fsBox.files.files <ButtonPress-1> "
+    FSBoxFSFileSelect %W $fsBox(showPixmap) %y"
+  bind .fsBox.files.files <Button1-Motion> "
+    FSBoxFSFileSelect %W $fsBox(showPixmap) %y"
+  bind .fsBox.files.files <Shift-Button1-Motion> "
+    FSBoxFSFileSelect %W $fsBox(showPixmap) %y"
+  bind .fsBox.files.files <Shift-ButtonPress-1> "
+    FSBoxFSFileSelect %W $fsBox(showPixmap) %y"
+
+  bind .fsBox.path.path <Tab> {
+    FSBoxFSNameComplete path}
+  bind .fsBox.path.path <Return> {
+    global tkVersion
+    global fsBox
+    FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)
+    FSBoxFSInsertPath
+    if {$tkVersion >= 3.0} {
+      .fsBox.file.file icursor end
+    } {
+      .fsBox.file.file cursor end
+    }
+    focus .fsBox.file.file}
+  catch "bind .fsBox.path.path <Up> {}"
+  bind .fsBox.path.path <Down> {
+    global tkVersion
+    if {$tkVersion >= 3.0} {
+      .fsBox.file.file icursor end
+    } {
+      .fsBox.file.file cursor end
+    }
+    focus .fsBox.file.file}
+
+  bind .fsBox.file.file <Tab> {
+    FSBoxFSNameComplete file}
+  bind .fsBox.file.file <Return> "
+    global fsBox
+    set fsBox(name) \[.fsBox.file.file get\]
+    if {$fsBox(showPixmap)} {
+      set fsBox(path) @\[.fsBox.path.path get\]
+    } {
+      set fsBox(path) \[.fsBox.path.path get\]
+    }
+    set fsBox(internalPath) \[.fsBox.path.path get\]
+    $fsBoxActionOk
+    if {\"\[info commands XFDestroy\]\" != \"\"} {
+      catch {XFDestroy .fsBox}
+    } {
+      catch {destroy .fsBox}
+    }"
+  bind .fsBox.file.file <Up> {
+    global tkVersion
+    if {$tkVersion >= 3.0} {
+      .fsBox.path.path icursor end
+    } {
+      .fsBox.path.path cursor end
+    }
+    focus .fsBox.path.path}
+  bind .fsBox.file.file <Down> {
+    global tkVersion
+    if {$tkVersion >= 3.0} {
+      .fsBox.pattern.pattern icursor end
+    } {
+      .fsBox.pattern.pattern cursor end
+    }
+    focus .fsBox.pattern.pattern}
+
+  bind .fsBox.pattern.pattern <Return> {
+    global fsBox
+    FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)}
+  bind .fsBox.pattern.pattern <Up> {
+    global tkVersion
+    if {$tkVersion >= 3.0} {
+      .fsBox.file.file icursor end
+    } {
+      .fsBox.file.file cursor end
+    }
+    focus .fsBox.file.file}
+  catch "bind .fsBox.pattern.pattern <Down> {}"
+
+  # packing
+  pack append .fsBox.files  .fsBox.files.vscroll "$fsBox(scrollSide) filly"  .fsBox.files.hscroll {bottom fillx}  .fsBox.files.files {left fill expand}
+  pack append .fsBox.file  .fsBox.file.labelfile {left}  .fsBox.file.file {left fill expand}
+  pack append .fsBox.frame1  .fsBox.frame1.ok {left fill expand}  .fsBox.frame1.rescan {left fill expand}  .fsBox.frame1.cancel {left fill expand}
+  pack append .fsBox.path.paths  .fsBox.path.paths.paths {left}
+  pack append .fsBox.pattern.patterns  .fsBox.pattern.patterns.patterns {left}
+  pack append .fsBox.path  .fsBox.path.paths {left}  .fsBox.path.path {left fill expand}
+  pack append .fsBox.pattern  .fsBox.pattern.patterns {left}  .fsBox.pattern.all {right fill}  .fsBox.pattern.pattern {left fill expand}
+  if {$fsBox(showPixmap)} {
+    pack append .fsBox.frame2  .fsBox.frame2.scrollbar1 {left filly}  .fsBox.frame2.canvas2 {top expand fill}  .fsBox.frame2.scrollbar3 {top fillx} 
+
+    pack append .fsBox  .fsBox.message1 {top fill}  .fsBox.frame1 {bottom fill}  .fsBox.pattern {bottom fill}  .fsBox.file {bottom fill}  .fsBox.path {bottom fill}  .fsBox.frame2 {right fill}  .fsBox.files {left fill expand}
+  } {
+    pack append .fsBox  .fsBox.message1 {top fill}  .fsBox.frame1 {bottom fill}  .fsBox.pattern {bottom fill}  .fsBox.file {bottom fill}  .fsBox.path {bottom fill}  .fsBox.files {left fill expand}
+  }
+  CenterDialog .fsBox
+
+  if {"$fsBoxActionOk" == "" && "$fsBoxActionCancel" == ""} {
+    # wait for the box to be destroyed
+    update idletask
+    grab .fsBox
+    tkwait window .fsBox
+
+    if {"[string trim $fsBox(path)]" != "" ||
+        "[string trim $fsBox(name)]" != ""} {
+      if {"[string trimleft [string trim $fsBox(name)] /]" == ""} {
+        return [string trimright [string trim $fsBox(path)] /]
+      } {
+        return [string trimright [string trim $fsBox(path)] /]/[string trimleft [string trim $fsBox(name)] /]
+      }
+    }
+  }
+}
+
+
+# Procedure: FSBoxBindSelectOne
+proc FSBoxBindSelectOne { fsBoxW fsBoxY} {
+# xf ignore me 6
+
+  set fsBoxNearest [$fsBoxW nearest $fsBoxY]
+  if {$fsBoxNearest >= 0} {
+#    $fsBoxW select from $fsBoxNearest
+#    $fsBoxW select to $fsBoxNearest
+  }
+}
+
+
+# Procedure: FSBoxFSFileSelect
+proc FSBoxFSFileSelect { fsBoxW fsBoxShowPixmap fsBoxY} {
+# xf ignore me 6
+  global fsBox
+
+  FSBoxBindSelectOne $fsBoxW $fsBoxY
+  set fsBoxNearest [$fsBoxW nearest $fsBoxY]
+  if {$fsBoxNearest >= 0} {
+    set fsBoxTmpEntry [$fsBoxW get $fsBoxNearest]
+    if {"[string index $fsBoxTmpEntry  [expr [string length $fsBoxTmpEntry]-1]]" == "/" ||
+        "[string index $fsBoxTmpEntry  [expr [string length $fsBoxTmpEntry]-1]]" == "@"} {
+      set fsBoxFileName [string range $fsBoxTmpEntry 0  [expr [string length $fsBoxTmpEntry]-2]]
+      if {![IsADir [string trimright $fsBox(internalPath)/$fsBoxFileName @]] &&
+          ![IsASymlink [string trimright $fsBox(internalPath)/$fsBoxFileName @]]} {
+        set fsBoxFileName $fsBoxTmpEntry
+      }
+    } {
+      if {"[string index $fsBoxTmpEntry  [expr [string length $fsBoxTmpEntry]-1]]" == "*"} {
+        set fsBoxFileName [string range $fsBoxTmpEntry 0  [expr [string length $fsBoxTmpEntry]-2]]
+        if {![file executable $fsBox(internalPath)/$fsBoxFileName]} {
+          set fsBoxFileName $fsBoxTmpEntry
+        }
+      } {
+        set fsBoxFileName $fsBoxTmpEntry
+      }
+    }
+    if {![IsADir [string trimright $fsBox(internalPath)/$fsBoxFileName @]]} {
+      set fsBox(name) $fsBoxFileName
+      .fsBox.file.file delete 0 end
+      .fsBox.file.file insert 0 $fsBox(name)
+      if {$fsBoxShowPixmap} {
+        catch ".fsBox.frame2.canvas2 itemconfigure currentBitmap -bitmap \"@$fsBox(internalPath)/$fsBox(name)\""
+      }
+    }
+  }
+}
+
+
+# Procedure: FSBoxFSFileSelectDouble
+proc FSBoxFSFileSelectDouble { fsBoxW fsBoxShowPixmap fsBoxAction fsBoxY} {
+# xf ignore me 6
+  global fsBox
+
+  FSBoxBindSelectOne $fsBoxW $fsBoxY
+  set fsBoxNearest [$fsBoxW nearest $fsBoxY]
+  if {$fsBoxNearest >= 0} {
+    set fsBoxTmpEntry [$fsBoxW get $fsBoxNearest]
+    if {"$fsBoxTmpEntry" == "../"} {
+      set fsBoxTmpEntry [string trimright [string trim $fsBox(internalPath)] "@/"]
+      if {"$fsBoxTmpEntry" == ""} {
+        return
+      }
+      FSBoxFSShow [file dirname $fsBoxTmpEntry]  [.fsBox.pattern.pattern get] $fsBox(all)
+      .fsBox.path.path delete 0 end
+      .fsBox.path.path insert 0 $fsBox(internalPath)
+    } {
+      if {"[string index $fsBoxTmpEntry  [expr [string length $fsBoxTmpEntry]-1]]" == "/" ||
+          "[string index $fsBoxTmpEntry  [expr [string length $fsBoxTmpEntry]-1]]" == "@"} {
+        set fsBoxFileName [string range $fsBoxTmpEntry 0  [expr [string length $fsBoxTmpEntry]-2]]
+        if {![IsADir [string trimright $fsBox(internalPath)/$fsBoxFileName @]] &&
+            ![IsASymlink [string trimright $fsBox(internalPath)/$fsBoxFileName @]]} {
+          set fsBoxFileName $fsBoxTmpEntry
+        }
+      } {
+        if {"[string index $fsBoxTmpEntry  [expr [string length $fsBoxTmpEntry]-1]]" == "*"} {
+          set fsBoxFileName [string range $fsBoxTmpEntry 0  [expr [string length $fsBoxTmpEntry]-2]]
+          if {![file executable $fsBox(internalPath)/$fsBoxFileName]} {
+            set fsBoxFileName $fsBoxTmpEntry
+          }
+        } {
+          set fsBoxFileName $fsBoxTmpEntry
+        }
+      }
+      if {[IsADir [string trimright $fsBox(internalPath)/$fsBoxFileName @]]} {
+        set fsBox(internalPath) "[string trimright $fsBox(internalPath) {/@}]/$fsBoxFileName"
+        FSBoxFSShow $fsBox(internalPath)  [.fsBox.pattern.pattern get] $fsBox(all)
+        .fsBox.path.path delete 0 end
+        .fsBox.path.path insert 0 $fsBox(internalPath)
+      } {
+        set fsBox(name) $fsBoxFileName
+        if {$fsBoxShowPixmap} {
+          set fsBox(path) @$fsBox(internalPath)
+        } {
+          set fsBox(path) $fsBox(internalPath)
+        }
+        if {"$fsBoxAction" != ""} {
+          eval "global fsBox; $fsBoxAction"
+        }
+        if {"[info commands XFDestroy]" != ""} {
+          catch {XFDestroy .fsBox}
+        } {
+          catch {destroy .fsBox}
+        }
+      }
+    }
+  }
+}
+
+
+# Procedure: FSBoxFSInsertPath
+proc FSBoxFSInsertPath {} {
+# xf ignore me 6
+  global fsBox
+
+  set fsBoxLast [.fsBox.path.paths.paths.menu index last]
+  set fsBoxNewEntry [string trimright [.fsBox.path.path get] "/@"]
+  for {set fsBoxCounter 0} {$fsBoxCounter <= $fsBoxLast} {incr fsBoxCounter 1} {
+    if {"$fsBoxNewEntry" ==  "[lindex [.fsBox.path.paths.paths.menu entryconfigure  $fsBoxCounter -label] 4]"} {
+      return
+    }
+  }
+  if {$fsBoxLast < 9} {
+    .fsBox.path.paths.paths.menu add command  -label "$fsBoxNewEntry"  -command "
+        global fsBox
+        FSBoxFSShow $fsBoxNewEntry  \[.fsBox.pattern.pattern get\] \$fsBox(all)
+        .fsBox.path.path delete 0 end
+        .fsBox.path.path insert 0 $fsBoxNewEntry"
+  } {
+    for {set fsBoxCounter 0} {$fsBoxCounter < $fsBoxLast} {incr fsBoxCounter 1} {
+      .fsBox.path.paths.paths.menu entryconfigure  $fsBoxCounter -label  [lindex [.fsBox.path.paths.paths.menu entryconfigure  [expr $fsBoxCounter+1] -label] 4]
+      .fsBox.path.paths.paths.menu entryconfigure $fsBoxCounter  -command "
+          global fsBox
+          FSBoxFSShow [lindex [.fsBox.path.paths.paths.menu entryconfigure  [expr $fsBoxCounter+1] -label] 4]  \[.fsBox.pattern.pattern get\] \$fsBox(all)
+          .fsBox.path.path delete 0 end
+          .fsBox.path.path insert 0 [lindex  [.fsBox.path.paths.paths.menu entryconfigure  [expr $fsBoxCounter+1] -label] 4]"
+    }
+    .fsBox.path.paths.paths.menu entryconfigure $fsBoxLast  -label "$fsBoxNewEntry"
+    .fsBox.path.paths.paths.menu entryconfigure $fsBoxCounter  -command "
+        global fsBox
+        FSBoxFSShow \[.fsBox.path.path get\]  \[.fsBox.pattern.pattern get\] \$fsBox(all)
+        .fsBox.path.path delete 0 end
+        .fsBox.path.path insert 0 $fsBoxNewEntry"
+  }
+}
+
+
+# Procedure: FSBoxFSNameComplete
+proc FSBoxFSNameComplete { fsBoxType} {
+# xf ignore me 6
+  global tkVersion
+  global fsBox
+
+  set fsBoxNewFile ""
+  if {"$fsBoxType" == "path"} {
+    set fsBoxDirName [file dirname [.fsBox.path.path get]]
+    set fsBoxFileName [file tail [.fsBox.path.path get]]
+  } {
+    set fsBoxDirName [file dirname [.fsBox.path.path get]/]
+    set fsBoxFileName [file tail [.fsBox.file.file get]]
+  }
+
+  set fsBoxNewFile ""
+  if {[IsADir [string trimright $fsBoxDirName @]]} {
+    catch "glob -nocomplain $fsBoxDirName/${fsBoxFileName}*" fsBoxResult
+    foreach fsBoxCounter $fsBoxResult {
+      if {"$fsBoxNewFile" == ""} {
+        set fsBoxNewFile [file tail $fsBoxCounter]
+      } {
+        if {"[string index [file tail $fsBoxCounter] 0]" !=
+            "[string index $fsBoxNewFile 0]"} {
+          set fsBoxNewFile ""
+          break
+        }
+        set fsBoxCounter1 0
+        set fsBoxTmpFile1 $fsBoxNewFile
+        set fsBoxTmpFile2 [file tail $fsBoxCounter]
+        set fsBoxLength1 [string length $fsBoxTmpFile1]
+        set fsBoxLength2 [string length $fsBoxTmpFile2]
+        set fsBoxNewFile ""
+        if {$fsBoxLength1 > $fsBoxLength2} {
+          set fsBoxLength1 $fsBoxLength2
+        }
+        while {$fsBoxCounter1 < $fsBoxLength1} {
+          if {"[string index $fsBoxTmpFile1 $fsBoxCounter1]" ==  "[string index $fsBoxTmpFile2 $fsBoxCounter1]"} {
+            append fsBoxNewFile [string index $fsBoxTmpFile1 $fsBoxCounter1]
+          } {
+            break
+          }
+          incr fsBoxCounter1 1
+        }
+      }
+    }
+  }
+  if {"$fsBoxNewFile" != ""} {
+    if {[IsADir [string trimright $fsBoxDirName/$fsBoxNewFile @]] ||
+        ![IsAFile [string trimright $fsBoxDirName/$fsBoxNewFile @]]} {
+      if {[IsADir [string trimright $fsBoxDirName/$fsBoxNewFile @]]} {
+        if {"$fsBoxDirName" == "/"} {
+          .fsBox.path.path delete 0 end
+          .fsBox.path.path insert 0 "/[string trimright [string trim $fsBoxNewFile /] @]/"
+        } {
+          .fsBox.path.path delete 0 end
+          .fsBox.path.path insert 0 "[string trimright $fsBoxDirName /]/[string trimright [string trim $fsBoxNewFile /] @]/"
+        }
+        FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)
+        FSBoxFSInsertPath
+      } {
+        .fsBox.path.path delete 0 end
+        .fsBox.path.path insert 0 "[string trimright $fsBoxDirName /]/[string trimright [string trim $fsBoxNewFile /] @]"
+      }
+    } {
+      .fsBox.path.path delete 0 end
+      .fsBox.path.path insert 0 "[string trimright $fsBoxDirName {@/}]/"
+      .fsBox.file.file delete 0 end
+      .fsBox.file.file insert 0 $fsBoxNewFile
+      if {$tkVersion >= 3.0} {
+        .fsBox.file.file icursor end
+      } {
+        .fsBox.file.file cursor end
+      }
+      focus .fsBox.file.file
+    }
+  }
+}
+
+
+# Procedure: FSBoxFSShow
+proc FSBoxFSShow { fsBoxPath fsBoxPattern fsBoxAll} {
+# xf ignore me 6
+  global fsBox
+
+  set tmpButtonOpt ""
+  if {"$fsBox(activeBackground)" != ""} {
+    append tmpButtonOpt "-activebackground \"$fsBox(activeBackground)\" "
+  }
+  if {"$fsBox(activeForeground)" != ""} {
+    append tmpButtonOpt "-activeforeground \"$fsBox(activeForeground)\" "
+  }
+  if {"$fsBox(background)" != ""} {
+    append tmpButtonOpt "-background \"$fsBox(background)\" "
+  }
+  if {"$fsBox(font)" != ""} {
+    append tmpButtonOpt "-font \"$fsBox(font)\" "
+  }
+  if {"$fsBox(foreground)" != ""} {
+    append tmpButtonOpt "-foreground \"$fsBox(foreground)\" "
+  }
+
+  set fsBox(pattern) $fsBoxPattern
+  if {[file exists $fsBoxPath] && [file readable $fsBoxPath] &&
+      [IsADir $fsBoxPath]} {
+    set fsBox(internalPath) $fsBoxPath
+  } {
+    if {[file exists $fsBoxPath] && [file readable $fsBoxPath] &&
+        [IsAFile $fsBoxPath]} {
+      set fsBox(internalPath) [file dirname $fsBoxPath]
+      .fsBox.file.file delete 0 end
+      .fsBox.file.file insert 0 [file tail $fsBoxPath]
+      set fsBoxPath $fsBox(internalPath)
+    } {
+      while {"$fsBoxPath" != "" && "$fsBoxPath" != "/" &&
+             ![file isdirectory $fsBoxPath]} {
+        set fsBox(internalPath) [file dirname $fsBoxPath]
+         set fsBoxPath $fsBox(internalPath)
+      }
+    }
+  }
+  if {"$fsBoxPath" == ""} {
+    set fsBoxPath "/"
+    set fsBox(internalPath) "/"
+  }
+  .fsBox.path.path delete 0 end
+  .fsBox.path.path insert 0 $fsBox(internalPath)
+
+  if {[.fsBox.files.files size] > 0} {
+    .fsBox.files.files delete 0 end
+  }
+  if {$fsBoxAll} {
+    if {[catch "exec ls -F -a $fsBoxPath" fsBoxResult]} {
+      puts stderr "$fsBoxResult"
+    }
+  } {
+    if {[catch "exec ls -F $fsBoxPath" fsBoxResult]} {
+      puts stderr "$fsBoxResult"
+    }
+  }
+  set fsBoxElementList [lsort $fsBoxResult]
+
+  foreach fsBoxCounter [winfo children .fsBox.pattern.patterns.patterns] {
+    if {[string length [info commands XFDestroy]] > 0} {
+      catch {XFDestroy $fsBoxCounter}
+    } {
+      catch {destroy $fsBoxCounter}
+    }
+  }
+  menu .fsBox.pattern.patterns.patterns.menu
+  catch ".fsBox.pattern.patterns.patterns.menu config $tmpButtonOpt"
+
+  if {$fsBox(extensions)} {
+    .fsBox.pattern.patterns.patterns.menu add command  -label "*"  -command {
+        global fsBox
+        set fsBox(pattern) "*"
+        .fsBox.pattern.pattern delete 0 end
+        .fsBox.pattern.pattern insert 0 $fsBox(pattern)
+        FSBoxFSShow [.fsBox.path.path get] $fsBox(pattern)  $fsBox(all)}
+  }
+
+  if {"$fsBoxPath" != "/"} {
+    .fsBox.files.files insert end "../"
+  }
+  foreach fsBoxCounter $fsBoxElementList {
+    if {[string match $fsBoxPattern $fsBoxCounter] ||
+        [IsADir [string trimright $fsBoxPath/$fsBoxCounter "/@"]]} {
+      if {"$fsBoxCounter" != "../" &&
+          "$fsBoxCounter" != "./"} {
+        .fsBox.files.files insert end $fsBoxCounter
+      }
+    }
+
+    if {$fsBox(extensions)} {
+      catch "file rootname $fsBoxCounter" fsBoxRootName
+      catch "file extension $fsBoxCounter" fsBoxExtension
+      set fsBoxExtension [string trimright $fsBoxExtension "/*@"]
+      if {"$fsBoxExtension" != "" && "$fsBoxRootName" != ""} {
+        set fsBoxInsert 1
+        set fsBoxLast [.fsBox.pattern.patterns.patterns.menu index last]
+        for {set fsBoxCounter1 0} {$fsBoxCounter1 <= $fsBoxLast} {incr fsBoxCounter1 1} {
+          if {"*$fsBoxExtension" ==  "[lindex [.fsBox.pattern.patterns.patterns.menu entryconfigure  $fsBoxCounter1 -label] 4]"} {
+            set fsBoxInsert 0
+          }
+        }
+	if {$fsBoxInsert} {
+          .fsBox.pattern.patterns.patterns.menu add command  -label "*$fsBoxExtension"  -command "
+              global fsBox
+              set fsBox(pattern) \"*$fsBoxExtension\"
+              .fsBox.pattern.pattern delete 0 end
+              .fsBox.pattern.pattern insert 0 \$fsBox(pattern)
+              FSBoxFSShow \[.fsBox.path.path get\] \$fsBox(pattern)  \$fsBox(all)"
+        }
+      }
+    }
+  }
+  if {$fsBox(extensions)} {
+    .fsBox.pattern.patterns.patterns.menu add separator
+  }
+  if {$fsBox(extensions) || 
+      "[.fsBox.pattern.patterns.patterns.menu index last]" == "none"} {
+    .fsBox.pattern.patterns.patterns.menu add checkbutton  -label "Scan extensions"  -variable "fsBox(extensions)"  -command {
+        global fsBox
+        FSBoxFSShow [.fsBox.path.path get]  [.fsBox.pattern.pattern get] $fsBox(all)}
+  }
+}
+
+
+# Procedure: IsADir
+proc IsADir { pathName} {
+# xf ignore me 5
+##########
+# Procedure: IsADir
+# Description: check if name is a directory (including symbolic links)
+# Arguments: pathName - the path to check
+# Returns: 1 if its a directory, otherwise 0
+# Sideeffects: none
+##########
+
+  if {[file isdirectory $pathName]} {
+    return 1
+  } {
+    catch "file type $pathName" fileType
+    if {"$fileType" == "link"} {
+      if {[catch "file readlink $pathName" linkName]} {
+        return 0
+      }
+      catch "file type $linkName" fileType
+      while {"$fileType" == "link"} {
+        if {[catch "file readlink $linkName" linkName]} {
+          return 0
+        }
+        catch "file type $linkName" fileType
+      }
+      return [file isdirectory $linkName]
+    }
+  }
+  return 0
+}
+
+
+# Procedure: IsAFile
+proc IsAFile { fileName} {
+# xf ignore me 5
+##########
+# Procedure: IsAFile
+# Description: check if filename is a file (including symbolic links)
+# Arguments: fileName - the filename to check
+# Returns: 1 if its a file, otherwise 0
+# Sideeffects: none
+##########
+
+  if {[file isfile $fileName]} {
+    return 1
+  } {
+    catch "file type $fileName" fileType
+    if {"$fileType" == "link"} {
+      if {[catch "file readlink $fileName" linkName]} {
+        return 0
+      }
+      catch "file type $linkName" fileType
+      while {"$fileType" == "link"} {
+        if {[catch "file readlink $linkName" linkName]} {
+          return 0
+        }
+        catch "file type $linkName" fileType
+      }
+      return [file isfile $linkName]
+    }
+  }
+  return 0
+}
+
+
+# Procedure: IsASymlink
+proc IsASymlink { fileName} {
+# xf ignore me 5
+##########
+# Procedure: IsASymlink
+# Description: check if filename is a symbolic link
+# Arguments: fileName - the path/filename to check
+# Returns: none
+# Sideeffects: none
+##########
+
+  catch "file type $fileName" fileType
+  if {"$fileType" == "link"} {
+    return 1
+  }
+  return 0
+}
+
+# Procedure: Blink
+proc Blink {Widget Resource On Off Interval} {
+    set ex [winfo exists $Widget]
+    if {$ex == 1} {
+      $Widget config $Resource $On
+      after $Interval [list Blink $Widget $Resource $Off $On $Interval]
+    }
+}
+
+# Procedure: SimpleDialog
+proc SimpleDialog { w title text bitmap default args} {
+
+	global button
+
+	# 1. Create the top-level window and divide it into top
+	# and bottom parts.
+
+        catch {destroy $w}
+	toplevel $w -class Dialog
+	wm title $w $title
+	wm iconname $w Dialog
+	frame $w.top -relief raised -bd 1 -background CadetBlue2
+	pack $w.top -side top -fill both
+	frame $w.bot -relief raised -bd 1 -background CadetBlue2
+	pack $w.bot -side bottom -fill both
+
+	# 2. Fill the top part with the bitmap and message.
+
+	message $w.top.msg -width 3i -text $text -background CadetBlue2
+#        $w.top.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+        Blink $w.top.msg -foreground red black 500
+	pack $w.top.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+	if {$bitmap != ""} {
+		label $w.top.bitmap -bitmap $bitmap -background CadetBlue2
+                Blink $w.top.bitmap -foreground black red 500
+		pack $w.top.bitmap -side left -padx 3m -pady 3m
+	}
+
+	# 3. Create a row of buttons at the bottom of the dialog.
+
+	set i 0
+	foreach but $args {
+		button $w.bot.button$i -text $but -command "set button $i" -background CadetBlue2 -activebackground CadetBlue4 -activeforeground Cadetblue1 -highlightthickness 0
+
+		if {$i == $default} {
+			frame $w.bot.default -relief sunken -bd 1 -background CadetBlue2
+			raise $w.bot.button$i
+			pack $w.bot.default -side left -expand 1 -padx 3m -pady 2m
+			pack $w.bot.button$i -in $w.bot.default -side left -padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack $w.bot.button$i -side left -expand 1 -padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+        CenterDialog $w
+
+	# 4. Set up a binding for <Return>, if there`s a default,
+	# set a grab, and claim the focus too.
+
+	if {$default >= 0} {
+		bind $w <Return> "$w.bot.button$default flash;  set button $default"
+	}
+	set oldFocus [focus]
+	grab set $w
+	focus $w
+
+	# 5. Wait for the user to respond, then restore the focus
+	# and return the index of the selected button.
+
+	tkwait variable button
+	destroy $w
+	focus $oldFocus
+	return $button
+}
+
+
+# Internal procedures
+
+
+# Procedure: Alias
+if {"[info procs Alias]" == ""} {
+proc Alias { args} {
+# xf ignore me 7
+##########
+# Procedure: Alias
+# Description: establish an alias for a procedure
+# Arguments: args - no argument means that a list of all aliases
+#                   is returned. Otherwise the first parameter is
+#                   the alias name, and the second parameter is
+#                   the procedure that is aliased.
+# Returns: nothing, the command that is bound to the alias or a
+#          list of all aliases - command pairs. 
+# Sideeffects: internalAliasList is updated, and the alias
+#              proc is inserted
+##########
+  global internalAliasList
+
+  if {[llength $args] == 0} {
+    return $internalAliasList
+  } {
+    if {[llength $args] == 1} {
+      set xfTmpIndex [lsearch $internalAliasList "[lindex $args 0] *"]
+      if {$xfTmpIndex != -1} {
+        return [lindex [lindex $internalAliasList $xfTmpIndex] 1]
+      }
+    } {
+      if {[llength $args] == 2} {
+        eval "proc [lindex $args 0] {args} {#xf ignore me 4
+return \[eval \"[lindex $args 1] \$args\"\]}"
+        set xfTmpIndex [lsearch $internalAliasList "[lindex $args 0] *"]
+        if {$xfTmpIndex != -1} {
+          set internalAliasList [lreplace $internalAliasList $xfTmpIndex $xfTmpIndex "[lindex $args 0] [lindex $args 1]"]
+        } {
+          lappend internalAliasList "[lindex $args 0] [lindex $args 1]"
+        }
+      } {
+        error "Alias: wrong number or args: $args"
+      }
+    }
+  }
+}
+}
+
+
+# Procedure: GetSelection
+if {"[info procs GetSelection]" == ""} {
+proc GetSelection {} {
+# xf ignore me 7
+##########
+# Procedure: GetSelection
+# Description: get current selection
+# Arguments: none
+# Returns: none
+# Sideeffects: none
+##########
+
+  # the save way
+  set xfSelection ""
+  catch "selection get" xfSelection
+  if {"$xfSelection" == "selection doesn't exist or form \"STRING\" not defined"} {
+    return ""
+  } {
+    return $xfSelection
+  }
+}
+}
+
+
+# Procedure: MenuPopupAdd
+if {"[info procs MenuPopupAdd]" == ""} {
+proc MenuPopupAdd { xfW xfButton xfMenu {xfModifier ""} {xfCanvasTag ""}} {
+# xf ignore me 7
+# the popup menu handling is from (I already gave up with popup handling :-):
+#
+# Copyright 1991,1992 by James Noble.
+# Everyone is granted permission to copy, modify and redistribute.
+# This notice must be preserved on all copies or derivates.
+#
+##########
+# Procedure: MenuPopupAdd
+# Description: attach a popup menu to widget
+# Arguments: xfW - the widget
+#            xfButton - the button we use
+#            xfMenu - the menu to attach
+#            {xfModifier} - a optional modifier
+#            {xfCanvasTag} - a canvas tagOrId
+# Returns: none
+# Sideeffects: none
+##########
+  global tk_popupPriv
+
+  set tk_popupPriv($xfMenu,focus) ""
+  set tk_popupPriv($xfMenu,grab) ""
+  if {"$xfModifier" != ""} {
+    set press "$xfModifier-"
+    set motion "$xfModifier-"
+    set release "Any-"
+  } {
+    set press ""
+    set motion ""
+    set release ""
+  }
+
+  bind $xfMenu "<${motion}B${xfButton}-Motion>"  "MenuPopupMotion $xfMenu %W %X %Y"
+  bind $xfMenu "<${release}ButtonRelease-${xfButton}>"  "MenuPopupRelease $xfMenu %W"
+  if {"$xfCanvasTag" == ""} {
+    bind $xfW "<${press}ButtonPress-${xfButton}>"  "MenuPopupPost $xfMenu %X %Y"
+    bind $xfW "<${release}ButtonRelease-${xfButton}>"  "MenuPopupRelease $xfMenu %W"
+  } {
+    $xfW bind $xfCanvasTag "<${press}ButtonPress-${xfButton}>"  "MenuPopupPost $xfMenu %X %Y"
+    $xfW bind $xfCanvasTag "<${release}ButtonRelease-${xfButton}>"  "MenuPopupRelease $xfMenu %W"
+  }
+}
+}
+
+
+# Procedure: MenuPopupMotion
+if {"[info procs MenuPopupMotion]" == ""} {
+proc MenuPopupMotion { xfMenu xfW xfX xfY} {
+# xf ignore me 7
+##########
+# Procedure: MenuPopupMotion
+# Description: handle the popup menu motion
+# Arguments: xfMenu - the topmost menu
+#            xfW - the menu
+#            xfX - the root x coordinate
+#            xfY - the root x coordinate
+# Returns: none
+# Sideeffects: none
+##########
+  global tk_popupPriv
+
+  if {"[info commands $xfW]" != "" && [winfo ismapped $xfW] &&
+      "[winfo class $xfW]" == "Menu" &&
+      [info exists tk_popupPriv($xfMenu,focus)] &&
+      "$tk_popupPriv($xfMenu,focus)" != "" &&
+      [info exists tk_popupPriv($xfMenu,grab)] &&
+      "$tk_popupPriv($xfMenu,grab)" != ""} {
+    set xfPopMinX [winfo rootx $xfW]
+    set xfPopMaxX [expr $xfPopMinX+[winfo width $xfW]]
+    if {$xfX >= $xfPopMinX && $xfX <= $xfPopMaxX} {
+      $xfW activate @[expr $xfY-[winfo rooty $xfW]]
+      if {![catch "$xfW entryconfig @[expr $xfY-[winfo rooty $xfW]] -menu" result]} {
+        if {"[lindex $result 4]" != ""} {
+          foreach binding [bind $xfMenu] {
+            bind [lindex $result 4] $binding [bind $xfMenu $binding]
+          }
+        }
+      }
+    } {
+      $xfW activate none
+    }
+  }
+}
+}
+
+
+# Procedure: MenuPopupPost
+if {"[info procs MenuPopupPost]" == ""} {
+proc MenuPopupPost { xfMenu xfX xfY} {
+# xf ignore me 7
+##########
+# Procedure: MenuPopupPost
+# Description: post the popup menu
+# Arguments: xfMenu - the menu
+#            xfX - the root x coordinate
+#            xfY - the root x coordinate
+# Returns: none
+# Sideeffects: none
+##########
+  global tk_popupPriv
+
+  if {"[info commands $xfMenu]" != ""} {
+    if {![info exists tk_popupPriv($xfMenu,focus)]} {
+      set tk_popupPriv($xfMenu,focus) [focus]
+    } {
+      if {"$tk_popupPriv($xfMenu,focus)" == ""} {
+        set tk_popupPriv($xfMenu,focus) [focus]
+      }
+    }
+    set tk_popupPriv($xfMenu,grab) $xfMenu
+
+    catch "$xfMenu activate none"
+    catch "$xfMenu post $xfX $xfY"
+    catch "focus $xfMenu"
+    catch "grab -global $xfMenu"
+  }
+}
+}
+
+
+# Procedure: MenuPopupRelease
+if {"[info procs MenuPopupRelease]" == ""} {
+proc MenuPopupRelease { xfMenu xfW} {
+# xf ignore me 7
+##########
+# Procedure: MenuPopupRelease
+# Description: remove the popup menu
+# Arguments: xfMenu - the topmost menu widget
+#            xfW - the menu widget
+# Returns: none
+# Sideeffects: none
+##########
+  global tk_popupPriv
+  global tkVersion
+
+  if {"[info commands $xfW]" != "" && [winfo ismapped $xfW] &&
+      "[winfo class $xfW]" == "Menu" &&
+      [info exists tk_popupPriv($xfMenu,focus)] &&
+      "$tk_popupPriv($xfMenu,focus)" != "" &&
+      [info exists tk_popupPriv($xfMenu,grab)] &&
+      "$tk_popupPriv($xfMenu,grab)" != ""} {
+    if {$tkVersion >= 3.0} {
+      catch "grab release $tk_popupPriv($xfMenu,grab)"
+    } {
+      catch "grab none"
+    }
+    catch "focus $tk_popupPriv($xfMenu,focus)"
+    set tk_popupPriv($xfMenu,focus) ""
+    set tk_popupPriv($xfMenu,grab) ""
+    if {"[$xfW index active]" != "none"} {
+      $xfW invoke active; catch "$xfMenu unpost"
+    }
+  }
+  catch "$xfMenu unpost"
+}
+}
+
+
+# Procedure: NoFunction
+if {"[info procs NoFunction]" == ""} {
+proc NoFunction { args} {
+# xf ignore me 7
+##########
+# Procedure: NoFunction
+# Description: do nothing (especially with scales and scrollbars)
+# Arguments: args - a number of ignored parameters
+# Returns: none
+# Sideeffects: none
+##########
+}
+}
+
+
+# Procedure: SN
+if {"[info procs SN]" == ""} {
+proc SN { {xfName ""}} {
+# xf ignore me 7
+##########
+# Procedure: SN
+# Description: map a symbolic name to the widget path
+# Arguments: xfName
+# Returns: the symbolic name
+# Sideeffects: none
+##########
+
+  SymbolicName $xfName
+}
+}
+
+
+# Procedure: SymbolicName
+if {"[info procs SymbolicName]" == ""} {
+proc SymbolicName { {xfName ""}} {
+# xf ignore me 7
+##########
+# Procedure: SymbolicName
+# Description: map a symbolic name to the widget path
+# Arguments: xfName
+# Returns: the symbolic name
+# Sideeffects: none
+##########
+
+  global symbolicName
+
+  if {"$xfName" != ""} {
+    set xfArrayName ""
+    append xfArrayName symbolicName ( $xfName )
+    if {![catch "set \"$xfArrayName\"" xfValue]} {
+      return $xfValue
+    } {
+      if {"[info commands XFProcError]" != ""} {
+        XFProcError "Unknown symbolic name:\n$xfName"
+      } {
+        puts stderr "XF error: unknown symbolic name:\n$xfName"
+      }
+    }
+  }
+  return ""
+}
+}
+
+
+# Procedure: Unalias
+if {"[info procs Unalias]" == ""} {
+proc Unalias { aliasName} {
+# xf ignore me 7
+##########
+# Procedure: Unalias
+# Description: remove an alias for a procedure
+# Arguments: aliasName - the alias name to remove
+# Returns: none
+# Sideeffects: internalAliasList is updated, and the alias
+#              proc is removed
+##########
+  global internalAliasList
+
+  set xfIndex [lsearch $internalAliasList "$aliasName *"]
+  if {$xfIndex != -1} {
+    rename $aliasName ""
+    set internalAliasList [lreplace $internalAliasList $xfIndex $xfIndex]
+  }
+}
+}
+
+
+
+# application parsing procedure
+proc XFLocalParseAppDefs {xfAppDefFile} {
+  global xfAppDefaults
+
+  # basically from: Michael Moore
+  if {[file exists $xfAppDefFile] &&
+      [file readable $xfAppDefFile] &&
+      "[file type $xfAppDefFile]" == "link"} {
+    catch "file type $xfAppDefFile" xfType
+    while {"$xfType" == "link"} {
+      if {[catch "file readlink $xfAppDefFile" xfAppDefFile]} {
+        return
+      }
+      catch "file type $xfAppDefFile" xfType
+    }
+  }
+  if {!("$xfAppDefFile" != "" &&
+        [file exists $xfAppDefFile] &&
+        [file readable $xfAppDefFile] &&
+        "[file type $xfAppDefFile]" == "file")} {
+    return
+  }
+  if {![catch "open $xfAppDefFile r" xfResult]} {
+    set xfAppFileContents [read $xfResult]
+    close $xfResult
+    foreach line [split $xfAppFileContents "\n"] {
+      # backup indicates how far to backup.  It applies to the
+      # situation where a resource name ends in . and when it
+      # ends in *.  In the second case you want to keep the *
+      # in the widget name for pattern matching, but you want
+      # to get rid of the . if it is the end of the name. 
+      set backup -2  
+      set line [string trim $line]
+      if {[string index $line 0] == "#" || "$line" == ""} {
+        # skip comments and empty lines
+        continue
+      }
+      set list [split $line ":"]
+      set resource [string trim [lindex $list 0]]
+      set i [string last "." $resource]
+      set j [string last "*" $resource]
+      if {$j > $i} { 
+        set i $j
+        set backup -1
+      }
+      incr i
+      set name [string range $resource $i end]
+      incr i $backup
+      set widname [string range $resource 0 $i]
+      set value [string trim [lindex $list 1]]
+      if {"$widname" != "" && "$widname" != "*"} {
+        # insert the widget and resourcename to the application
+        # defaults list.
+        if {![info exists xfAppDefaults]} {
+          set xfAppDefaults ""
+        }
+        lappend xfAppDefaults [list $widname [string tolower $name] $value]
+      }
+    }
+  }
+}
+
+# application loading procedure
+proc XFLocalLoadAppDefs {{xfClasses ""} {xfPriority "startupFile"} {xfAppDefFile ""}} {
+  global env
+
+  if {"$xfAppDefFile" == ""} {
+    set xfFileList ""
+    if {[info exists env(XUSERFILESEARCHPATH)]} {
+      append xfFileList [split $env(XUSERFILESEARCHPATH) :]
+    }
+    if {[info exists env(XAPPLRESDIR)]} {
+      append xfFileList [split $env(XAPPLRESDIR) :]
+    }
+    if {[info exists env(XFILESEARCHPATH)]} {
+      append xfFileList [split $env(XFILESEARCHPATH) :]
+    }
+    append xfFileList " /usr/lib/X11/app-defaults"
+    append xfFileList " /usr/X11/lib/X11/app-defaults"
+
+    foreach xfCounter1 $xfClasses {
+      foreach xfCounter2 $xfFileList {
+        set xfPathName $xfCounter2
+        if {[regsub -all "%N" "$xfPathName" "$xfCounter1" xfResult]} {
+          set xfPathName $xfResult
+        }
+        if {[regsub -all "%T" "$xfPathName" "app-defaults" xfResult]} {
+          set xfPathName $xfResult
+        }
+        if {[regsub -all "%S" "$xfPathName" "" xfResult]} {
+          set xfPathName $xfResult
+        }
+        if {[regsub -all "%C" "$xfPathName" "" xfResult]} {
+          set xfPathName $xfResult
+        }
+        if {[file exists $xfPathName] &&
+            [file readable $xfPathName] &&
+            ("[file type $xfPathName]" == "file" ||
+             "[file type $xfPathName]" == "link")} {
+          catch "option readfile $xfPathName $xfPriority"
+          if {"[info commands XFParseAppDefs]" != ""} {
+            XFParseAppDefs $xfPathName
+          } {
+            if {"[info commands XFLocalParseAppDefs]" != ""} {
+              XFLocalParseAppDefs $xfPathName
+            }
+          }
+        } {
+          if {[file exists $xfCounter2/$xfCounter1] &&
+              [file readable $xfCounter2/$xfCounter1] &&
+              ("[file type $xfCounter2/$xfCounter1]" == "file" ||
+               "[file type $xfCounter2/$xfCounter1]" == "link")} {
+            catch "option readfile $xfCounter2/$xfCounter1 $xfPriority"
+            if {"[info commands XFParseAppDefs]" != ""} {
+              XFParseAppDefs $xfCounter2/$xfCounter1
+            } {
+              if {"[info commands XFLocalParseAppDefs]" != ""} {
+                XFLocalParseAppDefs $xfCounter2/$xfCounter1
+              }
+            }
+          }
+        }
+      }
+    }
+  } {
+    # load a specific application defaults file
+    if {[file exists $xfAppDefFile] &&
+        [file readable $xfAppDefFile] &&
+        ("[file type $xfAppDefFile]" == "file" ||
+         "[file type $xfAppDefFile]" == "link")} {
+      catch "option readfile $xfAppDefFile $xfPriority"
+      if {"[info commands XFParseAppDefs]" != ""} {
+        XFParseAppDefs $xfAppDefFile
+      } {
+        if {"[info commands XFLocalParseAppDefs]" != ""} {
+          XFLocalParseAppDefs $xfAppDefFile
+        }
+      }
+    }
+  }
+}
+
+# application setting procedure
+proc XFLocalSetAppDefs {{xfWidgetPath "."}} {
+  global xfAppDefaults
+
+  if {![info exists xfAppDefaults]} {
+    return
+  }
+  foreach xfCounter $xfAppDefaults {
+    if {"$xfCounter" == ""} {
+      break
+    }
+    set widname [lindex $xfCounter 0]
+    if {[string match $widname ${xfWidgetPath}] ||
+        [string match "${xfWidgetPath}*" $widname]} {
+      set name [string tolower [lindex $xfCounter 1]]
+      set value [lindex $xfCounter 2]
+      # Now lets see how many tcl commands match the name
+      # pattern specified.
+      set widlist [info command $widname]
+      if {"$widlist" != ""} {
+        foreach widget $widlist {
+          # make sure this command is a widget.
+          if {![catch "winfo id $widget"] &&
+              [string match "${xfWidgetPath}*" $widget]} {
+            catch "$widget configure -$name $value" 
+          }
+        }
+      }
+    }
+  }
+}
+
+
+# prepare auto loading
+global auto_path
+global tk_library
+global xfLoadPath
+foreach xfElement [eval list [split $xfLoadPath :] $auto_path] {
+  if {[file exists $xfElement/tclIndex]} {
+    lappend auto_path $xfElement
+  }
+}
+catch "unset auto_index"
+
+catch "unset auto_oldpath"
+
+catch "unset auto_execs"
+
+# initialize global variables
+proc InitGlobals {} {
+  global {alertBox}
+  set {alertBox(activeBackground)} {LightSkyBlue4}
+  set {alertBox(activeForeground)} {white}
+  set {alertBox(after)} {0}
+  set {alertBox(anchor)} {nw}
+  set {alertBox(background)} {LightSkyBlue1}
+  set {alertBox(button)} {0}
+  set {alertBox(font)} {}
+  set {alertBox(foreground)} {}
+  set {alertBox(justify)} {center}
+  set {alertBox(toplevelName)} {.alertBox}
+  global {fsBox}
+  set {fsBox(activeBackground)} {CadetBlue4}
+  set {fsBox(activeForeground)} {CadetBlue1}
+  set {fsBox(all)} {0}
+  set {fsBox(background)} {CadetBlue1}
+  set {fsBox(button)} {0}
+  set {fsBox(extensions)} {0}
+  set {fsBox(font)} {}
+  set {fsBox(foreground)} {}
+  set {fsBox(internalPath)} {./}
+  set {fsBox(name)} {}
+  set {fsBox(path)} {./}
+  set {fsBox(pattern)} {*}
+  set {fsBox(scrollActiveForeground)} {grey}
+  set {fsBox(scrollBackground)} {CadetBlue1}
+  set {fsBox(scrollForeground)} {CadetBlue4}
+  set {fsBox(scrollSide)} {left}
+  set {fsBox(showPixmap)} {0}
+  global {len}
+  set {len} {13}
+  global {param}
+  set {param} {126 346}
+  global {tijk}
+  set {tijk} {}
+
+  # please don't modify the following
+  # variables. They are needed by xf.
+  global {autoLoadList}
+  set {autoLoadList(tpmenu)} {0}
+  global {internalAliasList}
+  set {internalAliasList} {}
+  global {moduleList}
+  set {moduleList(tpmenu)} {}
+  global {preloadList}
+  set {preloadList(xfInternal)} {}
+  global {symbolicName}
+  set {symbolicName(root)} {.}
+  global {xfWmSetPosition}
+  set {xfWmSetPosition} {}
+  global {xfWmSetSize}
+  set {xfWmSetSize} {}
+  global {xfAppDefToplevels}
+  set {xfAppDefToplevels} {}
+}
+
+# initialize global variables
+InitGlobals
+
+# put a kind of a semaphore
+set file [open tpmenu.is.running w+]
+puts $file "tpmenu is running"
+close $file
+
+#read in history file
+set Counter 0
+set ok [file exists .tpmenu.history]
+if {$ok == 1} {
+    set f [open .tpmenu.history r]
+    while {[gets $f line] >= 0} {
+         set History($Counter) $line
+         incr Counter
+    }
+    close $f
+}
+
+set ColorCounter 0
+
+# display/remove toplevel windows.
+ShowWindow.
+
+# load default bindings.
+if {[info exists env(XF_BIND_FILE)] &&
+    "[info procs XFShowHelp]" == ""} {
+  source $env(XF_BIND_FILE)
+}
+
+# parse and apply application defaults.
+XFLocalLoadAppDefs Tpmenu
+XFLocalSetAppDefs
+
+# eof
+#
+

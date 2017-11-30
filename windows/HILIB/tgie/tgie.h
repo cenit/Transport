@@ -1,0 +1,137 @@
+#define IDM_ABOUT           101
+
+
+#define IDD_1_DIALOG       8001
+#define IDD_2_DIALOG       8002
+#define IDD_3_DIALOG       8003
+#define IDD_4_DIALOG       8004
+#define IDD_5_DIALOG       8005
+#define IDD_6_DIALOG       8006
+#define IDD_7_DIALOG       8007
+#define IDD_8_DIALOG       8008
+#define IDD_9_DIALOG       8009
+#define IDD_12_DIALOG      8012
+#define IDD_16_DIALOG      8016
+#define IDD_HELP_DIALOG	   8017
+#define IDD_TGIE_DIALOG    8100
+#define IDD_STRING2_DIALOG 8102
+#define IDD_STRING3_DIALOG 8103
+
+#define ID_EXIT_BUTTON     7020
+#define IDR_TEXT           8012
+#define IDR_TTEXT          8013
+
+#define IDC_EXIT	201
+#define IDC_INFO	202
+#define IDC_MOVEUP	203
+#define IDC_MOVEDOWN	204
+#define IDC_READ	205
+#define IDC_DELETE	206
+#define IDC_EDT		207
+#define IDC_NEWINPUT	208
+#define IDC_INSERT	209
+#define IDC_COPY	210
+#define IDC_PASTE	211
+
+#define IDC_ELEM	212
+#define IDC_DAT		213
+#define IDC_TIT		214
+#define IDC_BEFORE	215
+#define IDC_AFTER	216
+#define IDC_HIDE	217
+#define IDC_HSCROLL	218
+#define IDC_HSCROL2	219
+
+#define IDC_HELP_LIST	300
+
+#define IDC_BEAM	5001
+#define IDC_EDGE	5002
+#define IDC_DRIFT	5003
+#define IDC_BEND	5004
+#define IDC_QUAD	5005
+#define IDC_SLIT	5006
+#define IDC_SLIT_T	15006
+#define IDC_SHIFT	5007
+#define IDC_ALIGN	5008
+#define IDC_REPEAT	5009
+#define IDC_FIT		5010
+#define IDC_ACCEL	5011
+#define IDC_CORREL	5012
+#define IDC_IO		5013
+#define IDC_MATRIX	5014
+#define IDC_UNITS	5015
+#define IDC_SPECIAL	5016
+#define IDC_SECOND	5017
+#define IDC_SEXT	5018
+#define IDC_SOLO	5019
+#define IDC_ROTAT	5020
+#define IDC_WIEN	5021
+#define IDC_SPACE	5022
+#define IDC_RFCAV	5023
+#define IDC_LDREG	5024
+#define IDC_COMBIN	5025
+#define IDC_OCTO	5026
+#define IDC_SEPA	5027
+#define IDC_SOL2        5028
+#define IDC_JUMP	5029
+#define IDC_DEDX	5030
+#define IDC_LIM		5050
+#define IDC_LIM_T	15050
+#define IDC_HIST2X	5051
+#define IDC_HIST2Y	5052
+#define IDC_FLAG	5053
+#define IDC_DECAY	5060
+#define IDC_LEER	5100
+#define IDC_FRAM	5101
+
+#define IDC_SIGN	2001
+#define IDC_TYPE	2002
+#define IDC_VARY	2003
+#define IDC_LABEL	2004
+
+#define IDC_PAR1	3001
+#define IDC_PAR2	3002
+#define IDC_PAR3	3003
+#define IDC_PAR4	3004
+#define IDC_PAR5	3005
+#define IDC_PAR6	3006
+#define IDC_PAR7	3007
+#define IDC_PAR8	3008
+#define IDC_PAR9	3009
+#define IDC_PAR10	3010
+#define IDC_PAR11	3011
+#define IDC_PAR12	3012
+#define IDC_PAR13	3013
+#define IDC_PAR14	3014
+#define IDC_PAR15	3015
+#define IDC_PAR16	3016
+#define IDC_PAR17	3017
+#define IDC_PAR18	3018
+#define IDC_PAR19	3019
+
+#define IDC_NAM1	4001
+#define IDC_NAM2	4002
+#define IDC_NAM3	4003
+#define IDC_NAM4	4004
+#define IDC_NAM5	4005
+#define IDC_NAM6	4006
+#define IDC_NAM7	4007
+#define IDC_NAM8	4008
+#define IDC_NAM9	4009
+#define IDC_NAM10	4010
+#define IDC_NAM11	4011
+#define IDC_NAM12	4012
+#define IDC_NAM13	4013
+#define IDC_NAM14	4014
+#define IDC_NAM15	4015
+#define IDC_NAM16	4016
+#define IDC_NAM17	4017
+#define IDC_NAM18	4018
+#define IDC_NAM19	4019
+
+#define IDM_SAVE	5001
+#define IDM_PRINT	5002
+#define IDM_PASTE	5003
+#define IDM_HOME	5004
+#define IDM_END		5005
+

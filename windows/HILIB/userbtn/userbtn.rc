@@ -1,0 +1,26 @@
+#include <windows.h>
+
+1001 ICON "ok1001.ico"       // IDOK
+1002 ICON "canc1002.ico"     // IDCANCEL
+1006 ICON "yes1006.ico"      // IDYES
+1007 ICON "no1007.ico"       // IDNO
+3001 ICON "ok3001.ico"
+3002 ICON "canc3002.ico"
+3006 ICON "yes3006.ico"
+3007 ICON "no3007.ico"
+5001 ICON "ok5001.ico"
+5002 ICON "canc5002.ico"
+5006 ICON "yes5006.ico"
+5007 ICON "no5007.ico"
+
+1999 ICON "ok1000.ico"      // IDC_OKAY = 999
+3999 ICON "ok3000.ico"
+5999 ICON "ok5000.ico"
+
+1998 ICON "li1000.ico"      // IDC_LPARAMS = 998
+3998 ICON "li3000.ico"
+5998 ICON "li5000.ico"
+
+1997 ICON "www1006.ico"     // IDC_WWW = 997
+3997 ICON "www3006.ico"
+5997 ICON "www5006.ico"

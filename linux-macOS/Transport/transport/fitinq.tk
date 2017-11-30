@@ -1,0 +1,251 @@
+#!/usr/bin/wish -f
+
+proc GetDim {object xx yy ww hh} {
+#
+#  return the x, y, w and h of the window 'object'
+#
+  upvar $xx x
+  upvar $yy y
+  upvar $ww w
+  upvar $hh h
+  
+  set w [winfo reqwidth $object]
+  set h [winfo reqheight $object]
+  set x [winfo x $object]
+  set y [winfo y $object]
+}
+
+proc ExecComm {Comm} {
+
+#select xterm background color from list
+
+  global ColorCounter
+  set colors {thistle1 LightSteelBlue cornsilk LightSkyBlue1 aquamarine1 CadetBlue1 LightGrey wheat1 LightCyan RosyBrown1}
+  set col [lindex $colors $ColorCounter]
+  set inwindow 1
+
+# open xterm window (with many parameters) and start process via open
+
+  if {$inwindow == 1} {
+    set xt {xterm -sb -sl 500 -j -ls -fn 7x14 -fg black -bg}
+    set xxt {-geometry 80x24}
+    set xt [concat $xt $col $xxt]
+
+    set x0 0; set y0 0; set w0 0; set h0 0 
+    GetDim . x0 y0 w0 h0
+    set w1 [expr 80*7]
+    set h1 [expr 24*14]
+    set x1 [expr $x0+$w0/2-$w1/2]
+    set x1 [expr ($x1 < 0) ? 0 : $x1]
+    set y1 [expr $y0+$h0/2-$h1/2]
+    set y1 [expr ($y1 < 0) ? 0 : $y1]
+    set xy +$x1+$y1
+    set xt $xt$xy
+
+    set xt [concat $xt -e]
+    set comnd [concat $xt $Comm]
+    set comnd [concat open \{|$comnd \} w+]
+    eval $comnd
+
+# start process via open
+
+  }  else {
+    set comnd [concat open \{|$Comm \} w+]
+    eval $comnd
+  }
+}
+
+proc Blink {Widget Resource On Off Interval} {
+    set ex [winfo exists $Widget]
+    if {$ex == 1} {
+      $Widget config $Resource $On
+      after $Interval [list Blink $Widget $Resource $Off $On $Interval]
+    }
+}
+
+proc mydialog { x y } {
+
+	global button
+
+	set titel "Special fit procedures with measured data"
+
+	wm title . $titel
+        set w [winfo screenwidth .]
+        set h [winfo screenheight .]
+        # guess for the window size
+        set w0 440; set h0 300
+        set xx [expr $x+$w0]
+        set yy [expr $y+$h0]
+        set xmax [expr $w-$w0]
+        set ymax [expr $h-$h0]
+        if {$xx>$w} { set x $xmax }
+        if {$yy>$h} { set y $ymax }
+
+        wm geometry . +$x+$y
+	frame .top0 -relief raised -bd 0 -background thistle1
+	pack .top0 -fill both
+	frame .top1 -relief raised -bd 0 -background CadetBlue3
+	pack .top1 -fill both
+	frame .bot1 -relief raised -bd 2 -background CadetBlue3
+	pack .bot1 -fill both
+	frame .top2 -relief raised -bd 0 -background CadetBlue2
+	pack .top2 -fill both
+	frame .bot2 -relief raised -bd 2 -background CadetBlue2
+	pack .bot2 -fill both
+	frame .top3 -relief raised -bd 0 -background CadetBlue3
+	pack .top3 -fill both
+	frame .bot3 -relief raised -bd 2 -background CadetBlue3
+	pack .bot3 -fill both
+	frame .top4 -relief raised -bd 0 -background CadetBlue2
+	pack .top4 -fill both
+	frame .bot4 -relief raised -bd 2 -background CadetBlue2
+	pack .bot4 -fill both
+
+	set text0 "Have you already generated a valid FOR022.DAT data file ?"
+	message .top0.msg -width 3i -text $text0 -background thistle1
+        .top0.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+	Blink .top0.msg -foreground grey black 1000
+	pack .top0.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+	set text1 "Select Pirex fit procedure:"
+	message .top1.msg -width 3i -text $text1 -background CadetBlue3
+        .top1.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+	pack .top1.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+	set text2 "Select IP2 (72 MeV) fit procedure:"
+	message .top2.msg -width 3i -text $text2 -background CadetBlue2
+        .top2.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+	pack .top2.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+	set text3 "Select Pkanal (EHT) fit procedure:"
+	message .top3.msg -width 3i -text $text3 -background CadetBlue3
+        .top3.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+	pack .top3.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+	set text4 "Select IP2 (40 MeV) fit procedure:"
+	message .top4.msg -width 3i -text $text4 -background CadetBlue2
+        .top4.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+	pack .top4.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+
+	set i 0
+	set default 3
+
+	set args1 { {envelope fit only} {quad fit only} {both fits} }
+	foreach but $args1 {
+		button .bot1.button$i -text $but -command "set button $i" -background CadetBlue3 -activebackground CadetBlue4 -activeforeground Cadetblue1
+		if {$i == $default} {
+			frame .bot1.default -relief sunken -bd 1 -background CadetBlue3
+			raise .bot1.button$i
+			pack .bot1.default -side left -expand 1 -padx 3m -pady 2m
+			pack .bot1.button$i -in .bot1.default -side left -padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack .bot1.button$i -side left -expand 1 -padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+	set args2 { {envelope fit only} {quad fit only} {both fits} }
+	foreach but $args2 {
+		button .bot2.button$i -text $but -command "set button $i" -background CadetBlue2 -activebackground CadetBlue4 -activeforeground Cadetblue1
+		if {$i == $default} {
+			frame .bot2.default -relief sunken -bd 1 -background CadetBlue2
+			raise .bot2.button$i
+			pack .bot2.default -side left -expand 1 -padx 3m -pady 2m
+			pack .bot2.button$i -in .bot2.default -side left -padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack .bot2.button$i -side left -expand 1 -padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+	set args3 { {envelope fit only} {quad fit only} {both fits} }
+	foreach but $args3 {
+		button .bot3.button$i -text $but -command "set button $i" -background CadetBlue3 -activebackground CadetBlue4 -activeforeground Cadetblue1
+		if {$i == $default} {
+			frame .bot3.default -relief sunken -bd 1 -background CadetBlue3
+			raise .bot3.button$i
+			pack .bot3.default -side left -expand 1 -padx 3m -pady 2m
+			pack .bot3.button$i -in .bot2.default -side left -padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack .bot3.button$i -side left -expand 1 -padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+	set args4 { {envelope fit only} {quad fit only} {both fits} }
+	foreach but $args4 {
+		button .bot4.button$i -text $but -command "set button $i" -background CadetBlue2 -activebackground CadetBlue4 -activeforeground Cadetblue1
+		if {$i == $default} {
+			frame .bot4.default -relief sunken -bd 1 -background CadetBlue2
+			raise .bot4.button$i
+			pack .bot4.default -side left -expand 1 -padx 3m -pady 2m
+			pack .bot4.button$i -in .bot2.default -side left -padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack .bot4.button$i -side left -expand 1 -padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+
+	# Set up a binding for <Return>, if there`s a default,
+	# set a grab, and claim the focus too.
+
+	if {$default >= 0} {
+		bind . <Return> ".bot.button$default flash;  set button $default"
+	}
+	set oldFocus [focus]
+	grab set .
+	focus .
+
+	# Wait for the user to respond, then restore the focus
+	# and return the index of the selected button.
+
+	tkwait variable button
+	focus $oldFocus
+	return $button
+}
+
+    global ColorCounter
+    set ColorCounter [lindex $argv 0]
+
+    set x [lindex $argv 1]
+    if {$x < 0} { set x 0 }
+
+    set y [lindex $argv 2]
+    if {$y < 0} { set y 0 }
+
+    set retval [mydialog $x $y]
+
+    if {$retval == 0} {
+       set comm "./pirexf 1"
+    }
+    if {$retval == 1} {
+       set comm "./pirexf 2"
+    }
+    if {$retval == 2} {
+       set comm "./pirexf 3"
+    }
+    if {$retval == 3} {
+       set comm "./ip2f 1"
+    }
+    if {$retval == 4} {
+       set comm "./ip2f 2"
+    }
+    if {$retval == 5} {
+       set comm "./ip2f 3"
+    }
+    if {$retval == 6} {
+       set comm "./pkanf 1"
+    }
+    if {$retval == 7} {
+       set comm "./pkanf 2"
+    }
+    if {$retval == 8} {
+       set comm "./pkanf 3"
+    }
+    if {$retval == 9} {
+       set comm "./ip3f 1"
+    }
+    if {$retval == 10} {
+       set comm "./ip3f 2"
+    }
+    if {$retval == 11} {
+       set comm "./ip3f 3"
+    }
+    ExecComm $comm
+    exit
+}
+
+

@@ -1,0 +1,13 @@
+g77 -finit-local-zero -fno-automatic dispo.f -o dispo
+g77 -finit-local-zero -fno-automatic disponew.f -o disponew
+g77 -finit-local-zero -fno-automatic element.f -o element
+g77 -finit-local-zero -fno-automatic el.f -o el
+g77 -finit-local-zero -fno-automatic emu.f -o emu
+g77 -finit-local-zero -fno-automatic ifq.f -o ifq
+g77 -finit-local-zero -fno-automatic si.f -o si
+g77 -finit-local-zero -fno-automatic siun.f -o siun
+g77 -finit-local-zero -fno-automatic sigma.f -o sigma
+g77 -finit-local-zero -fno-automatic tijk.f -o tijk
+g77 -finit-local-zero -fno-automatic bli.f -o bli
+g77 openURL.c -o openURL
+

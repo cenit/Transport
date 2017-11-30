@@ -1,0 +1,13 @@
+
+Content of directory TURTLE.
+============================
+
+00-index.txt         this file
+01-README.txt        (partly old) description of 'Turtle for Linux'
+02-special_files.txt list of special files in directory turtle
+cern                 directory containing cernlib-modules
+gratur               directory containing sources for gratur module
+makeall              command-file for building all modules from source code
+sources              directory containing source codes
+turtle               minimal distribution of 'Turtle for Linux'
+

@@ -1,0 +1,14 @@
+NAME           TTMENU
+DESCRIPTION    'Turtle Menu'
+EXETYPE        NT
+VERSION        1.0
+STUB           'WINSTUB.EXE'
+CODE           PRELOAD MOVEABLE DISCARDABLE
+DATA           PRELOAD MOVEABLE MULTIPLE
+HEAPSIZE       6000
+STACKSIZE      6000
+
+EXPORTS
+    WndProc  @2
+    DlgProc  @3
+    PrintAbortProc @4

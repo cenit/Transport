@@ -1,0 +1,80 @@
+/*****************************************************************************
+
+ ----  R O T K N O B  ------ MS-Windows Class Module ------------------------
+                             Resource file
+
+==============================================================================
+
+This MS-Windows library contains a dialog control class which provides a
+rotation knob to enter analog values via keyboard or mouse or to select
+between discrete positions.
+
+------------------------------------------------------------------------------
+
+The resource file contains some useful resources for the dynamic link library
+and the dialog box for the style input.
+
+------------------------------------------------------------------------------
+
+Copyright 1988, 1989, 1990, 1991, 1992 by Marcellus Buchheit, Germany
+Internet mabu@buchheit.de, CompuServe 100020,1723, Fax +49(0)721/356238
+
+Release 1.00 of 91-Dec-30 --- All rights reserved.
+
+*****************************************************************************/
+
+#include "COMMON.H"
+
+/* declaration for control type 0 */
+STRINGTABLE BEGIN
+  ST_TITLE,"Dialogelement Drehknopf"
+  ST_DESCR_0,"Drehknopf/Standard"
+END
+
+BMP_TLBOX_0   BITMAP TLBOX.BMP
+CRS_DRGDRP_0  CURSOR DRGDRP.CUR
+
+/* dialog message strings */
+STRINGTABLE BEGIN
+  MSG_GETINF,"Keine Stil-Information verfügbar."
+  MSG_SETINF,"Stil-Information kann nicht gesetzt werden."
+  MSG_NUMVAL,"Illegaler numerischer Wert."
+  MSG_LINERANGE,"Anzahl der Skalenlinien muß\nim Bereich von 0 bis 15 liegen."
+  MSG_TITLESTRING,"Text für Einheit zu lang."
+  MSG_SCALESTRING,"Text für Skala zu lang."
+END /* STRINGTABLE */
+
+
+DB_STYLE DIALOG LOADONCALL MOVEABLE DISCARDABLE 32,32,222,108
+CAPTION "Eigenschaften Drehknopf"
+STYLE WS_BORDER|WS_CAPTION|WS_DLGFRAME|WS_POPUP
+BEGIN
+ CONTROL "&ID-Wert:",IDNONE,"static",SS_LEFT|WS_CHILD,4,8,48,8
+ CONTROL "",IDIDVAL,"edit",
+         ES_AUTOHSCROLL|ES_LEFT|WS_BORDER|WS_TABSTOP|WS_CHILD,38,6,50,12
+ CONTROL "Stile",IDNONE2,"button",BS_GROUPBOX|WS_GROUP|WS_CHILD,4,24,84,60
+ CONTROL "&Diskrete Werte",IDDISCRET,"button",
+         BS_AUTOCHECKBOX|WS_TABSTOP|WS_GROUP|WS_CHILD,8,36,70,12
+ CONTROL "&Auto-Selektion",IDAUTOSEL,"button",
+         BS_AUTOCHECKBOX|WS_TABSTOP|WS_GROUP|WS_CHILD,8,48,70,12
+ CONTROL "&Linien/Skala:",IDHSCLLINE,"static",
+         SS_LEFT|WS_GROUP|WS_CHILD,8,64,44,8
+ CONTROL "",IDSCLLINE,"edit",ES_LEFT|WS_BORDER|WS_TABSTOP|WS_CHILD,52,62,28,12
+ CONTROL "Text/&Titel:",IDNONE3,"static",SS_LEFT|WS_CHILD,4,92,36,10
+ CONTROL "",IDTITLE,"edit",
+         ES_AUTOHSCROLL|ES_LEFT|WS_BORDER|WS_TABSTOP|WS_CHILD,52,90,36,12
+ CONTROL "&Skalentext:",IDNONE4,"static",SS_LEFT|WS_CHILD,96,8,68,8
+ CONTROL "",IDSCLTEXT,"edit",
+         ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|WS_BORDER|WS_VSCROLL|
+         WS_GROUP|WS_TABSTOP|WS_CHILD,96,18,72,88
+ CONTROL "",IDNONE5,"static",SS_BLACKFRAME|WS_CHILD,172,0,1,108
+ CONTROL "OK",IDOK,"button",BS_DEFPUSHBUTTON|WS_TABSTOP|WS_CHILD,178,4,40,14
+ CONTROL "Abbrechen",IDCANCEL,"button",
+         BS_PUSHBUTTON|WS_TABSTOP|WS_CHILD,178,22,40,14
+END /* DB_STYLE */
+
+
+/* =======================================
+   ROTKNOB class module: End of ROTKNOB.RC
+   =======================================
+*/

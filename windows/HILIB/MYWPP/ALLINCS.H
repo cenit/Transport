@@ -1,0 +1,27 @@
+#include <stdarg.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <windows.h>
+#include <commdlg.h>
+#include <ctype.h>
+#include "defines.h"
+#ifndef WIN32
+#include "ntdefs.h"
+#include <print.h>
+#endif
+#include "minmax.h"
+#include "anamtr.h"
+#include "rotknob.h"
+#include "colorbut.h"
+#include "ctl3d.h"
+#include "userbtn.hpp"
+#include "manager.hpp"
+#include "drwtools.hpp"
+#include "dispdev.hpp"
+#include "window.hpp"
+#include "metadev.hpp"
+#include "dialog.hpp"
+#include "control.hpp"
+#include "simpdlg.hpp"
+#include "printer.hpp"

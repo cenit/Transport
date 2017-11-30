@@ -1,0 +1,16 @@
+g77 -c -finit-local-zero -fno-automatic displaw.f
+g77 -c -finit-local-zero -fno-automatic displaps.f
+g77 -c -finit-local-zero -fno-automatic eliw.f
+g77 -c -finit-local-zero -fno-automatic elips.f
+g77 -c -finit-local-zero -fno-automatic eliw2.f
+g77 -c -finit-local-zero -fno-automatic elips2.f
+g77 -c -finit-local-zero -fno-automatic eliw3.f
+g77 -c -finit-local-zero -fno-automatic elips3.f
+g77 -c -finit-local-zero -fno-automatic dtmw.f
+g77 -c -finit-local-zero -fno-automatic dtmps.f
+g77 -c -finit-local-zero -fno-automatic pssubs.f
+g77 -c -finit-local-zero -fno-automatic bedacps.f
+g77 -c -finit-local-zero -fno-automatic begaussps.f
+gcc -c inips.c
+gcc -c xwi.c
+gcc -c mysleep.c

@@ -1,0 +1,26 @@
+
+ Table of different Transport Commands.
+ ------------------------------------------------------------------------------
+ Comm  Param            what it does
+ ------------------------------------------------------------------------------
+   t         Transport computation with display of envelope
+  tfo        Transport computation with standard output on file
+   s         Transport computation without display (only tables)
+   i         Transport input file editor for base sequence (mod. FOR001)
+  ifq        Transport fit sequence editor (modifies FOR001)
+   o         Shows output files & editor for display parameters (after T)
+   e         display beam ellipses (after T)
+ save        store envelope for multiple display (after T)
+  dtm   ijk  Display of up to 4 Tijk (after T)
+ tijk        List of 2nd-order components (after T)
+   si        Output of Sigma- & R1-matrices (after T and TFO)
+   el        *Elements* - List (after T and TFO)
+   r         New display of envelope (after O etc.)
+  qoi        Transfer of Quadrupol fields from output to input (after T)
+  loi        Transfer of varied element lengths from output to input (after T)
+  boi        Transfer of initial beam parameters from output to Input (after T)
+ bero        B * Rho scaling of a beamline (modifies FOR001)
+ delf        Erase all scratch files
+-------------------------------------------------------------------------------
+
+

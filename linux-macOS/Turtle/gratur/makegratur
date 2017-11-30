@@ -1,0 +1,16 @@
+#for RedHat 9.0 because errno and __ctype_b not found in libraries
+#statically link libg2c.a by having the lib in this directory (libg2c.a removed by stefano, hope it's not necessary to bring around a compiled object).
+#makes it more portable to new AMD64 platforms.
+g77 -finit-local-zero -fno-automatic gratur.f errno.c ctype.c \
+-L../cern/2003/lib \
+-lgraflib \
+-lgrafX11 \
+-lmathlib \
+-lkernlib \
+-lpacklib \
+-lphtools \
+-L/usr/X11R6/lib \
+-lX11 \
+-L/home/rohrer/gratur \
+-lg2c \
+-o gratur

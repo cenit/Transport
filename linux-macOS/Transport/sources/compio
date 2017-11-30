@@ -1,0 +1,10 @@
+g77 -c -finit-local-zero -fno-automatic io.f
+g77 -c -finit-local-zero -fno-automatic bero.f
+g77 -c -finit-local-zero -fno-automatic qoi.f
+g77 -c -finit-local-zero -fno-automatic boi.f
+g77 -c -finit-local-zero -fno-automatic loi.f
+g77 -c -finit-local-zero -fno-automatic qoi2.f
+g77 -c -finit-local-zero -fno-automatic fxydac.f
+g77 -c -finit-local-zero -fno-automatic fxygauss.f
+g77 -c -finit-local-zero -fno-automatic pirexf.f
+g77 -c stat.c

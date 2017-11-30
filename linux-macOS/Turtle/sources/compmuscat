@@ -1,0 +1,3 @@
+g77 -c -finit-local-zero -fno-automatic muscat.f
+gcc -c system.c
+

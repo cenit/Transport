@@ -1,0 +1,25 @@
+///////////////////////////////////////////////////////////////////////////////
+////////////////////// Definition of class FileBuff ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef FILEBUFF_HPP
+#define FILEBUFF_HPP
+
+class FileBuff : public Object
+{
+     char *Buff, *WorkBuff;
+     long Length;
+     FILE *fp;
+   protected:
+     long FileSize(FILE *);
+     int ReadLn(char **, char *);
+   public:
+     FileBuff(char *);
+     ~FileBuff(void);
+     int TellNumberOfLines(void);
+     int GetNextLine(char *);
+};
+
+#endif
+
+/////////////////////////////////// EOF ///////////////////////////////////////

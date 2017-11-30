@@ -1,0 +1,45 @@
+; CAMAC.DEF -- Definition file for CAMAC.DLL
+
+LIBRARY     CAMAC
+DESCRIPTION 'DLL for CAMAC access'
+EXETYPE     WINDOWS
+STUB        'WINSTUB.EXE'
+CODE        PRELOAD MOVEABLE DISCARDABLE
+DATA        PRELOAD MOVEABLE MULTIPLE
+HEAPSIZE    16384
+EXPORTS     ShowCamacDLLVersion @2
+	    IniDevList @3
+	    ReloadDevList @4
+            SetDac @5
+            GetDac @6
+            GetAdc @7
+            GetDevName @8
+            GetDevParam @9
+            GetDevParam2 @10
+            DelDevList @11
+            IniSerialComm @12
+            CloseSerialComm @13
+            IniKSI @14
+            WriteCamac @15
+            ReadCamac @16
+            ControlCamac @17
+	    ReadCamacDac @18
+	    WriteCamacDac @19
+            getq @20
+            getx @21
+            WriteDAC @22
+            ReadDAC @23
+            ReadADC @24
+            ReserveCrate @25
+            FreeCrate @26
+            ReadScaler @27
+            ClearScaler @28
+            SwitchOnCombis @29
+            SwitchOnCombi @30
+            SwitchOffCombi @31
+            GetNumberOfPages @32
+	    GetPageIndex @33
+            YieldQQ @34
+            wait @35
+	    ReadAll @36
+            SetDacWait @37

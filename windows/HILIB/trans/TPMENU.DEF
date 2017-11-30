@@ -1,0 +1,16 @@
+NAME           TPMENU
+DESCRIPTION    'Transport Menu'
+EXETYPE        WINDOWS
+STUB           'WINSTUB.EXE'
+CODE           PRELOAD MOVEABLE DISCARDABLE
+DATA           PRELOAD MOVEABLE MULTIPLE
+HEAPSIZE       10000
+STACKSIZE      8000
+
+EXPORTS
+    WndProc  @2
+    DlgProc  @3
+    PrintAbortProc @4
+    MyEditProc @1
+    MyListProc @5
+    HookProc @6

@@ -1,0 +1,208 @@
+
+About this GUI Input Editor for Transport and Turtle:
+=====================================================
+
+(First simpler version created in March 1997 by Urs Rohrer, PSI)
+(Revised several times in November 1999 by Urs Rohrer, PSI)
+(Updated in May 2002 by Urs Rohrer, PSI)
+
+   This program has been designed mainly for new users, who are not
+yet very familiar with the structure of a Transport or Turtle input
+file. It helps to work with the different Transport and Turtle type
+codes and parameters because their names are displayed. All push buttons
+have tool tips, giving some more information about what they are doing.
+All element lines are listed in an "owner-drawn extended multiple-
+selection list box". When starting up the program, then the current
+FOR001.DAT file is read in. By default the listed elements are printed
+in "long" standard form. In case the "short" button in the "View in
+List-box" section is pressed, then only function name and label
+(if any) on each line are displayed. In both cases at the beginning
+of each line a 15 pixel x 15 pixel bitmap (16 colors) is symbolizing
+the function of the element line. If the large fonts feature in the
+setup of your graphic card is being used, then bitmaps of 19 pixels
+x 19 pixels are used. For better readability all text in the list
+boxes is displayed with the fixed pitch system font.
+
+There are 3 ways to edit an element (single line):
+--------------------------------------------------
+1) Double-click the line with the left mouse button.
+2) Click at the line with the left mouse button and press the "Edit"
+   button afterwards.
+3) Click at the line with the left mouse button first and then with
+   the right mouse button.
+
+with 1):       You get always a simple "whole-line" edit-box.
+               (Also here the font has a fixed pitch.)
+with 2) or 3): For all known type codes you will get a special
+               edit-box, where each parameter may be changed
+               individually. (Empty parameter fields will not
+               be included into the element line after pressing
+               the OK button.)
+Point 3)       works only with the Windows 95/98/NT4/2000 version.
+
+Read- / Save-button features:
+-----------------------------
+- Read-button only:
+   Current FOR001.DAT (Transport/Turtle input file) is read in an displayed.
+- Read-button with Ctrl-key pressed down:
+   Current FOR001.BAK (generated with last save) is read in an displayed.
+- Read-button with Alt-key pressed down:
+   A file dialog box is displayed for choosing the file which has to be read in.
+- Save-button only:
+   Content of list box is saved as FOR001.DAT.
+   Old FOR001.DAT is saved as FOR001.BAK.
+   Old FOR001.BAK is saved as FOR001.BK2.
+- Save-button with Alt-key pressed down:
+   A file dialog box is displayed for choosing the file name under which
+   to save the current content of the list box.
+
+Multiple line features for Move Up/Down, Delete, Copy and Paste:
+----------------------------------------------------------------
+If you keep the Ctrl-key down while clicking with the left mouse
+key at different lines or drag the mouse pointer with the left
+mouse key pressed down over a range of several lines, then they
+are all getting selected. If you press now one of the above
+mentioned buttons, then the following happens:
+
+- Move Down: All selected lines are moved up 1 position.
+             Selection remains.
+- Move Up:   All selected lines are moved down 1 position.
+             Selection remains.
+- Delete:    All selected lines are deleted and stored in the
+             paste buffer. The next line before or after is selected.
+- Copy:      All selected lines are copied into the paste buffer.
+             The last line only remains selected.
+- Paste:     All lines in the paste buffer are inserted before/
+             after the selected line.
+- Also the multi-line edit box which pops up after pressing the
+  Insert button offers the possibility to enter several arbitrary
+  lines at once. Line separation cannot be done with the Enter
+  key. Instead the Control key has to be pressed together with
+  the Enter key.
+- After having selected a contiguous or non-contiguous range of
+  lines and then pressing the Edit button or the right mouse
+  button, the selected bunch of lines may be edited simultaneously
+  in a multi-line edit box.
+ 
+Known Transport type codes for this editor are 1 to 25 and 50.
+Known Turtle type codes for this editor are 1 to 7, 9, 12 to 21
+26, 27, 29, 30, 50 to 53 and 60.
+
+- If a " 16. 14. ; " element line is encountered, then "Update" is
+  replaced by "Slit" for the whole scope of the Transport input file.
+- If a " 13. 48. ; " element line is encountered, then for all
+  bending magnets the meaning of the second parameter is angle
+  instead of field value for the whole scope of the Transport
+  input file.
+- if a " 16. 165. ; " element line is encountered, then all  following
+  type code 1. elements preceding a drift and following a slit are
+  interpreted as multiple scattering parameter cards for the whole
+  scope of the Turtle file.
+
+If one of the above element line sequences are newly inserted
+with this editor into the input file, then you have to press "Save"
+and thereafter "Read" in order to make them active for this editor. 
+If one of the above mentioned element lines is removed, then you
+have to proceed the same way as well.
+
+If you want to transform an input from Turtle to Transport or
+vice versa then you have to start with interchanging the first
+indicator by the number of rays or vice versa and then you have
+to press "Save" and afterwards "Read" in order to establish fully
+the new context.
+
+Pressing the "New" button will not give a clean List Box field
+but a short Transport or Turtle input file with one empty fit
+sequence for Transport. 
+
+If a type code 13, 15 or 16 element is edited with the special edit-box,
+and if clicked with the left or right mouse button at the name of the
+first parameter (marked with an asterisks [*] and a frame around it),
+then an edit box containing all known possibilities for the parameter
+of this very type code will be shown. The content of these edit boxes
+is depending on whether the input is for Turtle or Transport. Its
+content you may also print or dump to clipboard or to a file via one of
+the extended system menu commands. In case the "short" button in the
+"View in List-box" section is pressed, then the 13, 15 and 16 element's
+functions are described in a few words depending on their meaning they
+have in Turtle or Transport.
+
+note 1:
+-------
+Finding out if an input file is for Turtle or for Transport is done
+by analyzing the first 5 lines: If a single number on one of these
+lines is less than or equal to zero, then this number is a fit indicator
+and therefore the input file is for Transport. If this single number is
+greater than zero, then it represents a number of rays and therefore the
+input file is for Turtle.
+                               -------------
+
+note 2:
+-------
+If you encounter problems with this program and you would like to
+have them solved, please do not hesitate to contact Urs.Rohrer@psi.ch
+Please include the input files(s) and a short description of the
+problem into your mail message.  Hints for improvements are also
+appreciated.
+                               -------------
+
+
+Annotations for the Transport user unfamiliar with this version:
+================================================================
+
+A Transport input file (always copy it to FOR001.DAT when it has to be
+used) has the following basic structure:
+
+/title of the basic sequence/
+0
+.
+beam line data
+.
+SENTINEL
+/title of the first fit sequence/
+-1
+.
+fit data
+.
+SENTINEL
+.
+.
+/*PLOT* title of the last fit sequence/
+-1
+.
+fit data
+.
+SENTINEL
+SENTINEL
+
+- The last title card must have a *PLOT* at the beginning. So if there
+  is no fit sequence, *PLOT* must be at the beginning of the title card
+  of the basic sequence.
+- The indicator -1 may be replaced by -9 for deactivating this fit
+  sequence.
+
+If you look at the delivered sample input codes, then you will see, that
+all of them obey this rule. If you want to look at one of this samples
+with TGIE, then you first have to copy the picked one to FOR001.DAT with
+the copy tool connected to the 2nd button of the task bar of the Transport
+framework panel. Now when you start TGIE32.EXE (GUI-editor) it will load
+and display this file. It shows you even at the top right position, that
+it loaded the current FOR001.DAT file. You may now make some modifications
+with the built-in tools and press the SAVE button to write the internal
+data back to the external FOR001.DAT file. Also this is indicated to you
+at the right top side of the GUI-editor's panel. Now you may run Transport
+with the modified input data (stored in FOR001.DAT as input for Transport).
+If you modify FOR001.DAT besides with some other tool and you want to
+import these modifications into TGIE, then you have to press the READ
+button. Also this is signaled to you at the right top message line in the
+TGIE panel.
+
+If you press the NEW button, then you are asked if you would like to have
+the currently stored data overwritten by a minimal Transport input
+(template for a short basic and one empty fit sequence). If you agree,
+then the template is displayed. You may then add some more elements
+according to your needs. If you want to test this new input, then you
+have to save it to FOR001.DAT with the SAVE button. Afterwards you have
+to run Transport.
+
+                          --- EOF ----

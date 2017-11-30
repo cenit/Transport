@@ -1,0 +1,13 @@
+NAME           Editor
+DESCRIPTION    'Text Editor'
+EXETYPE        WINDOWS
+STUB           'WINSTUB.EXE'
+CODE           PRELOAD MOVEABLE
+DATA           PRELOAD MOVEABLE MULTIPLE
+HEAPSIZE       4000
+STACKSIZE      8000
+
+EXPORTS
+    WndProc  @2
+    DlgProc  @3
+    PrintAbortProc @4

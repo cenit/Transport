@@ -1,0 +1,1111 @@
+#include <windows.h>
+#include "..\mywpp\defines.h"
+#include "tpmenu.h"
+
+IDR_APP_ICON ICON  "tpmenu.ico"
+IDR_QM_ICON ICON   "question.ico"
+#ifdef WIN95
+IDR_APP_BMP2 BITMAP "tpmenu95.bmp"
+IDB_TOOLBAR  BITMAP "toolbar.bmp";
+#endif
+IDR_APP_BMP  BITMAP "tpmenu.bmp"
+MyBack       BITMAP "back.bmp"
+MyBackInv    BITMAP "backinv.bmp"
+MyLegalMess  BITMAP "legal.bmp"
+
+IDR_MAIN_MENU MENU 
+BEGIN
+	POPUP "&Input"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "&About this Transport Framework...", IDM_ABOUT
+		MENUITEM SEPARATOR
+		MENUITEM "&Edit file...", IDM_EDT
+		MENUITEM "&Copy file...", IDM_COPYF
+		MENUITEM "&Display Parameters...", IDM_DISPAR
+		MENUITEM SEPARATOR
+		MENUITEM "&Bero Scaling", IDM_BERO
+		MENUITEM "&Show Input", IDM_DISPI
+		MENUITEM "Beam &Line Inversion", IDM_BLI
+		MENUITEM SEPARATOR
+		MENUITEM "&GUI Input Editor", IDM_GUI
+		MENUITEM "&Fit Sequence Editor", IDM_IFQ
+		MENUITEM SEPARATOR
+		MENUITEM "GUI Editor is Default Input Editor", IDM_EDIT_GUI
+		MENUITEM "Text Editor is Default Input Editor", IDM_EDIT_TEXT
+	END
+
+	POPUP "&Run"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "&Standard Transport", IDM_TRANS_FORM
+		MENUITEM SEPARATOR
+		MENUITEM "&Graphic  Transport", IDM_TRANS_GRAF
+		MENUITEM SEPARATOR
+		POPUP "Computation &Mode"
+		BEGIN
+#ifdef WIN32
+			MENUITEM "Use 32-bit-&DLL", IDM_16
+#else
+			MENUITEM "Use 16-bit-&DLL", IDM_16
+#endif
+			MENUITEM "Use 32-bit-&EXE", IDM_32
+		END
+		MENUITEM SEPARATOR
+		MENUITEM "E&xit", IDM_EXIT
+	END
+
+	POPUP "&Graphic"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "&Redraw", IDM_REDRAW
+		MENUITEM "&Ellipses (x,x' and y,y')", IDM_ELLIPSES
+		MENUITEM "&Ellipse (dl,dp/p)", IDM_ELLIPSEL
+		MENUITEM "&Ellipses (x,y and x',y')", IDM_ELLIPSE2
+		MENUITEM "&Second Order", IDM_SECOND
+		MENUITEM "Sa&ve Run", IDM_SAVER
+	END
+
+	POPUP "&Tables"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "&Initial Beam", IDM_BEAM
+		MENUITEM "&Quadrupoles", IDM_QUADS
+		MENUITEM "Bending &Magnets", IDM_BENDS
+		MENUITEM "&Fit Conditions", IDM_FITS
+		MENUITEM "&Shifts and Slits", IDM_SHIFTS
+		MENUITEM "&Beamline", IDM_BEAMLINE
+		MENUITEM "Floor &Layout coordinates", IDM_FLOOR
+		MENUITEM SEPARATOR
+		MENUITEM "Quad &DACs", IDM_QDAC
+		MENUITEM "Quad &Amps", IDM_QAMP
+		MENUITEM SEPARATOR
+		MENUITEM "Bend &DACs", IDM_BDAC
+		MENUITEM "Bend &Amps", IDM_BAMP
+	END
+
+	POPUP "&Output"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "Sigma &Matrices", IDM_SIGMA
+		MENUITEM "&List File", IDM_TEDI
+		MENUITEM SEPARATOR
+		MENUITEM "&Tijk Matrix...", IDM_TIJK
+		MENUITEM "&Beam Info...", IDM_BEAMINFO
+                MENUITEM "&Elements", IDM_ELEMENTS
+		MENUITEM SEPARATOR
+		MENUITEM "&Print file...", IDM_PRINT
+		MENUITEM "Printer &Setup...", IDM_PRINT_SETUP
+		MENUITEM "Line &width for Print ...",IDM_PRINT_LW
+		MENUITEM SEPARATOR
+		MENUITEM "Delete Scratch &Files", IDM_DELSCRA
+		MENUITEM "&Delete File...", IDM_DELFILE
+	END
+
+	POPUP "O->I &Func"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "&Quad Fields", IDM_QOI
+		MENUITEM "&Beam Parameters", IDM_BOI
+		MENUITEM "&Element Length", IDM_LOI
+		MENUITEM SEPARATOR
+		MENUITEM "&Get DACs...", IDM_GETDACS
+		MENUITEM "FxyDac   (FOR022.DAT)", IDM_FXYDAC
+		MENUITEM "FxyGauss (FOR022.DAT)", IDM_FXYGAU
+	END
+
+	POPUP "&Help"
+	BEGIN
+		MENUITEM SEPARATOR
+		MENUITEM "Online Info via the &Web", IDM_WWW
+	END
+END
+
+IDR_POPUP_MENU MENU 
+BEGIN
+	POPUP ""
+	BEGIN
+		MENUITEM "Print Graphics\tP",IDM_PRINT
+		MENUITEM "Print Graphics to PS-File\tF",IDM_PRINT2
+		MENUITEM "Graphics to Clipboard\tC",IDM_PASTE
+		MENUITEM "Close\t<CR>",IDM_EXIT
+		MENUITEM "No Action",IDM_HOME
+	END
+END
+
+IDR_MAIN_ACCEL ACCELERATORS 
+BEGIN
+	"Y", IDM_EXIT, VIRTKEY, CONTROL
+	"C", IDM_EXIT, VIRTKEY, CONTROL
+	VK_RETURN, IDM_COMMAND, VIRTKEY
+	"A", IDM_A_KEY, VIRTKEY
+	"B", IDM_B_KEY, VIRTKEY
+	"C", IDM_C_KEY, VIRTKEY
+	"D", IDM_D_KEY, VIRTKEY
+	"E", IDM_E_KEY, VIRTKEY
+	"F", IDM_F_KEY, VIRTKEY
+	"G", IDM_G_KEY, VIRTKEY
+	"I", IDM_I_KEY, VIRTKEY
+	"L", IDM_L_KEY, VIRTKEY
+	"O", IDM_O_KEY, VIRTKEY
+	"P", IDM_P_KEY, VIRTKEY
+	"Q", IDM_Q_KEY, VIRTKEY
+	"R", IDM_R_KEY, VIRTKEY
+	"S", IDM_S_KEY, VIRTKEY
+	"T", IDM_T_KEY, VIRTKEY
+	"1", IDM_1_KEY, VIRTKEY
+	"3", IDM_3_KEY, VIRTKEY
+END
+
+#ifdef WIN95
+STRINGTABLE DISCARDABLE
+BEGIN
+	IDM_EDT_INP	"Edit Input File"
+	IDM_COPYF	"Copy Input File"
+	IDM_DISPAR	"Show Graphic Display Parameters"
+	IDM_TRANS_GRAF	"Run Transport in Graphic Mode"
+	IDM_TRANS_FORM	"Run Transport in Standard Mode"
+	IDM_REDRAW	"Redraw Envelopes"
+	IDM_ELLIPSES	"Draw Ellipses"
+	IDM_PRINT	"Print File"
+	IDM_BEAMINFO	"Show BeamInfo"
+	IDM_QUADS	"Show Quadrupole Output Data"
+	IDM_BENDS	"Show Bending Magnet Output Data"
+	IDM_QOI		"Transfer Quadrupole Fields Output->Input"
+	IDM_BOI		"Transfer Initial Beam Parameters Output->Input"
+	IDM_SAVER	"Save Envelope for Multi Display"
+	IDM_SECOND	"Display Second Order Effects"
+	IDM_DELSCRA	"Delete Scratch Files"
+	IDM_IFQ		"Run Editor for Fit-Sequences"
+	IDM_TEDI	"Show Formatted Transport Output"
+	IDM_BEAMLINE	"Show Beamline Output Data"
+	IDM_BEAM	"Show Initial Beam Output Data"
+	IDM_SHIFTS	"Show Shifts and Slits Output Data"
+	IDM_FITS	"Show Fit Conditions Output Data"
+
+	IDC_NEXT	"Go to Next Transport Element"
+	IDC_PREV	"Go to Previous Transport Element "
+	IDC_CANCEL	"Immediate Quit"
+	IDC_1FRAME	"Show 1 Ellipse at a Time"
+	IDC_4FRAME	"Show Last 4 Ellipses at a Time"
+	IDC_PRINT	"Print Content of Ellipse Display"
+	IDC_CLEAR	"Clear Ellipse Display"
+
+	IDC_NEXT2	"Go to Next Transport Element"
+	IDC_PREV2	"Go to Previous Transport Element "
+	IDC_CANCEL2	"Immediate Quit"
+	IDC_1FRAME2	"Show 1 Ellipse at a Time"
+	IDC_4FRAME2	"Show Last 4 Ellipses at a Time"
+	IDC_PRINT2	"Print Content of Ellipse Display"
+	IDC_CLEAR2	"Clear Ellipse Display"
+
+	IDC_NEXT3	"Go to Next Transport Element"
+	IDC_PREV3	"Go to Previous Transport Element "
+	IDC_CANCEL3	"Immediate Quit"
+	IDC_1FRAME3	"Show 1 Ellipse at a Time"
+	IDC_4FRAME3	"Show Last 4 Ellipses at a Time"
+	IDC_PRINT3	"Print Content of Ellipse Display"
+	IDC_CLEAR3	"Clear Ellipse Display"
+
+	IDC_FILE	"Open File for Duplicating Screen Output"
+	IDC_CLOSE	"Close File with Duplicated Screen Output"
+	IDC_ERASE	"Erase Screen"
+	IDC_EDIT	"Input for Arbitrary z or Label"
+	IDOK		"Defaults to Next Transport Element"
+END
+#endif
+
+STRINGTABLE
+BEGIN
+   IDS_NOSECOR, "No Second Order Run."
+   IDS_RUNGTF,  "Run Graphic Transport first."
+   IDS_WRONGD,  "Wrong unit(s) for Graphic Transport"
+   IDS_RUNSTF,  "Run Standard Transport first."
+   IDS_QUADSNF, "QUADS.CAL not found."
+   IDS_BENDSNF, "BENDS.CAL not found."
+   IDS_FOR022NF,"FOR022.DAT not found."
+   IDS_FOR022WF,"FOR022.DAT wrong format."
+   IDS_F1NOTF,  "FOR001.DAT not found."
+   IDS_F2NOTF,  "FOR002.DAT not found."
+   IDS_F4NOTF,  "FOR004.DAT not found."
+   IDS_F13NOTF, "No layout coordinates found."
+   IDS_ERRF1,   "Error in FOR001.DAT."
+   IDS_DEVLISF, "DEVICE.LIS missing or faulty."
+   IDS_SOURCEF, "Cannot open source file."
+   IDS_DESTF,   "Cannot open destination file."
+   IDS_SREQDES, "Source equal destination, brrr !!!"
+   IDS_DTMNF,   "DTM.DAT not found."
+   IDS_NOITS,   "No item selected."
+   IDS_ALLZERO, "All requested Tijks are zero."
+   IDS_UNKNOWN, "Unknown command, Help ?"
+   IDS_LISTCOM, "List of all keyboard commands"
+   IDS_CBUSY,   "Crate busy. Continue?"
+   IDS_FLTSTR,  "(*.dat*)|*.dat*|(*.lis*)|*.lis*|(*.txt*)|*.txt*|(*.*)|*.*|"
+   IDS_FOR000,  "FOR000.DAT"
+   IDS_FOR001,  "FOR001.DAT"
+   IDS_FOR002,  "FOR002.DAT"
+   IDS_FOR004,  "FOR004.DAT"
+   IDS_FOR029,  "FOR029.DAT"
+   IDS_FOR022,  "FOR022.DAT"
+   IDS_ABOUT,   "&About Transport..."
+   IDS_NOPAR,   "No scratch directory and no\nserial port and no color flags\nvia command line passed.\nDefaults %s taken"
+   IDS_NOPARP,  "No colorflag for printer given\nDefault nC (for b/w) taken."
+   IDS_NOPARC,  "No colorflags given\nDefault C (color) for screen\nand nC (b/w) for printer taken."
+   IDS_NOPORT,  "No serial port and colorflags given\nDefault COM1:, C (color) for screen\nand nC (b/w) for printer taken."
+   IDS_DEVLIS,  "DEVICE.LIS"
+   IDS_TRANOUT, "Transport Output"
+   IDS_FLOOROUT,"Floor Coordinate Layout Output"
+   IDS_ERRORT,  "ERROR.TRA"
+   IDS_WRNF1,   "Writing new FOR001.DAT"   
+   IDS_UPDF1,   "Updating FOR001.DAT [Y/N] ?"
+   IDS_INSERT,  "Insert DACs into FOR001.DAT"
+   IDS_INSXYDAC,"Insert DACs and PM-Data into FOR001.DAT"
+   IDS_INSXYGAU,"Insert B-fields and PM-Data into FOR001.DAT"
+   IDS_TRANS,   "Transport Framework"
+   IDS_ELI,     "Ellipses (x,x' and y,y')"
+   IDS_ELIL,    "Ellipses (dl,dp/p)"
+   IDS_ELI2,    "Ellipses (x,y and x',y')"
+   IDS_DTMDAT,  "DTM.DAT"
+   IDS_DELFIL,  "File to delete"
+   IDS_SIGMAM,  "Sigma Matrix"
+   IDS_BINFO,   "Beam Info"
+   IDS_TIJK,    "Tijk *xj * xk"
+   IDS_TRANDLL, "TRANS.DLL"
+   IDS_RUNNING, "    running"
+   IDS_TRAN32,  "TRANEM32 "
+   IDS_NODATAF, "No data of this type found!"
+   IDS_PRINTF,  "File to print"
+   IDS_SOURCE,  "Source File"
+   IDS_DEST,    "Destination File"
+   IDS_OUTPUT,  "OUTPUT.DAT"
+   IDS_PS810,   "c:\\ps810.prn"
+   IDS_VPP,     "VPP c:\\ps810.prn"
+   IDS_COURIER, "Courier New"
+   IDS_NFCALF,  "%s not found in calibration file"
+   IDS_NFDEVL,  "%-4s not found in DEVICE.LIS"
+   IDS_KG_FORM, "%-4s: %6ld  %7.3f kG"
+   IDS_SET_TO,  "%-4s set to%7ld"
+   IDS_NOT_SET, "%-4s not set"
+   IDS_DATEXT,  "*.dat*"
+   IDS_KEEP0D,  "KEEP0.DAT"
+   IDS_SAVE0D,  "SAVE0.DAT"
+   IDS_QUADS,   "Quadrupoles, Sextupoles and Solenoids"
+   IDS_BEAML,   "Beamline"
+   IDS_BENDM,   "Bending Magnets"
+   IDS_IBEAM,   "Initial Beam"
+   IDS_FITC,    "Fit Conditions"
+   IDS_SHIFT,   "Shifts and Slits"
+   IDS_ELEM,    "Elements"
+   IDS_QDAC,    "Quad DACs"
+   IDS_QAMP,    "Quad Amps"
+   IDS_BDAC,    "Bend DACs"
+   IDS_BAMP,    "Bend Amps"
+   IDS_LAYOUT,  "Floor Coordinate Layout Output"
+   IDS_QOI,     "Quadfields Output->Input"
+   IDS_BOI,     "Beam Data Output->Input"
+   IDS_LOI,     "Element Length Output->Input"
+   IDS_3F,      "%f %f %f"
+   IDS_4FSS,    "%f %f %f %f %s %s"
+   IDS_5FSS,    "%f %f %f %f %f %s %s"
+   IDS_3FS,     "%f %f %f %s"
+   IDS_4FS,     "%f %f %f %f %s"
+   IDS_2FS,     "%f %f %s"
+   IDS_SSF,     "%s %s %f"
+   IDS_16FS,    "%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%s"
+   IDS_8FS,     "%f %f %f %f %f %f %f %f %s"
+   IDS_SFS,     "%s %f %s"
+   IDS_3FSS,    "%f %f %f %s %s"
+   IDS_SSFSFSFS,"%s %s %f %s %f %s %f %s"
+   IDS_F,       "%f"
+   IDS_3_1F,    "%-3.1f"
+   IDS_6_3F,    "%-6.3f"
+   IDS_8_3F,    "%-8.3f"
+   IDS_8_4F,    "%-8.4f"
+   IDS_10_5F,   "%-10.5f"
+   IDS_12_5F,   "%-12.5f"
+   IDS_F1LFT,   "FOR001.DAT <= "
+   IDS_F2RGT,   " =%9.5f %s <= FOR002.DAT"
+   IDS_F1MM,    "FOR001.DAT: /"
+   IDS_LMM,     "/ <--- label mismatch --> /"
+   IDS_F2MM,    "/ :FOR002.DAT"
+   IDS_LMIL,    "Length modified in line: "
+   IDS_LMM2,    " <== label mismatch ==> "
+   IDS_NOMLF,   "No modified length found!"
+   IDS_NYIMPL,  "Not yet implemented!"
+   IDS_QCAL,    "QUADS.CAL"
+   IDS_BCAL,    "BENDS.CAL"
+   IDS_T_DRIFT, "*DRIFT*"
+   IDS_T_BEND,  "*BEND*"
+   IDS_T_QUAD,  "*QUAD*"
+   IDS_T_SEXT,  "*SEXT*"
+   IDS_T_SOLO,  "*SOLO*"
+   IDS_x,       "x"
+   IDS_xp,      "x'"
+   IDS_r12,     "r12"
+   IDS_y,       "y"
+   IDS_yp,      "y'"
+   IDS_r34,     "r34"
+   IDS_R16,     "R16"
+   IDS_R26,     "R26"
+   IDS_p,       "p"
+   IDS_dpp,     "dp/p"
+   IDS_QO_FORM, "%s %s %7.3f %s %8.4f %s %7.2f %s"
+   IDS_BA_FORM, "%s%s%7.3f %s%6.1f %s%9.3f %s  n =%6.3f B.A =%5.1f %s"
+   IDS_BE_FORM, "*E-PRISM* %s%7.3f %s%6.1f %s  D.A =%5.1f %s  pq =%6.3f  E0 = %-.3f kV/cm"
+   IDS_BK_FORM, "%s%s%7.3f %s  k1 =%6.3f  k2 =%6.3f 1/r =%7.3f"
+   IDS_BL_FORM, "%s %s %7.3f %s%7.2f %s%7.2f %s%7.2f %s/%s %7.2f %s/%s"
+   IDS_LAY_FORM, "%s %s %8.3f %s%9.3f %9.3f %9.3f %s %9.3f %9.3f %s"
+   IDS_BE1_FORM," x   %10.3f %s"
+   IDS_BE2_FORM," x'  %10.3f %s"
+   IDS_BE3_FORM," r12 %10.3f"
+   IDS_BE4_FORM," epsx%10.4f %s%s"
+   IDS_BE5_FORM," y   %10.3f %s"
+   IDS_BE6_FORM," y'  %10.3f %s"
+   IDS_BE7_FORM," r34 %10.3f"
+   IDS_BE8_FORM," epsy%10.4f %s%s"
+   IDS_BE9_FORM," R16 %10.3f %s/%s"
+   IDS_BEA_FORM," R26 %10.3f %s/%s"
+   IDS_BEB_FORM," p   %10.5f %s/c"
+   IDS_BEC_FORM," dp/p%10.3f %s"
+   IDS_BED_FORM," alphax%10.5f"
+   IDS_BEE_FORM," betax %10.5f %s"
+   IDS_BEF_FORM," alphay%10.5f"
+   IDS_BEG_FORM," betay %10.5f %s"
+   IDS_FAILED,  "      *FAILED*"
+   IDS_FIT_FORM,"%s%10.3f%5.0f%5.0f%10.5f/%8.5f  (%10.5f )"
+   IDS_CHISQ,   "CHI**2 = %10.5e"
+   IDS_VAR,     "*VAR* : "
+   IDS_S2D_FORM,"%s %s %7.3f %s %4d %10.2f %s %4d %10.2f %s"
+   IDS_S1D_FORM,"%s %s %7.3f %s %4d %10.2f %s"
+   IDS_AXS_FORM,"%s %s %7.3f %s%7.3f %s%7.3f %s%7.3f %s%7.3f %s"
+   IDS_NX1_FORM,"%s %s %10.4f %s"
+   IDS_NX2_FORM,"%s %s %10.4f %s%10.5f%10.5f%10.5f"
+   IDS_NX4_FORM,"%s %s %10.4f %s%9.2f %s%10.5f %s%7.4f%6.1f %s"
+   IDS_NXE_FORM,"*E-PRISM*  %s %10.4f %s%9.2f %s%10.3f %s%7.3f  E0 = %-.3f kV/cm"
+   IDS_NX5_FORM,"%s %s %10.4f %s%9.2f %s%10.5f %s"
+   IDS_NX5E_FORM,"%s %s %10.4f %s%9.2f %s%10.5f kV/cm"
+   IDS_N62_FORM,"%s %s %10.4f %s %4d %10.2f %s %4d %10.2f %s"
+   IDS_N61_FORM,"%s %s %10.4f %s %4d %10.2f %s"
+   IDS_SPC_FORM,"%s %s %10.4f %s%10.4f A%10.2f MHz%10.1f"
+   IDS_NX7_FORM,"%s %s"
+   IDS_N11_FORM,"%s %s %10.4f %s%9.2f %s%10.5f %s"
+   IDS_TLG_FORM,"*LENGTH*        %10.4f %s"
+   IDS_7LD_FORM,"%7ld"
+   IDS_GSS_FORM," Gauss"
+   IDS_7KG_FORM,"%7.1f kG"
+   IDS_71A_FORM,"%7.1f A"
+   IDS_TIT_FORM,"%s   z =%7.3f %s   %s"
+   IDS_STR_FORM,"%s"
+   IDS_ZEX_FORM,"z =%9.4f  %s"
+   IDS_LEX_FORM,"l =%9.4f  %s"
+   IDS_BEX_FORM,"B =%10.5f %s"
+   IDS_AEX_FORM,"a =%7.2f    %s"
+   IDS_NEX_FORM,"n =%7.2f"
+   IDS_ZGTHZMAX,"z > zmax"
+   IDS_LUNKNOWN,"l = *"
+   IDS_BUNKNOWN,"B = *"
+   IDS_AUNKNOWN,"a = *"
+   IDS_LABEMPTY," -  "
+   IDS_SIGMA,   "*SIGMA*"
+   IDS_CENTERS, " Center:     %9.3f %s%9.3f %s%9.3f %s%9.3f %s"
+   IDS_HPARS,   " horz. Par. :%9.3f %s%9.3f %s%9.3f"
+   IDS_VPARS,   " vert. Par. :%9.3f %s%9.3f %s%9.3f"
+   IDS_TFORM1,  "*TRANSFORM 1*"
+   IDS_HORZVERT,"    horz:                              vert:"
+   IDS_R1_FORM, "%11.5f%11.5f%11.5f  %11.5f%11.5f%11.5f"
+   IDS_1_TWISS, "*TWISS PARAMETERS* (for dp/p =%6.3f %s)"
+   IDS_2_TWISS, "   alfax:     betax:         alfay:     betay:"
+   IDS_3_TWISS, "%10.5f %10.5f %s   %10.5f %10.5f %s"
+   IDS_x_FORM,  "x    =%11.3f %s"
+   IDS_xp_FORM, "x'   =%11.3f %s"
+   IDS_r12_FORM,"r12  =%11.3f"
+   IDS_y_FORM,  "y    =%11.3f %s"
+   IDS_yp_FORM, "y'   =%11.3f %s"
+   IDS_r34_FORM,"r34  =%11.3f"
+   IDS_dpp_FORM,"dp/p =%11.3f %s"
+   IDS_x0_FORM, "x0   =%11.3f %s"
+   IDS_x0p_FORM,"x0'  =%11.3f %s"
+   IDS_y0_FORM, "y0   =%11.3f %s"
+   IDS_y0p_FORM,"y0'  =%11.3f %s"
+   IDS_R11_FORM,"R11  =%11.3f"
+   IDS_R12_FORM,"R12  =%11.3f %s/%s"
+   IDS_R16_FORM,"R16  =%11.3f %s/%s"
+   IDS_R21_FORM,"R21  =%11.3f %s/%s"
+   IDS_R22_FORM,"R22  =%11.3f"
+   IDS_R26_FORM,"R26  =%11.3f %s/%s"
+   IDS_R33_FORM,"R33  =%11.3f"
+   IDS_R34_FORM,"R34  =%11.3f %s/%s"
+   IDS_R36_FORM,"R36  =%11.3f %s/%s"
+   IDS_R43_FORM,"R43  =%11.3f %s/%s"
+   IDS_R44_FORM,"R44  =%11.3f"
+   IDS_R46_FORM,"R46  =%11.3f %s/%s"
+   IDS_FIN_FORM,"%s %7.3f %s   %s"
+   IDS_IDX_FORM,"    *%d %s*"
+   IDS_2ME_FORM,"%10.4f"
+   IDS_T111,    "T111"
+   IDS_5S_FORM, "%s %s %s %s %s"
+   IDS_S4D_FORM,"%s %d %d %d %d"
+   IDS_10D,     "%d %d %d %d %d %d %d %d %d %d"
+   IDS_10F,     "%f %f %f %f %f %f %f %f %f %f"
+   IDS_FL2STR,  "(*.lis)|*.lis|(*.*)|*.*|"
+   IDS_LISEXT,  "*.lis"
+   IDS_FIL_MENU,"to File\tCtlr+F"
+   IDS_PRT_MENU,"to Printer\tCtrl+P"
+   IDS_CBD_MENU,"to Clipboard\tCtrl+C"
+   IDS_HOM_MENU,"Home\tCtrl+H"
+   IDS_END_MENU,"End\tCtrl+E"
+   IDS_FOS_MENU,"Font Size\tCtrl+S"
+   IDS_R_ASCII, "r_ascii"
+   IDS_SYSTEM,  "System"
+   IDS_LISTING, "Output of Data Listing from TRANS"
+   IDS_FILELENG,"File length=%ld bytes in %ld lines."
+   IDS_PRT_GRAF,"&Print Graphics\tP"
+   IDS_PRT_GRAF2,"&Print Graphics to PS-File\tF"
+   IDS_CLP_GRAF,"Graphics to &Clipboard  \tC"
+   IDS_CAP_GRAF,"Zmin=%6.2f %s Zmax=%6.2f %s Xmax=%5.1f %s Ymax=%5.1f %s Ap *%5.2f     %s"
+   IDS_PLOT,    "Output of Graphic Data from TRANS"
+   IDS_7_3_FORM,"%7.3f"
+   IDS_TMAX,    "Tmax=%6.2e"
+   IDS_WINDOWS, "windows"
+   IDS_DEVICE,  "Device"
+   IDS_SMALLF,  "Small Fonts"
+   IDS_TIMESNR, "Times New Roman"
+   IDS_SANSERIF,"MS Sans Serif"
+
+   IDS_LWX_FORM,"Lwx =%7.2f %s"
+   IDS_ERX_FORM,"Lwx = *** %s"
+   IDS_LWY_FORM,"Lwy =%7.2f %s"
+   IDS_ERY_FORM,"Lwy = *** %s"
+   IDS_CHX_FORM,"Chix =%7.1f deg   (%7.4f)"
+   IDS_CHY_FORM,"Chiy =%7.1f deg   (%7.4f)"
+   IDS_EPX_FORM,"Epsx =%6.2f * Pi %s%s"
+   IDS_EPY_FORM,"Epsy =%6.2f * Pi %s%s"
+   IDS_XXM_FORM,"Xm =%5.1f %s,  X'm =%5.1f %s"
+   IDS_YYM_FORM,"Ym =%5.1f %s,  Y'm =%5.1f %s"
+   IDS_DDP_FORM,"D =%5.1f %s,  D'=%5.1f %s"
+
+
+   IDS_CH1_FORM,"Chi1=%7.1f deg   (%7.4f)"
+   IDS_CH2_FORM,"Chi2=%7.1f deg   (%7.4f)"
+   IDS_EP1_FORM,"Eps1 =%6.2f * Pi %s%s"
+   IDS_EP2_FORM,"Eps2 =%6.2f * Pi %s%s"
+   IDS_XXM2_FORM,"Xm =%5.1f %s,  Ym =%5.1f %s"
+   IDS_YYM2_FORM,"X'm =%6.1f %s,  Y'm =%6.1f %s"
+
+
+   IDS_LW_FORM,"Lw =%7.2f %s"
+   IDS_ER_FORM,"Lw = *** %s"
+   IDS_CH_FORM,"Chi =%7.1f deg   (%7.4f)"
+   IDS_EP_FORM,"Eps =%6.2f * Pi %s%s"
+   IDS_M_FORM,"dlmax =%5.1f %s,  (dp/p)max =%5.1f %s"
+
+   IDS_CR_FORM, "%[^\n]"
+   IDS_PLOTST,  "*PLOT*"
+   IDS_FSFFSF,  "%f %s %f %f %s %f"
+   IDS_SIG_FORM,"%10.3f %s     %s"
+   IDS_SSDD7F,  "%s%s%d%d%f%f%f%f%f%f%f"
+   IDS_4PERC,   "%%%%"
+   IDS_BOF,     "BOF"
+   IDS_EOF_RF,  "EOF -- rewind file"
+   IDS_QUITS,   "QUIT"
+   IDS_OPEN_Q,  "Open File %s ?"
+   IDS_SHOWN_O, "Shown output will also go to file."
+   IDS_ALREADYO,"%s already open."
+   IDS_CLOSE_Q, "Close File %s ?"
+   IDS_WRITTEN, "%s written."
+   IDS_NOTOPEN, "%s not open."
+   IDS_NSN_FORM,"\n%s\n"
+   IDS_SGMA_DAT,"SIGMA.DAT"
+   IDS_INFO_DAT,"INFO.DAT"
+   IDS_TIJK_DAT,"TIJK.DAT"
+   IDS_RN_FORM, "\r\n"
+   IDS_SN_FORM, "%s\n"
+   IDS_BLANK_LB,"    "
+   IDS_SF_FORM, "%s %f"
+   IDS_DSP_FORM,"%-5s   %10.2f\n"
+   IDS_ZMIN,    "ZMIN"
+   IDS_ZMAX,    "ZMAX"
+   IDS_XMPL,    "XMPL"
+   IDS_YMPK,    "YMPL"
+   IDS_APFAC,   "APFAC"
+   IDS_SPEZ,    "SPEZ"
+   IDS_SPEZ2,   "SPEZ2"
+   IDS_APLAB,   "APLAB"
+   IDS_STEER,   "STEER"
+   IDS_DISP,    "DISP"
+   IDS_YDISP,   "YDISP"
+   IDS_RAX,     "RAX"
+   IDS_RAY,     "RAY"
+   IDS_MEASX,   "MEASX"
+   IDS_MEASY,   "MEASY"
+   IDS_MEASD,   "MEASD"
+   IDS_CSX,     "CSX"
+   IDS_CSY,     "CSY"
+   IDS_BUNL,    "BUNL"
+   IDS_BEAM_T,  "*BEAM*    "
+   IDS_ROTAT_T, "*ROTAT*   "
+   IDS_DRIFT_T, "*DRIFT*   "
+   IDS_BEND_T,  "*BEND*    "
+   IDS_QUAD_T,  "*QUAD*    "
+   IDS_SLIT_T,  "*SLIT*    "
+   IDS_SHIFT_T, "*AXIS SHI*"
+   IDS_ACC_T,   "*ACC*     "
+   IDS_CORR_T,  "*CORR*    "
+   IDS_MATRIX_T,"*MATRIX*  "
+   IDS_SEXT_T,  "*SEXT*    "
+   IDS_SOLO_T,  "*SOLO*    "
+   IDS_ZRO_T,   "*Z RO*    "
+   IDS_WIEN_T,  "*WIEN*    "
+   IDS_SPCH_T,  "*SP CH*   "
+   IDS_RFCAV_T, "*RF CAV*  "
+   IDS_SCINT_T, "*SCINT*   "
+   IDS_FRINGE_T,"*FRINGE*  "
+   IDS_EPRI_T,  "*E-PRISM* "
+   IDS_EQUAD_T, "*E-QUAD*  "
+   IDS_UNIT_SRC,"MM~CM~MR  ~PC~PM~DEG~M~KG~GEV~MEV"
+   IDS_UNIT_DES,"mm~cm~mrad~% ~%o~Deg~m~kG~GeV~MeV"
+   IDS_0_M,     " z        0.000 m"
+   IDS_INDEX,   "11~12~22~13~23~33~14~24~34~44~15~25~35~45~55~16~26~36~46~56~66"
+   IDS_TIT,     "*DR|*QU|*BE|*SO|*SE|*RO|*SC|*BE|*CO|*SL|*Z |*AC|*WI|*RF|*FR|*AX|*EL"
+   IDS_CMD_LINE," COM2: C nC"
+   IDS_CMD_LINE2,"+COM2:+C+nC"
+   IDS_COMMS1,  "EXIT|T|TFO|R|TIJK|EDIT|COPY|DEL|DELF|OQ|OBL|OB|OBE|OF|OS|EL|OQD|OQA|OBD|OBA|"
+   IDS_COMMS2,  "QOI|BOI|LOI|Q|SI|LI|BR|I|BI|D|PRINT|PS|A|DTM|E|EDT|SAVE|GD|32|16|EXE|DLL|FXY|PLW"
+   IDS_11S,     "%s %s %s %s %s %s %s %s %s %s %s"
+   IDS_SLD,     "%s %ld"
+   IDS_3S,      "%s %s %s"
+   IDS_8FSS,    "%f %f %f %f %f %f %f %f %s %s"
+   IDS_BERO_FRM,"Changing field of %-7s /%-4s/ from %8.4f to %8.4f kG"
+   IDS_BERO_SCL,"Bero Scaling"
+   IDS_BF_FORM, "%9.4f"
+   IDS_2FLFL,   "%f %f %s %f %s"
+   IDS_DAC_FORM "%-4s=%8.4f kG  "
+   IDS_PMD_FORM "%-4s=%5.1f mm  "
+   IDS_TRANSFER "The following Quad- and Fit-Data have been transferred:"
+   IDS_EDT_F001 "EDT FOR001.DAT"
+END
+
+IDD_VARI_DIALOG DIALOG 80, 78, 114, 46
+STYLE DS_ABSALIGN | WS_POPUP | WS_CAPTION
+CAPTION "*QUAD*    QHA1"
+FONT 10, "Courier New"
+BEGIN
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 2, 113, 45
+	LTEXT "z =  15.9110  m", IDC_Z, 3, 2, 63, 7, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "l =   0.6400  m", IDC_LEFF, 3, 9, 63, 7, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "B =  -5.45054 kG", IDC_FIELD, 3, 23, 64, 7, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "a = 125.00    mm", IDC_HAP, 3, 16, 64, 7, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "-5.4504", IDC_VARI, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 69, 23, 42, 8
+	PUSHBUTTON "Ok", IDOK, 69, 2, 14, 10, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Cancel", IDCANCEL, 83, 2, 28, 10, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	CONTROL "New Run", IDC_NEWRUN, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 4, 35, 40, 9
+	CONTROL "New Reference", IDC_NEWREF, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 49, 35, 62, 9
+	CONTROL "", 1001, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 0, 34, 115, 1
+	PUSHBUTTON "beam info", IDC_MORE, 69, 12, 42, 10, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+#ifdef WIN95
+	CONTROL "", 1002, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 70, 24, 43, 10
+#endif
+END
+
+IDD_HELP_DIALOG DIALOG 0, 0, 320, 230
+STYLE DS_ABSALIGN | WS_POPUP | WS_CAPTION
+CAPTION "Transport"
+FONT 10, "Courier New"
+BEGIN
+	CTEXT "abcdefghijklmnopqrstuvwxyzABCDEFGHI", IDC_TEXT, 98, 2, 139, 7
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 2, 319, 10
+	CONTROL "", 1001, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 319, 192
+	LTEXT "T     Run Graphic Transport", -1, 4, 15, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "TFO   Run Standard Transport", -1, 4, 23, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "R     Redraw Envelopes", -1, 4, 31, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "E     Draw Beam Ellipses", -1, 4, 39, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "TIJK  List 2nd Order Contributions", -1, 4, 47, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "DTM   Draw 2nd Order Contributions (1-4)*", -1, 4, 55, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "BI    Show Beam Info", -1, 4, 63, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "Q     Fit Sequence Editor", -1, 4, 71, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "I     Show Transport Input", -1, 4, 79, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "SI    Display Sigma Matrices", -1, 4, 87, 155, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "LI    Show Transport Output", -1, 4, 95, 156, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "BR    Perform Brho-Scaling", -1, 4, 103, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "EL    List Element Data", -1, 4, 111, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "QOI   Transfer Quad-Fields Output->Input", -1, 4, 119, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "BOI   Transfer Initial Beam Output->Input", -1, 4, 127, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "LOI   Transfer Element Length OutPut->Input", -1, 4, 135, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "D     Display Parameter Editor", -1, 4, 143, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "SAVE  Save Run Data for later display", -1, 4, 151, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "GD    Insert DAC values in FOR001.DAT", -1, 4, 159, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "DELF  Delete Scratch Files", -1, 4, 167, 157, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OQ     List of Quads, Sext. and Solen.", -1, 161, 15, 155, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OB     List of Magnets and Wien-Filt.", -1, 161, 23, 156, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OBE    Initial Beam Parameters", -1, 161, 31, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OBL    List Beam along Beamline", -1, 161, 39, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OF     List Fit Conditions", -1, 161, 47, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OS     List Slits and Shifts", -1, 161, 55, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OQD    List Quad DACs", -1, 161, 63, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OQA    List Quad Amps", -1, 161, 71, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OBD    List Bend DACs", -1, 161, 79, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "OBA    List Bend Amps", -1, 161, 87, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "FXY    Insert PmData and QDACS", -1, 161, 95, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "EDIT   Edit File (1)*", -1, 161, 103, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "EDT    Edit File (1)*", -1, 161, 111, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "COPY   Copy File (2)*", -1, 161, 119, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "DEL    Delete File (1)*", -1, 161, 127, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "PRINT  Print File (1)*", -1, 161, 135, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "PS     Printer Settings", -1, 161, 143, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "A      About Message", -1, 161, 151, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+#ifdef WIN32
+	LTEXT "DLL    Use 32-bit-DLL", -1, 161, 159, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "EXE    Use 32-bit-EXE", -1, 161, 167, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+#else
+	LTEXT "16     Use 16-bit-DLL", -1, 161, 159, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "32     Use 32-bit-EXE", -1, 161, 167, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+#endif
+	LTEXT "PLW    print line width", -1, 161, 175, 133, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "(n)*   gives number of optional parameters", -1, 71, 190, 188, 10, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "OK", IDC_OKAY, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 143, 207, 32, 20
+END
+
+IDD_FLAT_DIALOG DIALOG 0, 0, 399, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 398, 16
+	CONTROL "               ", IDC_EDIT, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK1, 102, 2, 24, 11, BS_DEFPUSHBUTTON
+	CONTROL "Next", IDC_NEXT, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 129, 2, 24, 11
+	CONTROL "Prev.", IDC_PREV, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 156, 2, 24, 11
+	CONTROL "Quit", IDC_CANCEL, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 183, 2, 26, 11
+	CONTROL "*1", IDC_1FRAME, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 212, 2, 24, 11
+	CONTROL "*4", IDC_4FRAME, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 239, 2, 24, 11
+	CONTROL "Print", IDC_PRINT, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 266, 2, 24, 11
+	CONTROL "Clear", IDC_CLEAR, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 293, 2, 24, 11
+	LTEXT "x,x' and y,y'", -1, 340, 3, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+END
+
+IDD_FLAT2_DIALOG DIALOG 0, 0, 399, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+FONT 12, "Arial"
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 398, 16
+	CONTROL "               ", IDC_EDIT, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK1, 102, 2, 24, 11, BS_DEFPUSHBUTTON
+	CONTROL "Next", IDC_NEXT, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 129, 2, 24, 11
+	CONTROL "Prev.", IDC_PREV, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 156, 2, 24, 11
+	CONTROL "Quit", IDC_CANCEL, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 183, 2, 26, 11
+	CONTROL "*1", IDC_1FRAME, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 212, 2, 24, 11
+	CONTROL "*4", IDC_4FRAME, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 239, 2, 24, 11
+	CONTROL "Print", IDC_PRINT, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 266, 2, 24, 11
+	CONTROL "Clear", IDC_CLEAR, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 293, 2, 24, 11
+	LTEXT "x,x' and y,y'", -1, 340, 3, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+END
+
+IDD_FLAT3_DIALOG DIALOG 0, 14, 399, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 398, 16
+	CONTROL "               ", IDC_EDIT2, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK2, 102, 2, 24, 11, BS_DEFPUSHBUTTON
+	CONTROL "Next", IDC_NEXT2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 129, 2, 24, 11
+	CONTROL "Prev.", IDC_PREV2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 156, 2, 24, 11
+	CONTROL "Quit", IDC_CANCEL2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 183, 2, 26, 11
+	CONTROL "*1", IDC_1FRAME2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 212, 2, 24, 11
+	CONTROL "*4", IDC_4FRAME2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 239, 2, 24, 11
+	CONTROL "Print", IDC_PRINT2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 266, 2, 24, 11
+	CONTROL "Clear", IDC_CLEAR2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 293, 2, 24, 11
+	LTEXT "dl,dp/p", -1, 340, 3, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+END
+
+IDD_FLAT4_DIALOG DIALOG 0, 14, 399, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+FONT 12, "Arial"
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 398, 16
+	CONTROL "               ", IDC_EDIT2, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK2, 102, 2, 24, 11, BS_DEFPUSHBUTTON
+	CONTROL "Next", IDC_NEXT2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 129, 2, 24, 11
+	CONTROL "Prev.", IDC_PREV2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 156, 2, 24, 11
+	CONTROL "Quit", IDC_CANCEL2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 183, 2, 26, 11
+	CONTROL "*1", IDC_1FRAME2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 212, 2, 24, 11
+	CONTROL "*4", IDC_4FRAME2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 239, 2, 24, 11
+	CONTROL "Print", IDC_PRINT2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 266, 2, 24, 11
+	CONTROL "Clear", IDC_CLEAR2, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 293, 2, 24, 11
+	LTEXT "dl,dp/p", -1, 340, 3, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+END
+
+IDD_FLAT5_DIALOG DIALOG 0, 28, 399, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 398, 16
+	CONTROL "               ", IDC_EDIT3, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK3, 102, 2, 24, 11, BS_DEFPUSHBUTTON
+	CONTROL "Next", IDC_NEXT3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 129, 2, 24, 11
+	CONTROL "Prev.", IDC_PREV3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 156, 2, 24, 11
+	CONTROL "Quit", IDC_CANCEL3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 183, 2, 26, 11
+	CONTROL "*1", IDC_1FRAME3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 212, 2, 24, 11
+	CONTROL "*4", IDC_4FRAME3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 239, 2, 24, 11
+	CONTROL "Print", IDC_PRINT3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 266, 2, 24, 11
+	CONTROL "Clear", IDC_CLEAR3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 293, 2, 24, 11
+	LTEXT "x,y and x',y'", -1, 340, 3, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+END
+
+IDD_FLAT6_DIALOG DIALOG 0, 28, 399, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+FONT 12, "Arial"
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 398, 16
+	CONTROL "               ", IDC_EDIT3, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK3, 102, 2, 24, 11, BS_DEFPUSHBUTTON
+	CONTROL "Next", IDC_NEXT3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 129, 2, 24, 11
+	CONTROL "Prev.", IDC_PREV3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 156, 2, 24, 11
+	CONTROL "Quit", IDC_CANCEL3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 183, 2, 26, 11
+	CONTROL "*1", IDC_1FRAME3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 212, 2, 24, 11
+	CONTROL "*4", IDC_4FRAME3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 239, 2, 24, 11
+	CONTROL "Print", IDC_PRINT3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 266, 2, 24, 11
+	CONTROL "Clear", IDC_CLEAR3, "colorbutton", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 293, 2, 24, 11
+	LTEXT "x,y and x',y'", -1, 340, 3, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+END
+
+IDD_BAR_DIALOG DIALOG 0, 0, 320, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 319, 16
+	CONTROL "               ", IDC_EDIT, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK, 102, 2, 24, 11
+	PUSHBUTTON "Next", IDC_NEXT, 129, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Prev.", IDC_PREV, 156, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Quit", IDCANCEL, 183, 2, 26, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "File", IDC_FILE, 212, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Close", IDC_CLOSE, 239, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Erase", IDC_ERASE, 266, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+END
+
+IDD_BAR2_DIALOG DIALOG 0, 0, 320, 14
+STYLE DS_ABSALIGN | WS_POPUP | WS_BORDER
+FONT 12, "Arial"
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 12, 319, 16
+	CONTROL "               ", IDC_EDIT, "EDIT", ES_LEFT | WS_TABSTOP, 25, 3, 73, 8
+	LTEXT "Input>", -1, 4, 3, 21, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	PUSHBUTTON "OK", IDOK, 102, 2, 24, 11
+	PUSHBUTTON "Next", IDC_NEXT, 129, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Prev.", IDC_PREV, 156, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Quit", IDCANCEL, 183, 2, 26, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "File", IDC_FILE, 212, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Close", IDC_CLOSE, 239, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Erase", IDC_ERASE, 266, 2, 24, 11, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+END
+
+IDD_DISPAR_DIALOG DIALOG 90, 35, 138, 222
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Display Parameters"
+BEGIN
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 7, 88, 54
+	LTEXT "z-Minimum", -1, 13, 10, 49, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "z-Maximum", -1, 13, 20, 49, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "x-Amplitude", -1, 13, 30, 49, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "y-Amplitude", -1, 13, 40, 50, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "Aperture factor", -1, 13, 50, 51, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "   0.00", IDC_ZMIN, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 65, 10, 26, 8
+	CONTROL " 100.00", IDC_ZMAX, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 65, 20, 26, 8
+	CONTROL " 150.00", IDC_XAMPL, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 65, 30, 26, 8
+	CONTROL " 150.00", IDC_YAMPL, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 65, 40, 26, 8
+	CONTROL "   1.00", IDC_APFAC, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 65, 50, 26, 8
+#ifdef WIN95
+	CONTROL "", 1002, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 65, 10, 27, 10
+	CONTROL "", 1003, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 65, 20, 27, 10
+	CONTROL "", 1004, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 65, 30, 27, 10
+	CONTROL "", 1005, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 65, 40, 27, 10
+	CONTROL "", 1006, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 65, 50, 27, 10
+#endif
+	CONTROL "", 1001, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 64, 127, 153
+
+	CONTROL "on", IDC_ENVEL_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 65, 20, 10
+	CONTROL "off", IDC_ENVEL_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 65, 18, 10
+	LTEXT "Envelopes", -1, 14, 65, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_DISP_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 75, 20, 10
+	CONTROL "off", IDC_DISP_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 75, 18, 10
+	LTEXT "x-Dispersion", -1, 14, 75, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_YDISP_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 85, 20, 10
+	CONTROL "off", IDC_YDISP_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 85, 18, 10
+	LTEXT "y-Dispersion", -1, 14, 85, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_RAX_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 95, 20, 10
+	CONTROL "off", IDC_RAX_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 95, 18, 10
+	LTEXT "x-Ray", -1, 14, 95, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_RAY_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 105, 20, 10
+	CONTROL "off", IDC_RAY_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 105, 18, 10
+	LTEXT "y-Ray", -1, 14, 105, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_CSX_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 115, 20, 10
+	CONTROL "off", IDC_CSX_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 115, 18, 10
+	LTEXT "x-Cos-Sin-Traj", -1, 14, 115, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_CSY_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 125, 20, 10
+	CONTROL "off", IDC_CSY_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 125, 18, 10
+	LTEXT "y-Sin-Cos-Traj", -1, 14, 125, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_SPEZ_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 135, 20, 10
+	CONTROL "off", IDC_SPEZ_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 135, 18, 10
+	LTEXT "Drift Labels", -1, 14, 135, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_APLAB_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 145, 20, 10
+	CONTROL "off", IDC_APLAB_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 145, 18, 10
+	LTEXT "Aperture Labels", -1, 14, 145, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_SPEZ2_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 155, 20, 10
+	CONTROL "off", IDC_SPEZ2_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 155, 18, 10
+	LTEXT "Magnet Settings", -1, 14, 155, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_STEER_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 165, 20, 10
+	CONTROL "off", IDC_STEER_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 165, 18, 10
+	LTEXT "Steering Mag. Opt.", -1, 14, 165, 65, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_MEASX_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 175, 20, 10
+	CONTROL "off", IDC_MEASX_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 175, 18, 10
+	LTEXT "x-Measurements", -1, 14, 175, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_MEASY_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 185, 20, 10
+	CONTROL "off", IDC_MEASY_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 185, 18, 10
+	LTEXT "y-Measurements", -1, 14, 185, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_MEASD_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 195, 20, 10
+	CONTROL "off", IDC_MEASD_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 195, 18, 10
+	LTEXT "d-Measurements", -1, 14, 195, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "on", IDC_BUNL_ON, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 82, 205, 20, 10
+	CONTROL "off", IDC_BUNL_OFF, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 108, 205, 18, 10
+	LTEXT "Disp bunch leng", -1, 14, 205, 57, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+
+	CONTROL "OK", IDOK, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 99, 8, 32, 20
+	CONTROL "CANCEL", IDCANCEL, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 99, 40, 32, 20
+END
+
+IDD_LIST_DIALOG DIALOG 95, 53, 124, 106
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Select  Set of Tijk"
+BEGIN
+	CONTROL "LISTBOX", IDC_LIST_BOX, "listbox", WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | 0x3L, 8, 5, 108, 80
+	PUSHBUTTON "OK", IDOK, 7, 93, 54, 11
+	PUSHBUTTON "Cancel", IDCANCEL, 63, 93, 54, 11
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 0, 90, 124, 1
+END
+
+IDD_GETDAC_DIALOG DIALOG 90, 45, 138, 138
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Transport"
+BEGIN
+	CONTROL "", 1000, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 8, 39, 123, 66
+	CONTROL "", 1001, "STATIC", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 8, 8, 123, 28
+	CTEXT "Transfer of DAC values from", -1, 12, 13, 113, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "CAMAC hardware to FOR001.DAT", -1, 12, 24, 115, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "include following types:", -1, 12, 41, 113, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "yes", IDC_QUAD_YES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 70, 51, 24, 10
+	CONTROL "no", IDC_QUAD_NO, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 103, 51, 24, 10
+	LTEXT "Quadrupoles", -1, 17, 52, 46, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "yes", IDC_SEXT_YES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 70, 61, 24, 10
+	CONTROL "no", IDC_SEXT_NO, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 103, 61, 24, 10
+	LTEXT "Sextupoles", -1, 17, 62, 46, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "yes", IDC_SOLO_YES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 70, 71, 24, 10
+	CONTROL "no", IDC_SOLO_NO, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 103, 71, 24, 10
+	LTEXT "Solenoids", -1, 17, 72, 46, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "yes", IDC_BEND_YES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 70, 81, 24, 10
+	CONTROL "no", IDC_BEND_NO, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 103, 81, 24, 10
+	LTEXT "Bends", -1, 17, 82, 46, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "yes", IDC_WIEN_YES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 70, 91, 24, 10
+	CONTROL "no", IDC_WIEN_NO, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 103, 91, 24, 10
+	LTEXT "Wien Filters", -1, 17, 92, 46, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "Button", IDOK, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 27, 111, 32, 20
+	CONTROL "Button", IDCANCEL, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 79, 111, 32, 20
+END
+
+IDD_BINFO_DIALOG DIALOG 18, 18, 114, 52
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Beam Info"
+FONT 10, "Courier New"
+BEGIN
+	LISTBOX IDC_BINFO, 2, 2, 110, 50, LBS_NOTIFY | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL
+END
+
+#ifdef WIN32
+#ifdef WIN95
+IDD_ABOUT_DIALOG DIALOG 74, 71, 175, 107
+STYLE DS_ABSALIGN | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Beam Transport at Your Fingertips"
+BEGIN
+	ICON IDR_APP_ICON, -1, 13, 35, 16, 16
+	CTEXT "Graphic Transport Version 2.61c", IDR_TEXT, 35, 9, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "for Microsoft Windows 95/98/Me,", -1, 35, 19, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "Windows NT4, 2000 and XP using", -1, 35, 29, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+#ifdef BORLAND
+	CTEXT "Borland C++ Version 5.0,", -1, 35, 39, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+#else
+	CTEXT "MS Visual C++ Version 6.0,", -1, 35, 39, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+#endif
+	CTEXT "Digital Visual Fortran 6.0", -1, 35, 49, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "and an own C++ class library", -1, 35, 59, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "by Urs Rohrer (PSI, CH-5232 Villigen)", -1, 35, 69, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "OK", IDC_OKAY, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 71, 87, 32, 20
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 6, 163, 74
+END
+#else
+IDD_ABOUT_DIALOG DIALOG 74, 71, 175, 107
+STYLE DS_ABSALIGN | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Transport"
+BEGIN
+	ICON IDR_APP_ICON, -1, 13, 35, 16, 16
+	CTEXT "Graphic Transport Version 2.61c", IDR_TEXT, 35, 9, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "=> 32 bit version <=", -1, 35, 19, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "for Microsoft Windows NT using", -1, 35, 29, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "MS Visual C++ (Version 6.0) and", -1, 35, 39, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "Digital Visual Fortran", -1, 35, 49, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "(Version 6.0) for Windows NT", -1, 35, 59, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "by Urs Rohrer (PSI, CH-5232 Villigen)", -1, 35, 69, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "OK", IDC_OKAY, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 71, 87, 32, 20
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 6, 163, 74
+END
+#endif
+#else
+IDD_ABOUT_DIALOG DIALOG 74, 71, 175, 107
+STYLE DS_ABSALIGN | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Transport"
+{
+ ICON IDR_APP_ICON, -1, 13, 35, 16, 16
+ CTEXT "Graphic Transport Version 2.61c", IDR_TEXT, 35, 9, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "for Microsoft Windows 3.1", -1, 35, 19, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Windows 95 and Windows NT", -1, 35, 29, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "using portable C++ code and", -1, 35, 39, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Microsoft Fortran (Version 5.1)", -1, 35, 49, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Lahey F77L-EM/32 (Version 5.01)", -1, 35, 59, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "by Urs Rohrer (PSI, CH-5232 Villigen)", -1, 35, 69, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CONTROL "OK", IDC_OKAY, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 71, 87, 32, 20
+ CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 6, 163, 74
+}
+#endif
+
+IDD_ABOUT2_DIALOG DIALOG 74, 71, 175, 107
+STYLE DS_ABSALIGN | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About CERN Transport"
+{
+ ICON IDR_APP_ICON, -1, 13, 35, 16, 16
+ CTEXT "The computational part is based on", IDR_TEXT, 35, 9, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "a CERN-SLAC-FNAL version", -1, 35, 19, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "of TRANSPORT written in FORTRAN by", -1, 35, 29, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "K.L. Brown and F. Rothacker (SLAC),", -1, 35, 39, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "D.C. Carey (FNAL) and", -1, 35, 49, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Ch. Iselin (CERN).", -1, 35, 59, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "See reports: CERN 73-16 and 80-04.", -1, 35, 69, 128, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CONTROL "OK", IDC_OKAY, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 71, 87, 32, 20
+ CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 6, 163, 74
+}
+
+IDD_QEND_DIALOG DIALOG 93, 78, 134, 63
+STYLE DS_ABSALIGN | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Transport"
+BEGIN
+	ICON IDR_QM_ICON, -1, 11, 10, 16, 16
+	CONTROL "Yes", IDYES, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 19, 39, 32, 20
+	CONTROL "No", IDNO, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 83, 39, 32, 20
+	LTEXT "Do You really want to quit ?", IDC_TEXT, 34, 13, 92, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 6, 4, 123, 26
+	CONTROL "", 1001, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 0, 34, 134, 1
+END
+
+IDD_INFO_DIALOG DIALOG 81, 79, 154, 51
+STYLE DS_ABSALIGN | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Info"
+BEGIN
+	CONTROL "OK", IDC_OKAY, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 63, 27, 32, 20
+	CTEXT "abcdefghijklmnopqrstuvwxyzABCDEFGHI", IDC_TEXT, 8, 8, 139, 8
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 5, 4, 145, 18
+END
+
+IDD_STRING_DIALOG DIALOG 102, 136, 101, 29
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | WS_POPUP
+CAPTION "Input"
+BEGIN
+	CONTROL "abcdefghijk", IDC_EDIT, "edit", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 3, 2, 95, 12
+	PUSHBUTTON "OK", IDOK, 2, 16, 48, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Cancel", IDCANCEL, 52, 16, 47, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+END
+
+IDD_FS_DIALOG DIALOG 102, 136, 101, 29
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | WS_POPUP
+CAPTION "Enter font size"
+BEGIN
+	CONTROL "abcdefghijk", IDC_EDIT, "edit", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 3, 2, 95, 12
+	PUSHBUTTON "OK", IDOK, 2, 16, 48, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Cancel", IDCANCEL, 52, 16, 47, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+END
+
+IDD_LW_DIALOG DIALOG 102, 136, 101, 29
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | WS_POPUP
+CAPTION "Enter print line width"
+BEGIN
+	CONTROL "abcdefghijk", IDC_EDIT, "edit", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 3, 2, 95, 12
+	PUSHBUTTON "OK", IDOK, 2, 16, 48, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Cancel", IDCANCEL, 52, 16, 47, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+END
+
+IDD_BERO_DIALOG DIALOG 102, 136, 101, 29
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | WS_POPUP
+CAPTION "Enter new B*Rho"
+BEGIN
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 2, 2, 97, 12
+	LTEXT "kGm", -1, 81, 4, 16, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	LTEXT "B*Rho =", -1, 5, 4, 29, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "abcdefghijk", IDC_EDIT, "edit", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 37, 4, 41, 8
+	PUSHBUTTON "OK", IDOK, 2, 16, 48, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+	PUSHBUTTON "Cancel", IDCANCEL, 52, 16, 47, 12, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+END
+
+IDD_PRINT_ABORT_DIALOG DIALOG 110, 76, 90, 64
+CAPTION "Transport"
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | WS_POPUP
+BEGIN
+	CTEXT "Sending", -1, 5, 6, 81, 8
+	CTEXT "text", IDC_FILE_NAME_TEXT, 5, 15, 81, 8
+	CTEXT "to print spooler", -1, 5, 24, 81, 8
+	CONTROL "Cancel", IDCANCEL, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 27, 41, 32, 20
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 3, 3, 84, 34
+END
+
+IDD_TOLONG_DIALOG DIALOG 102, 125, 174, 95
+STYLE WS_BORDER | WS_CAPTION | WS_DLGFRAME | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | WS_POPUP
+CAPTION "Transport Output"
+BEGIN
+	CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 3, 5, 167, 63
+	CTEXT "File FOR002.DAT is longer than 65536 bytes", -1, 6, 7, 163, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "and cannot be displayed in its entirety.", -1, 5, 17, 164, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "File length=120000 bytes in 3000 lines.", IDR_TEXT, 5, 28, 164, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CTEXT "Enter line number of first line to be displayed:", -1, 5, 40, 163, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+	CONTROL "0", IDC_EDIT, "edit", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 63, 52, 43, 12
+	CONTROL "OK", IDOK, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 46, 73, 32, 20
+	CONTROL "Cancel", IDCANCEL, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 95, 73, 32, 20
+END
+IDD_ABOUT3_DIALOG DIALOG 74, 71, 178, 140
+STYLE DS_ABSALIGN | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About some enhancements for this edition"
+{
+ CTEXT "The following features have been merged in:", -1, 15, 9, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Space charge effects by F. Sacherer et al. ", -1, 15, 19, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Wien filter (spin rotator) by R. Frosch.", -1, 15, 29, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Stochastic fit procedure by U. Witzke. ", -1, 15, 39, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Fringing field of quads by M. Matsuda et al.", -1, 15, 49, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Electrostatic quads and solenoid entrance/", -1, 15, 59, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "exit fields from A. P. Banford's text book.", -1, 15, 69, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Electrostatic accelerator by A. Galejs et al.", -1, 15, 79, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "For more info see: 'Compendium of", -1, 15, 89, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CTEXT "Transport Enhancements' via the internet.", -1, 15, 99, 145, 8, WS_CHILD | WS_VISIBLE | WS_GROUP
+ CONTROL "OK", IDOK, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 55, 119, 32, 20
+ CONTROL "WWW",IDC_WWW, "BUTTON", BS_OWNERDRAW | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 95, 119, 32, 20
+ CONTROL "", 1000, "static", SS_SIMPLE | WS_CHILD | WS_VISIBLE, 7, 6, 166, 106
+}

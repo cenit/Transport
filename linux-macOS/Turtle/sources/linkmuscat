@@ -1,0 +1,4 @@
+#g77 muscat.o system.o -o muscat -lcurses
+#new: link cursor-lib statically:
+#eventually you need: ln -s /usr/lib/libncurses.a /usr/lib/libcurses.a
+g77 muscat.o system.o /usr/lib/libcurses.a -o muscat

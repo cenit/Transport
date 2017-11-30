@@ -1,0 +1,1 @@
+g77 io.o bero.o qoi.o boi.o loi.o qoi2.o fxydac.o fxygauss.o pirexf.o stat.o -o io

@@ -1,0 +1,17 @@
+/* ColorButton message definitions */
+
+#define    CRBM_SETFACEBRUSH     (WM_USER+1)
+#define    CRBM_SETSHADOWBRUSH   (WM_USER+2)
+#define    CRBM_SETHILITEBRUSH   (WM_USER+6)
+#define    CRBM_SETTEXTCOLOR     (WM_USER+3)
+#define    CRBM_SETDRAWTEXTSTYLE (WM_USER+4)
+#define    CRBM_SETLABELFONT     (WM_USER+5)
+
+#define    CRBM_GETFACEBRUSH     (WM_USER+11)
+#define    CRBM_GETSHADOWBRUSH   (WM_USER+12)
+#define    CRBM_GETHILITEBRUSH   (WM_USER+16)
+#define    CRBM_GETTEXTCOLOR     (WM_USER+13)
+#define    CRBM_GETDRAWTEXTSTYLE (WM_USER+14)
+#define    CRBM_GETLABELFONT     (WM_USER+15)
+
+

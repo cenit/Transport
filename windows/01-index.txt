@@ -1,0 +1,60 @@
+Description of Transport & Turtle Source-Code directories & generated modules.
+============================================================================== 
+
+Trans - directory contains a minimal 'Transport for Windows' distribution
+trans32 - directory contains Sources & makefile for trans32.dll
+transnt - directory contains Source & buildfile for transnt.exe
+Turtle - directory contains a minimal 'Turtle for Windows' distribution
+turtle32 - directory contains Sources & makefile for turtle32.dll 
+turtlent - directory contains Source & buildfile for turtlent.exe
+
+01-index.txt - this file
+02-readme.txt - some notes about this collection
+files&Dirs.jpg - Picture of the open directories
+Makeall.bat - builds all modules (lib, dll & exe)
+trans32.dll - Transport compute engine as dll 
+transnt.exe - Transport compute engine as exe
+turtle32.dll - Turtle compute engine as dll
+turtlent.exe - Turtle compute engine as exe
+
+HILIB\ANAMTR - directory contains Sources & makefile for Analog meter for Turtle
+HILIB\Camac - directory contains Sources & makefile for Camac access for Transport 
+HILIB\COLORBUT - directory contains Sources & makefile for Colored buttons
+HILIB\editor32 - directory contains Sources & makefile for Text Editor
+HILIB\Libs - directory contains all built link-libraries 
+HILIB\LISTHSCR - directory contains Sources & makefile for Horizontal listing on screen
+HILIB\MSGDISPI - directory contains Sources & makefile for Message display
+HILIB\MYWPP - directory contains Sources & makefile for my WIN++ library
+HILIB\ROTKNOB - directory contains Sources & makefile for Rotation knob for Turtle
+HILIB\tgie - directory contains Sources & makefile for graphic input editor
+HILIB\trans - directory contains Sources & makefile for Transport framework
+HILIB\TURTLE - directory contains Sources & makefile for Turtle framework
+HILIB\userbtn - directory contains Sources & makefile for user shaped buttons
+
+HILIB\anmtr32.dll - Analog meter for Turtle
+HILIB\camac32.dll - Camac access for Transport
+HILIB\colrbt32.dll - Colored buttons for ?
+HILIB\editor32.exe - Text editor for Transport & Turtle Input
+HILIB\lsthsc32.dll - Horizontal listing on screen for Turtle
+HILIB\msgdsp32.dll - Message display for ?
+HILIB\rotknb32.dll - Rotation knob for Turtle
+HILIB\tgie32.exe - Turtle/Transport graphic input editor
+HILIB\tpmenu32.exe - Transport framework
+HILIB\ttmenu32.exe - Turtle framework
+HILIB\usrbtn32.dll - User shaped buttons for Turtle/Transport
+
+MISC32\bli - directory contains Source & buildfile for bli32.exe
+MISC32\cernlib - directory contains the cernlib for building gratur32.exe
+MISC32\gratur - directory contains Source & buildfile for gratur32.exe
+MISC32\IFQ - directory contains Source & buildfile for ifq32.exe
+MISC32\INPUT - directory contains Source & buildfile for input32.exe
+MISC32\muscat - directory contains Source & buildfile for muscat32.exe
+
+MISC32\bli32.exe - Transport Beam line Inversion
+MISC32\gratur32.exe - Graphic Turtle Output
+MISC32\ifq32.exe - Input Editor for Transport Fit Sequences (Version Q)
+MISC32\input32.exe - Line Input Editor for Transport (Version I)
+MISC32\muscat32.exe - Multiple Scattering Parameters for Turtle
+
+
+Urs Rohrer, September 2010

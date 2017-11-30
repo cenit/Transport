@@ -1,0 +1,17 @@
+LIBRARY        COLORBUT
+DESCRIPTION    'Custom Controls - Copyright 1991, Professional Development Svcs, Dennis Cook'
+EXETYPE        NT
+VERSION        1.0
+CODE           PRELOAD MOVEABLE DISCARDABLE
+DATA           PRELOAD MOVEABLE SINGLE
+HEAPSIZE       4096
+EXPORTS        ColorButtonInfo         @2
+               ColorButtonStyle        @3
+               ColorButtonFlags        @4
+               ColorButtonWndFn        @5
+               ColorButtonDlgFn        @6
+               ColorButtonInfoRW       @7
+               ColorButtonFlagsRW      @8
+               ListClasses             @9 RESIDENTNAME
+               DrawLabel               @10
+               FreeObject

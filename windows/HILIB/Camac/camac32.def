@@ -1,0 +1,42 @@
+; CAMAC32.DEF -- Definition file for CAMAC32.DLL
+
+LIBRARY     CAMAC32
+DESCRIPTION 'DLL for CAMAC access'
+CODE        READ SHARED EXECUTE
+DATA        SHARED READ WRITE
+EXPORTS     ShowCamacDLLVersion @2
+	    IniDevList @3
+	    ReloadDevList @4
+            SetDac @5
+            GetDac @6
+            GetAdc @7
+            GetDevName @8
+            GetDevParam @9
+            GetDevParam2 @10
+            DelDevList @11
+            IniSerialComm @12
+            CloseSerialComm @13
+            IniKSI @14
+            WriteCamac @15
+            ReadCamac @16
+            ControlCamac @17
+	    ReadCamacDac @18
+	    WriteCamacDac @19
+            getq @20
+            getx @21
+            WriteDAC @22
+            ReadDAC @23
+            ReadADC @24
+            ReserveCrate @25
+            FreeCrate @26
+            ReadScaler @27
+            ClearScaler @28
+            SwitchOnCombis @29
+            SwitchOnCombi @30
+            SwitchOffCombi @31
+            GetNumberOfPages @32
+	    GetPageIndex @33
+            YieldQQ @34
+            wait @35
+	    ReadAll @36
+            SetDacWait @37

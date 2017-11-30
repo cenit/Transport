@@ -1,0 +1,25 @@
+g77 -static \
+displaw.o \
+displaps.o \
+eliw.o \
+elips.o \
+eliw2.o \
+elips2.o \
+eliw3.o \
+elips3.o \
+dtmw.o \
+dtmps.o \
+pssubs.o \
+inips.o \
+xwi.o \
+bedacps.o \
+begaussps.o \
+mysleep.o \
+-o displaw \
+-L/usr/X11R6/lib \
+-lX11 \
+
+
+
+
+

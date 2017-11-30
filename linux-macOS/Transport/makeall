@@ -1,0 +1,58 @@
+cd sources
+
+./comptran
+./linktran
+cp trans ../transport
+rm -r -f trans
+
+./compio
+./linkio
+cp io ../transport
+rm -r -f io
+
+./compplot
+./linkplot
+cp plotf ../transport
+cp plota ../transport
+rm -r -f plotf
+rm -r -f plota
+
+rm -r -f *.o
+
+cd ../display
+
+./compall
+./mdisplaw
+cp displaw ../transport
+rm -r -f displaw
+
+rm -r -f *.o
+
+cd ../sources
+
+./complinkrest
+cp dispo ../transport
+cp disponew ../transport
+cp element ../transport
+cp el ../transport
+cp emu ../transport
+cp ifq ../transport
+cp si ../transport
+cp siun ../transport
+cp sigma ../transport
+cp tijk ../transport
+cp openURL ../transport
+cp bli ../transport
+
+rm -r -f dispo
+rm -r -f disponew
+rm -r -f element
+rm -r -f el
+rm -r -f emu
+rm -r -f ifq
+rm -r -f si
+rm -r -f siun
+rm -r -f sigma
+rm -r -f tijk
+rm -r -f openURL
+rm -r -f bli

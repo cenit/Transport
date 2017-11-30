@@ -1,0 +1,4 @@
+g77 -c -finit-local-zero -fno-automatic turtlin.f
+gcc -c system.c
+
+

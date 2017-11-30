@@ -1,0 +1,66 @@
+#!/usr/bin/wish -f
+
+proc mydialog { x y title text bitmap default args} {
+
+	global button
+
+	# 1. Create the top-level window and divide it into top
+	# and bottom parts.
+
+	wm title . $title
+        wm geometry . +$x+$y
+	frame .top -relief raised -bd 1 -background CadetBlue2
+	pack .top -side top -fill both
+	frame .bot -relief raised -bd 1 -background CadetBlue2
+	pack .bot -side bottom -fill both
+
+	# 2. Fill the top part with the bitmap and message.
+
+	message .top.msg -width 3i -text $text -background CadetBlue2
+        .top.msg configure -font -Adobe-Times-Medium-R-Normal-*-180-*
+	pack .top.msg -side right -expand 1 -fill both -padx 3m -pady 3m
+	if {$bitmap != ""} {
+		label .top.bitmap -bitmap $bitmap -background CadetBlue2
+		pack .top.bitmap -side left -padx 3m -pady 3m
+	}
+
+	# 3. Create a row of buttons at the bottom of the dialog.
+
+	set i 0
+	foreach but $args {
+		button .bot.button$i -text $but -command "set button $i" -background CadetBlue2 -activebackground CadetBlue4 -activeforeground Cadetblue1
+		if {$i == $default} {
+			frame .bot.default -relief sunken -bd 1 -background CadetBlue2
+			raise .bot.button$i
+			pack .bot.default -side left -expand 1 -padx 3m -pady 2m
+			pack .bot.button$i -in .bot.default -side left -padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack .bot.button$i -side left -expand 1 -padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+
+	# 4. Set up a binding for <Return>, if there`s a default,
+	# set a grab, and claim the focus too.
+
+	if {$default >= 0} {
+		bind . <Return> ".bot.button$default flash;  set button $default"
+	}
+	set oldFocus [focus]
+	grab set .
+	focus .
+
+	# 5. Wait for the user to respond, then restore the focus
+	# and return the index of the selected button.
+
+	tkwait variable button
+	focus $oldFocus
+	return $button
+}
+
+if {$argv == "selprint"} {
+  set retval [mydialog 100 100 {Output} {Select printer} warning 0 {Local} {Remote}]
+  exit $retval
+}
+
+

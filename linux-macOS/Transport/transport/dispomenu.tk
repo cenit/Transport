@@ -1,0 +1,333 @@
+#!/usr/bin/wish -f
+# Program: dispomenu
+# Tcl version: 7.4 (Tcl/Tk/XF)
+# Tk version: 4.0
+# XF version: 2.3
+#
+##########################################
+# Compiled by Urs Rohrer (PSI), Apr 2005 #
+##########################################
+
+global myx0
+global myy0
+
+set myx0 [lindex $argv 0]
+set myy0 [lindex $argv 1]
+
+global ColorCounter
+set ColorCounter 0
+
+#procedure ExecComm
+proc ExecComm {Comm} {
+
+set comp {{./disponew BL} {./disponew BE} {./disponew F} {./disponew Q} {./disponew C} {./disponew S} {./disponew B} {./disponew D} {./disponew QA} {./disponew QD}}
+
+#select xterm background color from list
+
+  global ColorCounter
+  set colors {thistle1 LightSteelBlue cornsilk LightSkyBlue1 aquamarine1 CadetBlue1 LightGrey wheat1 LightCyan RosyBrown1}
+  set col [lindex $colors $ColorCounter]
+
+#all commands in 'comp' list have to run in xterm window
+
+  set inwindow 0
+  for {set i 0} {$i<18} {incr i} {
+    set temp [lindex $comp $i]
+      if {$temp == $Comm} {
+            set inwindow 1
+      }
+  }
+
+# open xterm window (with many parameters) and start process via open
+
+  if {$inwindow == 1} {
+    set xt {xterm -sb -sl 500 -j -ls -fn 7x14 -fg black -bg}
+
+    if {$Comm == "./disponew C"} {
+       set xxt {-geometry 100x24}
+       set dx 100
+    }  elseif {$Comm == "./disponew QA"} {
+       set xxt {-geometry 50x24}
+       set dx 50
+    }  elseif {$Comm == "./disponew QD"} {
+       set xxt {-geometry 50x24}
+       set dx 50
+    }  elseif {$Comm == "./disponew D"} {
+       set xxt {-geometry 50x24}
+       set dx 50
+    }  else {
+       set xxt {-geometry 80x24}
+       set dx 80
+    }
+    set xt [concat $xt $col $xxt]
+
+    set x0 0; set y0 0; set w0 0; set h0 0 
+    GetDim . x0 y0 w0 h0
+    set w1 [expr $dx*7]
+    set h1 [expr 24*14]
+    set x1 [expr $x0+$w0/2-$w1/2]
+    set x1 [expr ($x1 < 0) ? 0 : $x1]
+    set y1 [expr $y0+$h0/2-$h1/2]
+    set y1 [expr ($y1 < 0) ? 0 : $y1]
+    set xy +$x1+$y1
+    set xt $xt$xy
+
+    set xt [concat $xt -e]
+    set comnd [concat $xt $Comm]
+    set comnd [concat open \{|$comnd \} w+]
+    eval $comnd
+
+# start process via open
+
+  }  else {
+    set comnd [concat open \{|$Comm \} w+]
+    eval $comnd
+  }
+
+  incr ColorCounter
+  if {$ColorCounter > 9} {
+    set ColorCounter 0
+  }
+}
+
+# procedure to show window .
+proc ShowWindow. {args} {# xf ignore me 7
+
+  # Window manager configurations
+  global tkVersion
+  global myx0
+  global myy0
+  wm geometry . +$myx0+$myy0
+  wm sizefrom . ""
+  wm maxsize . 1152 900
+  wm title . {Output tables menu}
+
+  # build widget .b0
+  button .b0 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command {exit 0} \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {Exit this menu}
+  # build widget .b1
+
+  button .b1 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew B" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show bending magnet parameters}
+
+  # build widget .b2
+  button .b2 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew S" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show beam shifts}
+
+  # build widget .b3
+  button .b3 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew F" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show fit conditions}
+
+  # build widget .b4
+  button .b4 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew BE" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show initial beam parameters}
+
+  # build widget .b5
+  button .b5 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew Q" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show quadrupole parameters}
+
+  # build widget .b6
+  button .b6 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew BL" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show beam line}
+
+  # build widget .b7
+  button .b7 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew C" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show floor coordinates layout}
+
+  # build widget .b8
+  button .b8 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew BL" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show beam line}
+
+  # build widget .b9
+  button .b9 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew D" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show display parametes}
+
+  # build widget .b10
+  button .b10 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew QD" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show quadrupole DAC values}
+
+  # build widget .b11
+  button .b11 \
+    -background {cornsilk} \
+    -activebackground CadetBlue4 \
+    -command { ExecComm "./disponew QA" } \
+    -foreground {black} \
+    -activeforeground white \
+    -pady 0 -pady 0 \
+    -highlightthickness 0 \
+    -text {show quadrupole Ampere values}
+
+  # hot keys (with first key Dialog box pops up)
+  bind . <Any-KeyPress> {
+      set val %N
+      set var %A
+
+      set char ""
+      if  { $val > 31} {
+	  if { $val < 256 } {
+              set char $var              
+          }
+      }
+  }
+
+  # pack widget .
+  pack append . \
+    .b0 {top frame center fillx} \
+    .b4 {top frame center fillx} \
+    .b1 {top frame center fillx} \
+    .b5 {top frame center fillx} \
+    .b10 {top frame center fillx} \
+    .b11 {top frame center fillx} \
+    .b3 {top frame center fillx} \
+    .b6 {top frame center fillx} \
+    .b2 {top frame center fillx} \
+    .b7 {top frame center fillx} \
+    .b9 {top frame center fillx} \
+
+  if {"[info procs XFEdit]" != ""} {
+    catch "XFMiscBindWidgetTree ."
+    after 2 "catch {XFEditSetShowWindows}"
+  }
+}
+
+proc GetDim {object xx yy ww hh} {
+#
+#  return the x, y, w and h of the window 'object'
+#
+  upvar $xx x
+  upvar $yy y
+  upvar $ww w
+  upvar $hh h
+  
+  set w [winfo reqwidth $object]
+  set h [winfo reqheight $object]
+  set x [winfo x $object]
+  set y [winfo y $object]
+}
+
+# Procedure: CenterDialog
+proc CenterDialog {object} {
+
+# first get x, y, w and h of root-window
+
+  wm withdraw $object
+  update idletasks
+
+  GetDim . x0 y0 w0 h0
+
+#get screen size
+
+  set sw [winfo screenwidth $object]
+  set sh [winfo screenheight $object]
+ 
+#then get width and height of dialog box 'object'
+
+  GetDim $object x1 y1 w1 h1
+  set xmax [expr $sw-$w1-10]
+  set ymax [expr $sh-$h1-40]
+
+#then center 'object' relative to root
+
+  set x1 [expr $x0+$w0/2-$w1/2 - 6 ]
+  set xt [expr $x1+$w1+10]
+  if {$x1 < 0} {
+    set x1 0
+  }
+  if {$xt > $sw} {
+    set x1 $xmax
+  }
+  set y1 [expr $y0+$h0/2-$h1/2 - 15 ]
+  set yt [expr $y1+$h1+10]
+  if {$y1 < 0} {
+    set y1 0
+  }
+  if {$yt > $sh} {
+    set y1 $ymax
+  }
+  wm geometry $object +$x1+$y1
+  wm deiconify $object
+}
+
+# display/remove toplevel windows.
+ShowWindow.
+
+# eof
+#
+

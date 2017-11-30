@@ -1,0 +1,7 @@
+delf         csh, command deletes all scratch files
+gsprompt     ev. needed by printg (gratur)
+kdestart     csh, command for starting ttmenu from desktop
+printg       csh, command for printing
+ttmenu       wish, Tcl/Tk menu
+turtle.png   desktop icon
+turtle.xpm   desktop icon

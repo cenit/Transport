@@ -1,0 +1,23 @@
+/*
+ * COLORBUT (CUSTOM CONTROL) - RESOURCE FILE
+ *
+ */
+
+#include <windows.h>
+#include "colorbut.h"
+
+#include "colorbut.dlg"
+
+/*
+   Borland Resource Workshop stuff added by Urs Rohrer, PSI, November 1992
+   Extracted from RotKnob or AnaMtr by M. Buchheit
+*/
+
+BMP_TLBOX_0 BITMAP TLBOX.BMP
+CRS_DRGDRP_0 CURSOR DRGDRP.CUR
+
+STRINGTABLE BEGIN
+  ST_TITLE,"Dialogelement ColorButton"
+  ST_DESCR_0,"ColorButton"
+END
+

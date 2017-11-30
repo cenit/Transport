@@ -1,0 +1,27 @@
+cd sources
+
+./compturt
+./linkturt
+cp turtle ../turtle
+rm -r -f turtle
+
+./compmuscat
+./linkmuscat
+cp muscat ../turtle
+rm -r -f muscat
+
+./complinkrest
+cp openURL ../turtle
+rm -r -f openURL
+
+rm -r -f *.o
+
+cd ../gratur
+
+./makegratur
+cp gratur ../turtle
+rm -r -f gratur
+ 
+rm -r -f *.o
+
+cd ..

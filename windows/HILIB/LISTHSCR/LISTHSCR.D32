@@ -1,0 +1,10 @@
+LIBRARY         LISTHSCR
+DESCRIPTION     'Windows Horizontal Listbox Scrolling Methods, Kraig Brockschmidt'
+CODE            PRELOAD MOVEABLE DISCARDABLE
+DATA            PRELOAD MOVEABLE MULTIPLE
+HEAPSIZE        2048
+EXPORTS         FInitListboxExtents @2
+                WAddExtentEntry     @3  RESIDENTNAME
+                WRemoveExtentEntry  @4
+                FFreeListboxExtents @5
+                ResetListboxExtents @6
