@@ -18,7 +18,7 @@ phone: +41 56 310 40 35
 This version of the computer program Transport is based on a CERN version by
 K.L. Brown, D.C. Carey, Ch. Iselin and F. Rothacker (see: CERN 80-04) and is
 written in Fortran-77. Only the graphical X-Window interface is written in C.
-In order to use the graphical features, you have to start X-windows (startx)
+In order to use the graphical features, you have to start X-window (startx)
 and run all commands from a X-terminal (xterm). Most commands are short C-shell
 (csh) scripts. The local printing of the graphical output is done via ghostscript
 (gs). Some sample input files are included in this package (.dat). If you choose
@@ -54,7 +54,7 @@ ht:
 ## X Command Shell
 
 If you start tpmenu, then a X-window menu containing buttons for almost all
-of the above commands is poping up. Tpmenu runs only if the wish-shell
+of the above commands is popping up. Tpmenu runs only if the wish-shell
 (Tcl/Tk) is present in the system (e.g. in /usr/bin).
 
 ## KDE support

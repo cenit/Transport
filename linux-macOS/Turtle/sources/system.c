@@ -6,7 +6,7 @@
 #include "time.h"
 #include "curses.h"
 
-random_(float *rnd)
+void random_(float *rnd)
 {
    long rn;
 
@@ -14,24 +14,24 @@ random_(float *rnd)
    *rnd = (float)rn / (float)RAND_MAX;
 }
 
-seed_(long *seed)
+void seed_(long *seed)
 {
    srand(*seed);
 }
 
-getsecs_(long *secs)
+void getsecs_(long *secs)
 {
    time_t t;
    t = time(NULL);
    *secs = t;
 }
 
-putcha_(int *c)
+void putcha_(int *c)
 {
    putchar(*c);
 }
 
-getcha_(int *c)
+void getcha_(int *c)
 {
    int cc;
 
@@ -39,12 +39,12 @@ getcha_(int *c)
    *c = cc;
 }
 
-exit_(int *code)
+void exit_(int *code)
 {
    exit(*code);
 }
 
-gtext_(int *x, int *y, char *line)
+void gtext_(int *x, int *y, char *line)
 {
    
    // uses curses routines: initscr, move, addstr and refresh

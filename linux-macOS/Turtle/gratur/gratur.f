@@ -499,7 +499,7 @@ C
             FIELD(J,I) = ARRAY(MM)
           ENDIF
   100   CONTINUE
-        MM = MM + 1	!	SKIP SUM
+        MM = MM + 1 ! SKIP SUM
   200 CONTINUE
 c
       if (TYP .eq. 'C1' .or. TYP .eq. 'C2') then
@@ -648,7 +648,7 @@ C
           MM = MM + 1
           FIELD(J,I) = ARRAY(MM)
   100   CONTINUE
-        MM = MM + 1	!	SKIP SUM
+        MM = MM + 1 ! SKIP SUM
   200 CONTINUE
 C
       DO 400 J = 1, NX
@@ -735,16 +735,16 @@ C
        CALL ELLIPS(ARRAY(1), XBEG,NX,DX, YBEG,NY,DY,
      X             SUM, XM, XXM, YM, YYM, R12, EPS, IER)
        IF ( (IER .EQ. 0) .AND. (SUM .GT. 0.0) ) THEN
-	if ( (mx .eq. 1) .and. (my .eq. 1)) then
-	  u = 6 * chs
-	  v = 4 * chs
+         if ( (mx .eq. 1) .and. (my .eq. 1)) then
+           u = 6 * chs
+           v = 4 * chs
           WRITE(TEMP,332) SUM
   332     FORMAT('Sum=',G8.3)
           call hplcom(xl3+u,yl3-4.5*chs+v,TEMP)
-	else
-	  u = 0.0
-          v = 0.0
-	endif
+         else
+           u = 0.0
+                 v = 0.0
+         endif
         WRITE(TEMP,333,ERR=1333) YM
   333   FORMAT('Mean2=',G8.3)
  1333   WRITE(TEMP,2333) YM
@@ -940,19 +940,19 @@ c
  1001 format(a6)
       call tolower(strin)
       if (strin(1:1) .ne. ' ') then
-	if (strin(1:1) .eq. 'm') then
+        if (strin(1:1) .eq. 'm') then
           write(6,1010)
  1010     format(' Enter file name (D = metafile.rz) : ',$)
           fname = ' '
           read(5,1011) fname
  1011     format(a32)
           if (fname(1:1) .eq. ' ') fname = 'metafile.rz'
-	  call hrput(0,fname,'N')
-	else
+          call hrput(0,fname,'N')
+        else
           call ClosePS
           call SYSTEM('./printg '//strin//' hist.ps')
           id = 0
-	endif
+        endif
       endif
       call hdelet(id)
       call NextID
