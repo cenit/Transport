@@ -2,6 +2,10 @@ cmake_minimum_required (VERSION 2.8.7)
 project(Turtle)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+if(APPLE)
+    set (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/opt/cern/cernlib")
+endif
+
 enable_language(Fortran)
 enable_language(C)
 
@@ -23,12 +27,12 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE RELEASE)
 endif()
 
-add_executable (turtle 
+add_executable (turtle
     sources/turtlin.f
     sources/system.c
 )
 
-add_executable (muscat 
+add_executable (muscat
     sources/muscat.f
     sources/system.c
 )
@@ -45,7 +49,7 @@ target_link_libraries(turtle ${CURSES_LIBRARY})
 target_link_libraries(muscat ${CURSES_LIBRARY})
 target_link_libraries(gratur ${LIBGRAFLIB_LIBRARIES} ${LIBGRAFX11_LIBRARIES} ${LIBKERNLIB_LIBRARIES} ${LIBMATHLIB_LIBRARIES} ${LIBPACKLIB_LIBRARIES} ${LIBPHTOOLS_LIBRARIES} ${X11_LIBRARIES})
 
-install (TARGETS 
+install (TARGETS
     turtle
     muscat
     gratur

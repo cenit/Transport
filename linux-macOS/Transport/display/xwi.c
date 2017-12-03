@@ -46,7 +46,7 @@ void getscreenres_(int *iw, int *ih);
 /*-------------------------------- Globals ----------------------------------*/
 /*--------- static globals are only reachable inside this file --------------*/
 
-/* #define TEST */ 
+/* #define TEST */
 
 #define NP 500
 #define NC   9
@@ -104,7 +104,7 @@ static void timer(void (*func)(void), int time)
 }
 /*----------------------------------------------------------------------------*/
 
-static void wait(int timex)
+static void waitw(int timex)
 {
    usleep(1000*timex);
 }
@@ -831,7 +831,7 @@ void vt220_push_(void)
    }
    XRaiseWindow(dpy,window1);
    if (image)
-   {  wait(100);   /* 0.1 sec delay */
+   {  waitw(100);   /* 0.1 sec delay */
       XCopyArea(dpy,pixmap,window1,gc,0,0,window1W,window1H,0,0);
    }
    XSynchronize(dpy,0);
@@ -1023,7 +1023,7 @@ len     : auxiliary arument added by FORTRAN
 
    xpos = (int)*x - menu_width/2;
    xpos = (xpos < 0) ? 0 : xpos;
-   xpos = (xpos > window1W - menu_width - off) 
+   xpos = (xpos > window1W - menu_width - off)
           ? window1W - menu_width - off : xpos;
 
    ypos = window1H - (int)*y;
@@ -1096,7 +1096,7 @@ len     : auxiliary arument added by FORTRAN
                         nn++;
                         DrawMarker(menuwin,menu_width+15,pane_height*i+2);
                      }
-                  }   
+                  }
          break;
           case MotionNotify:
             n = -1;
@@ -1197,7 +1197,7 @@ len     : auxiliary argument added by FORTRAN
 
    xpos = (int)*x - menu_width/2;
    xpos = (xpos < 0) ? 0 : xpos;
-   xpos = (xpos > window1W - menu_width - off) 
+   xpos = (xpos > window1W - menu_width - off)
           ? window1W - menu_width - off : xpos;
 
    ypos = window1H - (int)*y;

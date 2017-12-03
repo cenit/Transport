@@ -51,3 +51,31 @@ On Ubuntu it is as easy as
 ```bash
 sudo apt-get install cernlib libncurses5-dev libgeant321-2-dev libhepmc-dev
 ```
+
+On macOS it is a little bit more complicated:
+
+1. First of all install homebrew
+
+2. Install these packages:
+
+```bash
+brew install gcc imake openmotif lapack openblas
+```
+
+3. Prepare the CERNLIB folder (requires super-user privileges, move to another folder only if really necessary - untested!)
+
+```bash
+cd /opt/
+sudo mkdir cern
+sudo chown $(whoami):$(id -g -n $(whoami)) cern
+cd cern/
+mkdir cernlib
+
+# export CERN=/opt/cern
+# export CERN_ROOT=/opt/cern
+# export CERNLIB=$CERN/2006/lib
+# export CERNBIN=$CERN/2006/bin
+# export PATH=$PATH:$CERNBIN
+```
+
+4. Run the `build_cernlib_v2006_macOS.sh` script
