@@ -1255,7 +1255,7 @@ C
   698   WRITE(6,3000)
   699   WRITE(6,2002)
         READ(5,1000) KEY
-	CALL TOUPPER(KEY)
+    CALL TOUPPER(KEY)
         IF (KEY(1:1).EQ.'H' .OR. KEY(1:1).EQ.'h') THEN
          CALL HELP1(WORD)
          GO TO 699
@@ -1282,7 +1282,7 @@ C
         IF ((KEY.EQ.'RAYS  ') .AND. INDIC.NE.0) GO TO 710
         IF (KEY(1:2).EQ.'28' .AND. INDIC.NE.0) GO TO 710
         IF (KEY.EQ.WORD(1) .OR. KEY(1:2).EQ.NUMB(1)) GO TO 705
-	WRITE(6,*) 'Illegal keyword, try again'
+        WRITE(6,*) 'Illegal keyword, try again'
         GO TO 699
 C
 C       ENTER NEW TITLE
@@ -1302,7 +1302,7 @@ C
         READ(5,2501,ERR=715) IND
         IF (IND .NE. 0) INDIC=IND
         GO TO 699
-  715	WRITE(6,*) 'Wrong input format, try again'
+  715   WRITE(6,*) 'Wrong input format, try again'
         GO TO 710
 C
 C       LIST ELEMENTS OF DESIRED TYPE
@@ -1329,7 +1329,7 @@ C
         IF (N.EQ.7 .AND. INDIC.NE.0) M=4
         IF (N.EQ.2) M=7
         IF (M .EQ. -1) THEN
-	 WRITE(6,*) 'No elements of this type found'
+        WRITE(6,*) 'No elements of this type found'
          GO TO 699
         END IF
 C
@@ -1613,7 +1613,7 @@ C
          RETURN
         ENDIF
         IF (M .EQ. -1) THEN
-	 WRITE(6,*) 'No element of desired type found'
+     WRITE(6,*) 'No element of desired type found'
          RETURN
         END IF
 C

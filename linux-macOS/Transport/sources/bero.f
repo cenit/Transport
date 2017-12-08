@@ -68,9 +68,9 @@ C
           DTA1 = DATA(I+2)
          ELSE
           WRITE(6,1001) NAM1,LAB1,OLDV1,DTA1,
-     +                  NAM,LABEL(NUM),OLDVAL,DATA(I+2)
+     1                  NAM,LABEL(NUM),OLDVAL,DATA(I+2)
  1001     FORMAT(A6,2X,A4,F9.5,'  -->',F9.5,4X,
-     +           A6,2X,A4,F9.5,'  -->',F9.5)
+     1           A6,2X,A4,F9.5,'  -->',F9.5)
          ENDIF
   750   CONTINUE
         IF (MAL - 2 * (MAL/2) .EQ. 1) THEN

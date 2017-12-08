@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "time.h"
 
-random_(float *rnd)
+void random_(float *rnd)
 {
    long rn;
 
@@ -12,24 +12,24 @@ random_(float *rnd)
    *rnd = (float)rn / (float)RAND_MAX;
 }
 
-seed_(long *seed)
+void seed_(long *seed)
 {
    srand(*seed);
 }
 
-gettim_(long *secs)
+void gettim_(long *secs)
 {
    time_t t;
    t = time(NULL);
    *secs = t;
 }
 
-putcha_(int *c)
+void putcha_(int *c)
 {
    putchar(*c);
 }
 
-exit_(int *code)
+void exit_(int *code)
 {
    exit(*code);
 }

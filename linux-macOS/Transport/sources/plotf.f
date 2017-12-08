@@ -1,3 +1,3 @@
-    PROGRAM PLOTF
-    CALL PLOT1F
-    END
+        PROGRAM PLOTF
+        CALL PLOT1F
+        END

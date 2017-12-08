@@ -4,12 +4,12 @@
 #include <string.h>
 #include <time.h>
 
-exit_(int *code)
+void exit_(int *code)
 {
    exit(*code);
 }
 
-gettim_(char *tim)
+void gettim_(char *tim)
 {
    time_t t;
    char *ts;
@@ -26,7 +26,7 @@ gettim_(char *tim)
       strncpy(tim,p,strlen(p));
 }
 
-getdat_(char *dat)
+void getdat_(char *dat)
 {
    time_t t;
    char *ts;

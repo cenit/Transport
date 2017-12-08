@@ -1,3 +1,3 @@
-    PROGRAM PLOTA
-    CALL PLOT2
-    END
+        PROGRAM PLOTA
+        CALL PLOT2
+        END
