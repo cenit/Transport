@@ -46,7 +46,7 @@ C
          WRITE(7,3012) UEBER(JT:79)
  3012    FORMAT(1X,A,//)
          WRITE(6,*) 'Matrices shown on screen will also be printed',
-         X              ' on file SIGMA.DAT'
+     X              ' on file SIGMA.DAT'
          GO TO 100
         ENDIF
 C

@@ -16,12 +16,12 @@ C       GET USER INPUT
 C
         WRITE(6,1000)
  1000   FORMAT(' Input: required',
-       1       ' horizontal beam spot diameter in mm (4*sigx) ',$)
+     1         ' horizontal beam spot diameter in mm (4*sigx) ',$)
         READ(5,1002,ERR=999) VALX 
  1002   FORMAT(F10.0)
         WRITE(6,1001)
  1001   FORMAT(' Input: required',
-       1       ' vertical beam spot diameter in mm (4*sigy) ',$)
+     1         ' vertical beam spot diameter in mm (4*sigy) ',$)
         READ(5,1002,ERR=999) VALY 
 C
 C       FILL INTO FOR001.DAT

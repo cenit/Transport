@@ -136,8 +136,10 @@ C
         CH3=LINE(I+2)(J:J+2)
         IF(CH(1:2).EQ.'2.' .AND. CH2.EQ.'20.') GO TO 36
         IF(CH.EQ.'20.' .AND. CH2(1:2).EQ.'2.') GO TO 37
-        IF(CH.NE.'20.'.AND.CH2(1:2).EQ.'2.'.AND.CH3(1:2).EQ.'4.') GO TO 38
-        IF(CH(1:2).EQ.'4.'.AND.CH2(1:2).EQ.'2.'.AND.CH3.NE.'20.') GO TO 50
+        IF(CH.NE.'20.'.AND.CH2(1:2).EQ.'2.'.AND.CH3(1:2).EQ.'4.') 
+     1   GO TO 38
+        IF(CH(1:2).EQ.'4.'.AND.CH2(1:2).EQ.'2.'.AND.CH3.NE.'20.') 
+     1   GO TO 50
         L=0
         GO TO 60
    36   IF(LINE(I+1)(J+4:J+7).EQ.'180.' .OR.

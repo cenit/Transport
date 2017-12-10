@@ -13,11 +13,11 @@ C
 C
       WRITE(6,*) ' '
       WRITE(6,*)
-     X  'Table of 6 largest second order beam components per coordinate.'
+     X 'Table of 6 largest second order beam components per coordinate.'
       WRITE(6,*)
-     X  '(components = Tijk * Xj * Xk , Xi = initial beam parameters.)'
+     X '(components = Tijk * Xj * Xk , Xi = initial beam parameters.)'
       WRITE(6,*)
-     X  '==============================================================='
+     X '==============================================================='
 C
 C   OPEN FILE WITH TIJK
 C
@@ -110,25 +110,25 @@ C
 C   ERROR HANDLING
 C
   600   IREM = IREM + 1
-      IF (IREM .EQ. 2) WRITE(6,2000)
+        IF (IREM .EQ. 2) WRITE(6,2000)
   601   REWIND(UNIT=0)
-      IF (IREM .EQ. 1) THEN
-      READ(0) XDIME
-      GO TO 30
-      END IF
-      GO TO 1
+        IF (IREM .EQ. 1) THEN
+        READ(0) XDIME
+        GO TO 30
+        END IF
+        GO TO 1
 C
 C
-  999   CONTINUE
+  999  CONTINUE
 C
- 1000   FORMAT(/
-     X  ' Input: z_coordinate in m or label (<CR>: next, QUIT: exit) ',$)
- 1001   FORMAT(A20)
- 1002   FORMAT(F20.0)
- 1003   FORMAT(A4)
- 1004   FORMAT(/4X,A10,F7.3,' m',7X,A4)
- 1010   FORMAT(/6(4X,A1,I1,I2,I1,A1,3X))
- 1011   FORMAT(6(F10.4,3X))
- 1012   FORMAT(6(G10.3,3X))
- 2000   FORMAT(' z groesser als zmax oder unbekanntes Label.')
-      END
+ 1000  FORMAT(/
+     X ' Input: z_coordinate in m or label (<CR>: next, QUIT: exit) ',$)
+ 1001  FORMAT(A20)
+ 1002  FORMAT(F20.0)
+ 1003  FORMAT(A4)
+ 1004  FORMAT(/4X,A10,F7.3,' m',7X,A4)
+ 1010  FORMAT(/6(4X,A1,I1,I2,I1,A1,3X))
+ 1011  FORMAT(6(F10.4,3X))
+ 1012  FORMAT(6(G10.3,3X))
+ 2000  FORMAT(' z groesser als zmax oder unbekanntes Label.')
+       END

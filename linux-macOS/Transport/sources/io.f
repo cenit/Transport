@@ -1255,7 +1255,7 @@ C
   698   WRITE(6,3000)
   699   WRITE(6,2002)
         READ(5,1000) KEY
-    CALL TOUPPER(KEY)
+        CALL TOUPPER(KEY)
         IF (KEY(1:1).EQ.'H' .OR. KEY(1:1).EQ.'h') THEN
          CALL HELP1(WORD)
          GO TO 699
@@ -1613,7 +1613,7 @@ C
          RETURN
         ENDIF
         IF (M .EQ. -1) THEN
-     WRITE(6,*) 'No element of desired type found'
+         WRITE(6,*) 'No element of desired type found'
          RETURN
         END IF
 C

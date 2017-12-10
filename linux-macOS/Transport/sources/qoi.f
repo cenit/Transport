@@ -22,7 +22,7 @@ C
      X       FORM='UNFORMATTED',ERR=99)
   440   READ(11,END=450,ERR=99) TITEL,LAB,XLENG,DIM1,AP,DIM2,B,DIM4,XN
         IF (TITEL.NE.'*QUAD*' .AND. TITEL.NE.'*SOLO*' .AND.
-         X      TITEL.NE.'*EQUAD*'.AND. TITEL.NE.'*SEXT*') GO TO 440
+     X      TITEL.NE.'*EQUAD*'.AND. TITEL.NE.'*SEXT*') GO TO 440
         QUAD(J)  = B + ABS(B) / (B + .000001) *.000001
         LABELF(J) = LAB
         J = J + 1
@@ -59,8 +59,8 @@ C
 C
         IF (NNQ .GT. 0) THEN
          WRITE(6,*)
-         X   'The following quad-, solenoid and sextupole-data',
-         X   ' have been transferred:'
+     X   'The following quad-, solenoid and sextupole-data',
+     X   ' have been transferred:'
          WRITE(6,*) ' '
          WRITE(6,1020) (QUADD(I),I=1,NNQ)
          WRITE(6,*) ' '

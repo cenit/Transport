@@ -108,7 +108,8 @@ C
          IF (LABLE .EQ. QLAB(K)) THEN
               GO TO 716
          ENDIF
-         IF (IA.EQ.JA(K) .AND. LL.EQ.LEFF(K) .AND. QLAB(K).EQ.'%%%%') THEN
+         IF (IA.EQ.JA(K) .AND. LL.EQ.LEFF(K) .AND. QLAB(K).EQ.'%%%%')
+     1   THEN
               GO TO 716
          ENDIF
   715   CONTINUE

@@ -1,8 +1,9 @@
 /* f77 interface to system routine */
 
 //#include "f2c.h"
-#include "stdlib.h"
-#include "time.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void random_(float *rnd)
 {
