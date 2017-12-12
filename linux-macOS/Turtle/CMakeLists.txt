@@ -2,10 +2,6 @@ cmake_minimum_required (VERSION 2.8.7)
 project(Turtle)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-if(APPLE)
-    set (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/opt/cern/cernlib")
-endif
-
 enable_language(Fortran)
 enable_language(C)
 
